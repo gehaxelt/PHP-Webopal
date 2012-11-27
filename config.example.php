@@ -1,4 +1,4 @@
 <?php
-$HOSTURL=''; //Set your hosturl here.
-$IMPRESSUM='http://www.gehaxelt.in/blog/impressum/'; //Set your Impressum url here
+$HOSTURL=''; //Set the host url here, e.g. http://opal.test.me/
+$IMPRESSUM=''; //Set the url to your impressum, if necessary.
 ?>
