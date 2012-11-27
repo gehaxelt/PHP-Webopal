@@ -49,7 +49,7 @@ include 'config.php';
 	<div id="wrapper">
 		<h1>WebOpal by Sebastian Neef und Tim M&uuml;ller</h1>
 
-		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo $IMPRESSUM; ?>">Impressum</a> </span>
+		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
 		<form action="index.php" method="post">
 				<div id="implcontainer">
     				Eingabe f&uuml;r den Implementationsteil:
@@ -96,7 +96,7 @@ include 'config.php';
 	function downloadURL() {
 		$ranName=str_shuffle($_SESSION['randNum']);
 		shell_exec("cd ./uploads/; tar cfz ../downloads/".$ranName.".tgz ./".$_SESSION['randNum'].";");
-		return "<span><a href='".$HOSTURL."/downloads/".$ranName.".tgz'>Archiv ".$ranName.".tgz downloaden</a>";
+		return "<span><a href='".htmlentities($HOSTURL)."/downloads/".$ranName.".tgz'>Archiv ".$ranName.".tgz downloaden</a>";
 	}
 	function runOasys() {
 		if(isset($_SESSION['impl_eingabe']) && isset($_SESSION['sign_eingabe']) && isset($_SESSION['cmd'])) {
