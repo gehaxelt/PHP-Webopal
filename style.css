@@ -1,0 +1,89 @@
+body {
+	background-color: #292527;
+}
+
+#customsearch {
+	width:1015px;
+	margin-bottom:10px;
+	margin-top:5px;
+}
+
+#downloadform {
+	display: inline;
+}
+
+#wrapper {
+	background-color: #FA9200;
+	margin: 0px auto 0px auto;
+	width: 1024px;
+	-webkit-border-radius: 5px;
+	-webkit-border-top-right-radius: 10px;
+	-moz-border-radius: 5px;
+	-moz-border-radius-topright: 10px;
+	border-radius: 5px;
+	border-top-right-radius: 10px;
+	border: 1px solid #000000;
+	padding-left:5px;
+	padding-top:-10px;
+}
+
+#wrapper #title {
+	display:block;
+	
+}
+
+#implcontainer {
+	float:left;
+	position:relative;
+	width:500px;
+	height:250px;
+	margin-top:10px;
+}
+
+#EditAreaArroundInfos_impl_eingabe, #EditAreaArroundInfos_sign_eingabe {
+	display:none;
+}
+
+#signcontainer {
+	float:right;
+	position:relative;
+	width:500px;
+	height:250px;
+	margin-top:10px;
+}
+
+#funccontainer {
+	float:left;
+	position:relative;
+	width:500px;
+	height:50px;
+}
+
+#sendcontainer {
+	float:right;
+	position:relative;
+	width:500px;
+	height:50px;
+}
+
+#outputcontainer {
+	clear:both;
+	position:relative;
+	widht:1024px;
+	height:250px;
+}
+
+#outputcontainer textarea {
+	width:1015px;
+	height: 240px;
+}
+
+#signcontainer textarea {
+	width:490px;
+	height:225px;
+}
+
+#implcontainer textarea {
+	width: 490px;
+	height: 225px;
+}
