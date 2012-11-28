@@ -17,9 +17,18 @@ if(isset($_POST['focus'])) {$_SESSION['focus']=$_POST['focus'];}
 $jsinit="";
 for($i=0;$i<$MAXFILES;$i++){
 	/* initialize further $_SESSION if necessary */
-	if(!isset($_SESSION['name'][$i])) {$_SESSION['name'][$i]=""; }
+	if(!isset($_SESSION['name'][$i])) {
+		$_SESSION['name'][$i]=""; 
+	}else{
+		if($_SESSION["name"][$i]==""){
+			$_SESSION["name"][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
+		}
+	}
 	if(!isset($_SESSION['impl_eingabe'][$i])) {$_SESSION['impl_eingabe'][$i]=""; }
 	if(!isset($_SESSION['sign_eingabe'][$i])) {$_SESSION['sign_eingabe'][$i]=""; }
+
+	/* If the structure has no name, create one */
+
 	
 	/* initialize editAreas */
 	$jsinit .= '
@@ -55,7 +64,7 @@ for($i=0;$i<$MAXFILES;$i++){
 	<script language="javascript" type="text/javascript">
 	<?php echo $jsinit; ?>
     	$(function() {
-		$("#accordion").accordion({collapsible:false,heightStyle: "content"});
+		$("#accordion").accordion({collapsible:false,heightStyle: "content", event: "mouseup",active : <?php echo $_SESSION['focus'];?>});
 	});
 	</script>
 	<script language="javascript" type="text/javascript">
@@ -107,7 +116,7 @@ for($i=0;$i<$MAXFILES;$i++){
 				</div>
 				<div id="outputcontainer">
 					<textarea name="output" cols="110" rows="10"><?php
-											echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus'])); 
+							echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus'])); 
 										?>
 					</textarea>
 				</div>
@@ -157,8 +166,6 @@ for($i=0;$i<$MAXFILES;$i++){
 		/* Create impl and sign files for every structure with a non empty impl */
 		for($i=0;$i<$MAXFILES;$i++){
 			if($imps[$i]!=""){
-				/* If the structure has no name, create one */
-				if($names[$i]==""){$names[$i]=substr($ranFile,0,4)."datei".$i;}
 
 				/* Check if structure contains bad things */
 				$pattern = '~(.+Com.+)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
@@ -168,7 +175,7 @@ for($i=0;$i<$MAXFILES;$i++){
 				$signStr = "SIGNATURE ".$names[$i];
 				$implStr = "IMPLEMENTATION ".$names[$i];
 				file_put_contents($dirStr."/".$names[$i].".sign",$signStr."\n".str_replace("\r","\n",$signs[$i]));
-				file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$imps[$i]));			
+				file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$imps[$i]));		
 			}
 		}
 		/* Run focussed Structure */
