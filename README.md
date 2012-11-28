@@ -1,4 +1,4 @@
-WebOpal - A webinferface for Opal
+WebOpal - A webinterface for Opal
 ==================================
 
 - 1. Requirements

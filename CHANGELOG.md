@@ -6,7 +6,6 @@ Changelog WebOpal
 - NEW FEATURE: Multiple Dateien (default 3) möglich (Akkordeonstruktur von JQUERY UI)
 - NEW FEATURE: Benennung der Strukturen möglich (wenn nicht benannt, wird zufällig ein Name gewählt)
 - NEW FEATURE: Eine der Strukturen kann fokussiert werden
-- NEW FEATURE: download & upload - Verzeichnis werden regelmäßig geleert (Alle 24 Stunden)
 - NEW FEATURE: Timeout, wenn Programm zu lange läuft (default 10s)
 - Bugfix: Typos berichtigt
 - Bugfix: CHANGELOG.md erstellt

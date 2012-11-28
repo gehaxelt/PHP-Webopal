@@ -27,12 +27,16 @@ for($i=0;$i<$MAXFILES;$i++){
 		id : "impl_eingabe'.$i.'"		// textarea id
 		,syntax: "opal"			// syntax to be uses for highgliting
 		,start_highlight: true		// to display with highlight mode on start-up
+		,min_width: 450
+		,min_height: 200
 		,allow_toggle: false
 	});
         editAreaLoader.init({
                 id : "sign_eingabe'.$i.'"             // textarea id
                 ,syntax: "opal"                    // syntax to be uses for highgliting
                 ,start_highlight: true          // to display with highlight mode on start-up
+		,min_width: 450
+		,min_height: 200
         	,allow_toggle: false
 	});';
 }
@@ -44,9 +48,15 @@ for($i=0;$i<$MAXFILES;$i++){
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal v0.1a</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
 	<script language="javascript" type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
 	<script language="javascript" type="text/javascript">
 	<?php echo $jsinit; ?>
+    	$(function() {
+		$("#accordion").accordion({collapsible:false,heightStyle: "content"});
+	});
 	</script>
 	<script language="javascript" type="text/javascript">
 	  (function() {
@@ -63,25 +73,30 @@ for($i=0;$i<$MAXFILES;$i++){
 		<h1>WebOpal by Sebastian Neef und Tim M&uuml;ller</h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
 		<form action="index.php" method="post">
+				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
 				for($i=0;$i<$MAXFILES;$i++){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '
-					<div class="filename">
+					<h3 class="filename">
 						Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="name_eingabe" name="name['.$i.']" value="'.htmlentities($_SESSION['name'][$i]).'">
 						<input type="radio" name="focus" value="'.$i.'" '.$checked.'> Fokus
-					</div>
+					</h3>
+					<div class="struccontainer" style="padding:10px;">
 					<div class="implcontainer">
 	    					Eingabe f&uuml;r den Implementationsteil:
 						<textarea class="quadrat impl_eingabe" id="impl_eingabe'.$i.'" name="impl_eingabe['.$i.']" cols="50" rows="10">'.htmlentities($_SESSION['impl_eingabe'][$i]).'</textarea>
 	    				</div>
 					<div class="signcontainer">
-						Eingabe f&uuml;r den Signaturteil
+						Eingabe f&uuml;r den Signaturteil:
 						<textarea class="quadrat sign_eingabe" id="sign_eingabe'.$i.'" name="sign_eingabe['.$i.']" cols="50" rows="10">'.htmlentities($_SESSION['sign_eingabe'][$i]).'</textarea>
-	    				</div>';
+	    				</div>
+					</div>';
 				}
 				?>
+				</div>
+				<br>
 				<div id="funccontainer">
 					Eingabefeld: "Funktionsaufruf func(var1, var2, ...)":<br>
 					<input name="execute" type="text" size="43" maxlength="30" value="<?php echo htmlentities($_SESSION['cmd']);?>">
