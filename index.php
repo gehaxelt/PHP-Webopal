@@ -5,7 +5,7 @@ include 'config.php';
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['cmd'])) {$_SESSION['cmd']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
-if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=0;}
+if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
 
 /* Check if $_POST is set, if yes, update $_SESSION */
 if(isset($_POST['impl_eingabe'])) {$_SESSION['impl_eingabe']=$_POST['impl_eingabe'];}
@@ -170,6 +170,10 @@ for($i=0;$i<$MAXFILES;$i++){
 				/* Check if structure contains bad things */
 				$pattern = '~(.+Com.+)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
 				if(preg_match($pattern, $imps[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
+
+				/* Check if name contains bad things */
+				$pattern = '~[^a-zA-Z0-9]~sm'; 
+				if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
 				/* Create impl and sign files for the structure */
 				$signStr = "SIGNATURE ".$names[$i];
