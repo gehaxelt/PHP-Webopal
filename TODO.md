@@ -1,9 +1,12 @@
 TODO WebOpal
 ============
 
-- Mehrere Strukturen
-- Downloads korrekt bennen (<> Konflikte bei mehreren Versione)
-- Tmp-Dateien korrekt bennen
+- Downloads korrekt benennen (<> Konflikte bei mehreren Versionen) ? -> Was genau ist gemeint?
 - Multi-User-System
-- Timeout mit "man timeout"
+- Tmp-Dateien korrekt benennen -> Was genau ist gemeint?
+
+##Erledigt##
+- Mehrere Strukturen -> Done
+- Timeout mit "man timeout" -> Done
+
 

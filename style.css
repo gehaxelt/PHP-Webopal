@@ -32,7 +32,7 @@ body {
 	
 }
 
-#implcontainer {
+.implcontainer {
 	float:left;
 	position:relative;
 	width:500px;
@@ -44,7 +44,7 @@ body {
 	display:none;
 }
 
-#signcontainer {
+.signcontainer {
 	float:right;
 	position:relative;
 	width:500px;
@@ -78,12 +78,12 @@ body {
 	height: 240px;
 }
 
-#signcontainer textarea {
+.signcontainer textarea {
 	width:490px;
 	height:225px;
 }
 
-#implcontainer textarea {
+.implcontainer textarea {
 	width: 490px;
 	height: 225px;
 }

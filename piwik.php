@@ -8,5 +8,5 @@ var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 6);
 piwikTracker.trackPageView();
 piwikTracker.enableLinkTracking();
 } catch( err ) {}
-</script><noscript><p><img src="http://www.gehaxelt.in/piwik/piwik.php?idsite=6" style="border:0" alt="" /></p></noscript>
+</script><noscript><p><img src="http://www.gehaxelt.in/piwik/piwik.php?idsite=6" style="border:0" alt=""></p></noscript>
 <!-- End Piwik Tracking Code -->
