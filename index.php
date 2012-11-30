@@ -136,6 +136,9 @@ for($i=0;$i<$MAXFILES;$i++){
        		<div id="customsearch">
 			<div class="gcse-search"></div>
         	</div>
+		<br />		
+		<div id="github">Fork us on GitHub:<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div> <br />
 	</div>
 	<?php include "piwik.php"; ?>
 </body>
