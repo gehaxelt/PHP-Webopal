@@ -2,6 +2,18 @@
 session_start();
 include 'config.php';
 
+//Sessionexpiration
+/*
+This is a very basic 'hack'. It seems to be better to use a MySQL-backend for deleting unused files and user managment.
+*/
+if(isset($_SESSION['sessionstart'])){
+	$sessionlife = time() - $_SESSION['sessionstart'];
+	if(sessionlife > SESSIONTIMEOUT){
+		//TODO: remove random created file
+	}
+}
+$_SESSION['sessionstart'] = time();
+
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['cmd'])) {$_SESSION['cmd']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
@@ -136,6 +148,9 @@ for($i=0;$i<$MAXFILES;$i++){
        		<div id="customsearch">
 			<div class="gcse-search"></div>
         	</div>
+		<br />		
+		<div id="github">Fork us on GitHub:<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div> <br />
 	</div>
 	<?php include "piwik.php"; ?>
 </body>
