@@ -1,5 +1,15 @@
 <?php
 include 'config.php';
+
+if(isset($_GET['output'])){
+	if($_GET['output'] == "true"){
+		run_gc(true);
+	} else {
+		run_gc(false);
+	}
+}
+
+function run_gc($output=false){
 	$dirs = scandir("./uploads");
 	$delfiles = 0;
 	foreach($dirs as $entry){
@@ -14,12 +24,14 @@ include 'config.php';
 			if((time() - intval($time)) > $SESSIONTIMEOUT){
 				rrmdir($dir);
 				$delfiles++;
-				echo("Deleted folder: ".$dir."<br />");
+				if($output) echo("Deleted folder: ".$dir."<br />");
 			}
 		}
 	}
-	echo($delfiles." folder(s) deleted");
-	echo("<br />");
+	if($output){
+		echo($delfiles." folder(s) deleted");
+		echo("<br />");
+	}
 	$files = scandir("./downloads");
 	$delfiles = 0;
 	foreach($files as $entry){
@@ -40,11 +52,12 @@ include 'config.php';
 					unlink($filename);
 				}
 				$delfiles++;
-				echo("Deleted file: ".$fname."<br />");
+				if($output) echo("Deleted file: ".$fname."<br />");
 			}
 		}
 	}
-	echo($delfiles." file(s) deleted");
+	if($output) echo($delfiles." file(s) deleted");
+}
 
 function endsWith( $str, $sub ) {
 	return ( substr( $str, strlen( $str ) - strlen( $sub ) ) == $sub );

@@ -1,7 +1,9 @@
 <?php
 session_start();
+ob_start(); //start output buffering
 include 'config.php';
 include 'contributors.php';
+include 'gc.php';
 
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
@@ -221,4 +223,14 @@ for($i=0;$i<$MAXFILES;$i++){
 		$result=str_replace($names[$focus].".impl>^D (quit)\n".$TIMEOUTTXT,"",$result[1]);
 		return $result;
 	}
+	$output = ob_get_clean();
+	ignore_user_abort(true);
+	set_time_limit(0);
+	header("Connection: close");
+	header("Content-Length: ".strlen($output));
+	header("Content-Encoding: none");
+	echo $output.str_repeat(' ', 1) ."\n\n\n";
+	flush(); //script send all data to the browser
+
+	run_gc(false);
 ?>
