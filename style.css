@@ -91,3 +91,8 @@ body {
 .struccontainer{
 	padding:0;
 }
+
+#github {
+	width: 100px;
+	height: 50px;
+}
