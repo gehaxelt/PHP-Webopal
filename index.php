@@ -20,7 +20,7 @@ if(isset($_SESSION['sessionstart'])){
 if(!isset($_SESSION['cmd'])) {$_SESSION['cmd']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
-if(!isset($_SESSION['structnr'])) {$_SESSION['structnr']=$MAXFILES;}
+if(!isset($_SESSION['structnr'])) {$_SESSION['structnr']=$MINFILES;}
 
 /* Check if $_POST is set, if yes, update $_SESSION */
 if(isset($_POST['impl_eingabe'])) {$_SESSION['impl_eingabe']=$_POST['impl_eingabe'];}
@@ -30,9 +30,9 @@ if(isset($_POST['name'])) {$_SESSION['name']=$_POST['name'];}
 if(isset($_POST['focus'])) {$_SESSION['focus']=$_POST['focus'];}
 if(isset($_POST['structnr'])) {
 	if(intval($_POST['structnr'])>$MAXFILES){	
-		$_SESSION['structnr']=$MAXFILES;
+		$_SESSION['structnr']=$MINFILES;
 	} else {
-		$_SESSION['structnr']=$_POST['structnr'];
+		$_SESSION['structnr']=intval($_POST['structnr']);
 	}
 }
 
