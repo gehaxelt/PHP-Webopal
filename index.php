@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'config.php';
+include 'contributors.php';
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
 	$sessionlife = time() - $_SESSION['sessionstart'];
@@ -89,7 +90,7 @@ for($i=0;$i<$MAXFILES;$i++){
 </head>
 <body>
 	<div id="wrapper">
-		<h1>WebOpal by Sebastian Neef und Tim M&uuml;ller</h1>
+		<h1>WebOpal v0.1a</h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
 		<form action="index.php" method="post">
 				<div id="accordion">
@@ -148,8 +149,13 @@ for($i=0;$i<$MAXFILES;$i++){
         	</div>
 		<br />		
 		<div id="github">Fork us on GitHub:<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true"
-  allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div> <br />
+  allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div>
+	<div id="contributors">
+	WebOpal (c) 2012 by <?php echo_contributors(); ?>
 	</div>
+	<br />
+	</div>
+	
 	<?php include "piwik.php"; ?>
 </body>
 

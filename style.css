@@ -96,3 +96,8 @@ body {
 	width: 100px;
 	height: 50px;
 }
+
+#contributors {
+	text-align: right;
+	margin-right: 5px;
+}
