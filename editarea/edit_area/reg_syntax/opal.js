@@ -20,11 +20,11 @@ editAreaLoader.load_syntax["opal"] = {
 		]
  		,'keywords' : [
 			'Nat', 'nat', 'Denotation', 'denotation', 'real',
-			'Real','char','Char','RealConv','CharConv','NatConv','Seq'
+			'Real','char','Char','RealConv','CharConv','NatConv','Seq','BoolConv', 'bool', 'Bool'
 		]
 	}
 	,'OPERATORS' :[
-		'==','->','+', '-', '/', '*', '=', '<', '>', '%', '!', '?', ':', '&'
+		'==','->','+', '-', '/', '*', '=', '<', '>', '%', '!', '?', ':', '&', '|='
 	]
 	,'DELIMITERS' :[
 		'(', ')', '[', ']', '{', '}'
