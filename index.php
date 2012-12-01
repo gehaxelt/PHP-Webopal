@@ -1,7 +1,9 @@
 <?php
 session_start();
+ob_start(); //start output buffering
 include 'config.php';
 include 'contributors.php';
+include 'gc.php';
 
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
@@ -93,16 +95,23 @@ for($i=0;$i<$MAXFILES;$i++){
 	<div id="wrapper">
 		<h1>WebOpal v0.1a</h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
+		<?php
+		//First Visit? --> set cookie
+		if(!isset($_COOKIE['visited'])){
+			setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
+			$_SESSION['sign_eingabe'][0] = $EXAMPLECODE_SIGN;
+			$_SESSION['impl_eingabe'][0] = $EXAMPLECODE_IMPL;
+			$_SESSION['cmd'] = "hello";
+		}
+		//Cookietest
+		if(count($_COOKIE) == 0){
+					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
+		}
+		?>
 		<form action="index.php" method="post">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
-				//First Visit? --> set cookie
-				if(!isset($_COOKIE['visited'])){
-					setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
-					$_SESSION['impl_eingabe'][0] = $EXAMPLECODE;
-					$_SESSION['cmd'] = "hello";
-				}
 				for($i=0;$i<$MAXFILES;$i++){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '
@@ -221,4 +230,14 @@ for($i=0;$i<$MAXFILES;$i++){
 		$result=str_replace($names[$focus].".impl>^D (quit)\n".$TIMEOUTTXT,"",$result[1]);
 		return $result;
 	}
+	$output = ob_get_clean();
+	ignore_user_abort(true);
+	set_time_limit(0);
+	header("Connection: close");
+	header("Content-Length: ".strlen($output));
+	header("Content-Encoding: none");
+	echo $output.str_repeat(' ', 1) ."\n\n\n";
+	flush(); //script send all data to the browser
+
+	run_gc(false);
 ?>
