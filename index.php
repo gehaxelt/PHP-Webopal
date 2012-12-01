@@ -70,8 +70,8 @@ for($i=0;$i<$MAXFILES;$i++){
 	<title>WebOpal v0.1a</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.min.js"></script>
 	<script language="javascript" type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
 	<script language="javascript" type="text/javascript">
 	<?php echo $jsinit; ?>
