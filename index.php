@@ -20,6 +20,7 @@ if(isset($_SESSION['sessionstart'])){
 if(!isset($_SESSION['cmd'])) {$_SESSION['cmd']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
+if(!isset($_SESSION['structnr'])) {$_SESSION['structnr']=$MAXFILES;}
 
 /* Check if $_POST is set, if yes, update $_SESSION */
 if(isset($_POST['impl_eingabe'])) {$_SESSION['impl_eingabe']=$_POST['impl_eingabe'];}
@@ -27,9 +28,16 @@ if(isset($_POST['sign_eingabe'])) {$_SESSION['sign_eingabe']=$_POST['sign_eingab
 if(isset($_POST['execute'])) {$_SESSION['cmd']=$_POST['execute'];}
 if(isset($_POST['name'])) {$_SESSION['name']=$_POST['name'];}
 if(isset($_POST['focus'])) {$_SESSION['focus']=$_POST['focus'];}
+if(isset($_POST['structnr'])) {
+	if(intval($_POST['structnr'])>$MAXFILES){	
+		$_SESSION['structnr']=$MAXFILES;
+	} else {
+		$_SESSION['structnr']=$_POST['structnr'];
+	}
+}
 
 $jsinit="";
-for($i=0;$i<$MAXFILES;$i++){
+for($i=0;$i<$_SESSION['structnr'];$i++){
 	/* initialize further $_SESSION if necessary */
 	if(!isset($_SESSION['name'][$i])) {
 		$_SESSION["name"][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
@@ -108,11 +116,12 @@ for($i=0;$i<$MAXFILES;$i++){
 					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
 		}
 		?>
+		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" /></form>
 		<form action="index.php" method="post">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
-				for($i=0;$i<$MAXFILES;$i++){
+				for($i=0;$i<$_SESSION['structnr'];$i++){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '
 					<h3 class="filename">
@@ -188,7 +197,7 @@ for($i=0;$i<$MAXFILES;$i++){
 
 	/* Run Oasys Code */
 	function runOasys($imps,$signs,$cmd,$names,$focus) {
-		global $MAXFILES,$TIMEOUT,$TIMEOUTTXT;
+		global $TIMEOUT,$TIMEOUTTXT;
 		if($cmd==""){return "Keine Funktion angegeben.";}
 		if($imps[$focus]==""){return "Fokussierte Implementation ist leer.";}
 
@@ -201,7 +210,7 @@ for($i=0;$i<$MAXFILES;$i++){
 		file_put_contents($dirStr."/time.stamp", time());
 
 		/* Create impl and sign files for every structure with a non empty impl */
-		for($i=0;$i<$MAXFILES;$i++){
+		for($i=0;$i<$_SESSION['structnr'];$i++){
 			if($imps[$i]!=""){
 
 				/* Check if structure contains bad things */
