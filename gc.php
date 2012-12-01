@@ -14,7 +14,7 @@ include 'config.php';
 			if((time() - intval($time)) > $SESSIONTIMEOUT){
 				rrmdir($dir);
 				$delfiles++;
-				echo("Deleted: ".$dir);
+				echo("Deleted: ".$dir."<br />");
 			}
 		}
 	}
