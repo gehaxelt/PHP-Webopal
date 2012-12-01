@@ -95,16 +95,23 @@ for($i=0;$i<$MAXFILES;$i++){
 	<div id="wrapper">
 		<h1>WebOpal v0.1a</h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
+		<?php
+		//First Visit? --> set cookie
+		if(!isset($_COOKIE['visited'])){
+			setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
+			$_SESSION['sign_eingabe'][0] = $EXAMPLECODE_SIGN;
+			$_SESSION['impl_eingabe'][0] = $EXAMPLECODE_IMPL;
+			$_SESSION['cmd'] = "hello";
+		}
+		//Cookietest
+		if(count($_COOKIE) == 0){
+					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
+		}
+		?>
 		<form action="index.php" method="post">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
-				//First Visit? --> set cookie
-				if(!isset($_COOKIE['visited'])){
-					setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
-					$_SESSION['impl_eingabe'][0] = $EXAMPLECODE;
-					$_SESSION['cmd'] = "hello";
-				}
 				for($i=0;$i<$MAXFILES;$i++){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '
