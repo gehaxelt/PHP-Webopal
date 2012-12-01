@@ -177,6 +177,8 @@ for($i=0;$i<$MAXFILES;$i++){
 		$dirStr = "./uploads/".$ranFile;
 		mkdir($dirStr);
 
+		file_put_contents($dirStr."/time.stamp", time());
+
 		/* Create impl and sign files for every structure with a non empty impl */
 		for($i=0;$i<$MAXFILES;$i++){
 			if($imps[$i]!=""){
