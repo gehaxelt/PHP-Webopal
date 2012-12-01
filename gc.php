@@ -10,6 +10,7 @@ if(isset($_GET['output'])){
 }
 
 function run_gc($output=false){
+	global $SESSIONTIMEOUT;
 	$dirs = scandir("./uploads");
 	$delfiles = 0;
 	foreach($dirs as $entry){
