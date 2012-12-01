@@ -101,3 +101,8 @@ body {
 #githublink {
 	text-decoration:none;
 }
+
+#contributors {
+	text-align: right;
+	margin-right: 5px;
+}
