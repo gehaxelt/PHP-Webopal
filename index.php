@@ -2,6 +2,7 @@
 session_start();
 include 'config.php';
 include 'contributors.php';
+
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
 	$sessionlife = time() - $_SESSION['sessionstart'];
@@ -96,6 +97,12 @@ for($i=0;$i<$MAXFILES;$i++){
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
+				//First Visit? --> set cookie
+				if(!isset($_COOKIE['visited'])){
+					setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
+					$_SESSION['impl_eingabe'][0] = $EXAMPLECODE;
+					$_SESSION['cmd'] = "hello";
+				}
 				for($i=0;$i<$MAXFILES;$i++){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '

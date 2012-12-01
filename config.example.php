@@ -5,4 +5,5 @@ $MAXFILES=3; //Number of the Maximum Structures allowed
 $TIMEOUT=10; //Number of seconds which the program is allowed to run
 $TIMEOUTTXT='Your program maybe timed out (>'.$TIMEOUT.'s)'; //text shown, if program did timeout
 $SESSIONTIMEOUT=600; //time in seconds until the session expire
+$EXAMPLECODE = "FUN hello : denotation\nDEF hello == \"Hello World!\"";
 ?>
