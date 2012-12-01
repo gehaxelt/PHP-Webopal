@@ -28,7 +28,7 @@ $jsinit="";
 for($i=0;$i<$MAXFILES;$i++){
 	/* initialize further $_SESSION if necessary */
 	if(!isset($_SESSION['name'][$i])) {
-		$_SESSION['name'][$i]=""; 
+		$_SESSION["name"][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
 	}else{
 		if($_SESSION["name"][$i]==""){
 			$_SESSION["name"][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
