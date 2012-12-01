@@ -151,7 +151,8 @@ for($i=0;$i<$MAXFILES;$i++){
 	function downloadURL() {
 		global $HOSTURL;
 		$ranName=str_shuffle($_SESSION['randNum']);
-		shell_exec("cd ./uploads/".$_SESSION['randNum']."; tar cfz ../../downloads/".$ranName.".tgz * --exclude=OCS;");
+		file_put_contents("./downloads/".$ranName.".stamp", time());
+		shell_exec("cd ./uploads/".$_SESSION['randNum']."; tar cfz ../../downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
 		return "<span><a href='".htmlentities($HOSTURL)."/downloads/".$ranName.".tgz'>Archiv ".$ranName.".tgz downloaden</a></span>";
 	}
 
