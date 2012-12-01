@@ -102,7 +102,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 <body>
 	<div id="wrapper">
 		<h1>WebOpal v0.1a</h1>
-		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a> </span>
+		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
 		<?php
 		//First Visit? --> set cookie
 		if(!isset($_COOKIE['visited'])){
@@ -176,7 +176,8 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		<div id="github"><a href="https://github.com/gehaxelt/PHP-Webopal" id='githublink'>Fork us on GitHub:</a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div>
 	<div id="contributors">
-	WebOpal (c) 2012 by <?php echo_contributors(); ?>
+		WebOpal (c) 2012 by <?php echo_contributors(); ?>
+		<a href="<?php echo htmlentities($IMPRESSUM); ?>">, Impressum</a>
 	</div>
 	<br />
 	</div>
