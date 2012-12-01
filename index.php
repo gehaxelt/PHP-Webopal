@@ -1,6 +1,16 @@
 <?php
 session_start();
 include 'config.php';
+//Sessionexpiration
+if(isset($_SESSION['sessionstart'])){
+	$sessionlife = time() - $_SESSION['sessionstart'];
+	if($sessionlife > $SESSIONTIMEOUT){
+		session_unset();
+		session_destroy();
+	}
+} else {
+	$_SESSION['sessionstart'] = time();
+}
 
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['cmd'])) {$_SESSION['cmd']=""; }
@@ -136,6 +146,9 @@ for($i=0;$i<$MAXFILES;$i++){
        		<div id="customsearch">
 			<div class="gcse-search"></div>
         	</div>
+		<br />		
+		<div id="github">Fork us on GitHub:<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div> <br />
 	</div>
 	<?php include "piwik.php"; ?>
 </body>
@@ -147,7 +160,8 @@ for($i=0;$i<$MAXFILES;$i++){
 	function downloadURL() {
 		global $HOSTURL;
 		$ranName=str_shuffle($_SESSION['randNum']);
-		shell_exec("cd ./uploads/".$_SESSION['randNum']."; tar cfz ../../downloads/".$ranName.".tgz * --exclude=OCS;");
+		file_put_contents("./downloads/".$ranName.".stamp", time());
+		shell_exec("cd ./uploads/".$_SESSION['randNum']."; tar cfz ../../downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
 		return "<span><a href='".htmlentities($HOSTURL)."/downloads/".$ranName.".tgz'>Archiv ".$ranName.".tgz downloaden</a></span>";
 	}
 
@@ -162,6 +176,8 @@ for($i=0;$i<$MAXFILES;$i++){
 		$_SESSION['randNum']=$ranFile;
 		$dirStr = "./uploads/".$ranFile;
 		mkdir($dirStr);
+
+		file_put_contents($dirStr."/time.stamp", time());
 
 		/* Create impl and sign files for every structure with a non empty impl */
 		for($i=0;$i<$MAXFILES;$i++){
