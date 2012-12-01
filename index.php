@@ -1,14 +1,13 @@
 <?php
 session_start();
 include 'config.php';
-
 //Sessionexpiration
 /*
 This is a very basic 'hack'. It seems to be better to use a MySQL-backend for deleting unused files and user managment.
 */
 if(isset($_SESSION['sessionstart'])){
 	$sessionlife = time() - $_SESSION['sessionstart'];
-	if(sessionlife > SESSIONTIMEOUT){
+	if($sessionlife > $SESSIONTIMEOUT){
 		//TODO: remove random created file
 	}
 }
