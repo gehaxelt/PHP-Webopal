@@ -50,26 +50,6 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	if(!isset($_SESSION['sign_eingabe'][$i])) {$_SESSION['sign_eingabe'][$i]=""; }
 
 	/* If the structure has no name, create one */
-
-	
-	/* initialize editAreas */
-	$jsinit .= '
-	editAreaLoader.init({
-		id : "impl_eingabe'.$i.'"		// textarea id
-		,syntax: "opal"			// syntax to be uses for highgliting
-		,start_highlight: true		// to display with highlight mode on start-up
-		,min_width: 450
-		,min_height: 200
-		,allow_toggle: false
-	});
-        editAreaLoader.init({
-                id : "sign_eingabe'.$i.'"             // textarea id
-                ,syntax: "opal"                    // syntax to be uses for highgliting
-                ,start_highlight: true          // to display with highlight mode on start-up
-		,min_width: 450
-		,min_height: 200
-        	,allow_toggle: false
-	});';
 }
 ?>
 
@@ -82,7 +62,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.min.js"></script>
-	<script language="javascript" type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
+	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script language="javascript" type="text/javascript">
 	<?php echo $jsinit; ?>
     	$(function() {
@@ -98,6 +78,25 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
 	  })();
 	</script>
+	<?php
+		for($i=0;$i<$_SESSION['structnr'];$i++){
+			echo("<style type=\"text/css\" media=\"screen\">#editor-impl-".$i." { 
+							position: absolute;
+							top: 0;
+							right: 0;
+							bottom: 0;
+							left: 0;
+						}
+
+						#editor-sign-".$i." { 
+							position: absolute;
+							top: 0;
+							right: 0;
+							bottom: 0;
+							left: 0;
+						}</style>");
+		}
+	?>
 </head>
 <body>
 	<div id="wrapper">
@@ -117,7 +116,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		}
 		?>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" /></form>
-		<form action="index.php" method="post">
+		<form id="form" action="index.php" method="post">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -131,13 +130,21 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 					<div class="struccontainer" style="padding:10px;">
 					<div class="implcontainer">
 	    					Eingabe f&uuml;r den Implementationsteil:
-						<textarea class="quadrat impl_eingabe" id="impl_eingabe'.$i.'" name="impl_eingabe['.$i.']" cols="50" rows="10">'.htmlentities($_SESSION['impl_eingabe'][$i]).'</textarea>
+						<div id="editor-impl-'.$i.'">'.htmlentities($_SESSION['impl_eingabe'][$i]).'</div>
 	    				</div>
 					<div class="signcontainer">
 						Eingabe f&uuml;r den Signaturteil:
-						<textarea class="quadrat sign_eingabe" id="sign_eingabe'.$i.'" name="sign_eingabe['.$i.']" cols="50" rows="10">'.htmlentities($_SESSION['sign_eingabe'][$i]).'</textarea>
-	    				</div>
-					</div>';
+						<div id="editor-sign-'.$i.'">'.htmlentities($_SESSION['sign_eingabe'][$i]).'</div>
+	    				</div>';
+					echo('<script type="text/javascript">
+						    var editor_impl_'.$i.' = ace.edit("editor-impl-'.$i.'");
+						    editor_impl_'.$i.'.setTheme("ace/theme/chrome");
+						    editor_impl_'.$i.'.getSession().setMode("ace/mode-opal");
+						    var editor_sign_'.$i.' = ace.edit("editor-sign-'.$i.'");
+						    editor_sign_'.$i.'.setTheme("ace/theme/chrome");
+						    editor_sign_'.$i.'.getSession().setMode("ace/mode-opal");
+						</script>');
+					echo('</div>');
 				}
 				?>
 				</div>
@@ -148,11 +155,41 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 				</div>
 				<div id="sendcontainer">
 					Zum Ausf&uuml;hren den Knopf dr&uuml;cken:<br>
-					<input type="submit" name="button1" value="Ausf&uuml;hren" >
+					<input type="submit" onclick="submitform()" name="button1" value="Ausf&uuml;hren" >
+					<?php echo('<script>
+					function submitform(){
+					var form = document.createElement("form");
+					form.method = "POST";
+					form.action = "index.php";
+					');
+					for($i = 0;$i<$_SESSION['structnr'];$i++){
+						//sign
+						echo('var input_sign_'.$i.'=document.createElement("input");');
+						echo('input_sign_'.$i.'.setAttribute("type", "hidden");');
+						echo('input_sign_'.$i.'.setAttribute("value", editor_sign_'.$i.'.getValue());');
+						echo('input_sign_'.$i.'.setAttribute("name", "sign_eingabe['.$i.']");');
+						echo('form.appendChild(input_sign_'.$i.');');
+						//impl
+						echo('var input_impl_'.$i.'=document.createElement("input");');
+						echo('input_impl_'.$i.'.setAttribute("type", "hidden");');
+						echo('input_impl_'.$i.'.setAttribute("value", editor_impl_'.$i.'.getValue());');
+						echo('input_impl_'.$i.'.setAttribute("name", "impl_eingabe['.$i.']");');
+						echo('form.appendChild(input_impl_'.$i.');');
+					}
+					echo('var childs = document.getElementById("form").childnodes;
+					for(var child in childs){
+						form.appendChild(child);
+					}
+					');
+					echo('document.body.appendChild(form);');
+					echo('form.submit();');
+					echo('document.body.removeChild(form);');
+					echo('}');
+					echo('</script>'); ?>
 				</div>
 				<div id="outputcontainer">
 					<textarea name="output" cols="110" rows="10"><?php
-							echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus'])); 
+							echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus']));
 										?>
 					</textarea>
 				</div>
