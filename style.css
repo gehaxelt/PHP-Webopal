@@ -1,5 +1,13 @@
+@font-face {
+  font-family: 'Rambla';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Rambla'), local('Rambla-Regular'), url(fonts/Rambla.woff) format('woff');
+}
+
 body {
 	background-color: #292527;
+	font-family: 'Rambla', sans-serif;
 }
 
 #customsearch {
