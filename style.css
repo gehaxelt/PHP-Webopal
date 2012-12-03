@@ -5,9 +5,9 @@
   src: local('Rambla'), local('Rambla-Regular'), url(fonts/Rambla.woff) format('woff');
 }
 
-body {
+body, .ui-widget {
 	background-color: #292527;
-	font-family: 'Rambla', sans-serif;
+	font-family: 'Rambla', Verdana, Arial, sans-serif;
 }
 
 #customsearch {
