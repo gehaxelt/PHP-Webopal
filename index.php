@@ -31,6 +31,8 @@ if(isset($_POST['focus'])) {$_SESSION['focus']=$_POST['focus'];}
 if(isset($_POST['structnr'])) {
 	if(intval($_POST['structnr'])>$MAXFILES){	
 		$_SESSION['structnr']=$MAXFILES;
+	} else if(intval($_POST['structnr']<=0){
+		$_SESSION['structnr']=$MINFILES;
 	} else {
 		$_SESSION['structnr']=intval($_POST['structnr']);
 	}
