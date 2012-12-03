@@ -108,6 +108,7 @@ body, .ui-widget {
 
 #githublink {
 	text-decoration:none;
+	display:block;
 }
 
 #contributors {
