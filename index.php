@@ -122,7 +122,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
 		}
 		?>
-		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" />  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ooml;glich)</form>
+		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" />  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
 		<form action="index.php" method="post">
 				<div id="accordion">
 				<?php
