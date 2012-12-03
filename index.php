@@ -23,11 +23,6 @@ if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(ti
 if(!isset($_SESSION['structnr'])) {$_SESSION['structnr']=$MINFILES;}
 
 /* Check if $_POST is set, if yes, update $_SESSION */
-if(isset($_POST['impl_eingabe'])) {$_SESSION['impl_eingabe']=$_POST['impl_eingabe'];}
-if(isset($_POST['sign_eingabe'])) {$_SESSION['sign_eingabe']=$_POST['sign_eingabe'];}
-if(isset($_POST['execute'])) {$_SESSION['cmd']=$_POST['execute'];}
-if(isset($_POST['name'])) {$_SESSION['name']=$_POST['name'];}
-if(isset($_POST['focus'])) {$_SESSION['focus']=$_POST['focus'];}
 if(isset($_POST['structnr'])) {
 	if(intval($_POST['structnr'])>$MAXFILES){	
 		$_SESSION['structnr']=$MINFILES;
@@ -36,7 +31,6 @@ if(isset($_POST['structnr'])) {
 	}
 }
 
-$jsinit="";
 for($i=0;$i<$_SESSION['structnr'];$i++){
 	/* initialize further $_SESSION if necessary */
 	if(!isset($_SESSION['name'][$i])) {
@@ -64,10 +58,41 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.min.js"></script>
 	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script language="javascript" type="text/javascript">
-	<?php echo $jsinit; ?>
+	var editors = new Array();
     	$(function() {
-		$("#accordion").accordion({collapsible:false,heightStyle: "content", event: "mouseup",active : <?php echo $_SESSION['focus'];?>});
+		$("#accordion").accordion({
+			collapsible:false,heightStyle: "content", event: "mouseup",active : <?php echo $_SESSION['focus'];?>,
+			activate: function(event, ui){
+				s = ui.newPanel.find(".impl").attr("id");
+				editors[s].focus();
+				//editors[s].gotoLine(editors[s].session.getLength());				
+			}
+		});
+		$(".struccontainer").each(function(index){
+			impl = $(this).find(".impl").attr("id");
+			sign = $(this).find(".sign").attr("id");
+			editors[impl] = ace.edit(impl);
+			editors[impl].setTheme("ace/theme/chrome");
+			editors[impl].getSession().setMode("ace/mode-opal");
+			editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
+			editors[sign] = ace.edit(sign);
+			editors[sign].setTheme("ace/theme/chrome");
+			editors[sign].getSession().setMode("ace/mode-opal");
+			editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
+		});
+		$("#button1").click(function(){
+			$(".struccontainer").each(function(index){
+				$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
+				$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
+			});
+		    $.get( 'oasys.php', $('#mainsubmit').serialize(), function(data) {
+			$('#output').text(data)
+		       },
+		       'json' // I expect a JSON response
+		    );
+		});
 	});
+
 	</script>
 	<script language="javascript" type="text/javascript">
 	  (function() {
@@ -78,45 +103,26 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
 	  })();
 	</script>
-	<?php
-		for($i=0;$i<$_SESSION['structnr'];$i++){
-			echo("<style type=\"text/css\" media=\"screen\">#editor-impl-".$i." { 
-							position: absolute;
-							top: 0;
-							right: 0;
-							bottom: 0;
-							left: 0;
-						}
-
-						#editor-sign-".$i." { 
-							position: absolute;
-							top: 0;
-							right: 0;
-							bottom: 0;
-							left: 0;
-						}</style>");
-		}
-	?>
 </head>
 <body>
 	<div id="wrapper">
-		<h1>WebOpal v0.1a</h1>
+		<h1>WebOpal v0.1a <? echo time();?></h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
 		<?php
 		//First Visit? --> set cookie
-		if(!isset($_COOKIE['visited'])){
+		/*if(!isset($_COOKIE['visited'])){
 			setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
 			$_SESSION['sign_eingabe'][0] = $EXAMPLECODE_SIGN;
 			$_SESSION['impl_eingabe'][0] = $EXAMPLECODE_IMPL;
 			$_SESSION['cmd'] = "hello";
-		}
+		}*/
 		//Cookietest
 		if(count($_COOKIE) == 0){
 					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
 		}
 		?>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" /></form>
-		<form id="form" action="index.php" method="post">
+		<form action="index.php" method="post" id="mainsubmit">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -130,20 +136,14 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 					<div class="struccontainer" style="padding:10px;">
 					<div class="implcontainer">
 	    					Eingabe f&uuml;r den Implementationsteil:
-						<div id="editor-impl-'.$i.'">'.htmlentities($_SESSION['impl_eingabe'][$i]).'</div>
+						<div class="impl" id="editor-impl-'.$i.'"></div>
+						<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['impl_eingabe'][$i]).'" name="impl_eingabe['.$i.']" ></input>
 	    				</div>
 					<div class="signcontainer">
 						Eingabe f&uuml;r den Signaturteil:
-						<div id="editor-sign-'.$i.'">'.htmlentities($_SESSION['sign_eingabe'][$i]).'</div>
+						<div class="sign" id="editor-sign-'.$i.'"></div>
+						<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['sign_eingabe'][$i]).'" name="sign_eingabe['.$i.']" ></input>
 	    				</div>';
-					echo('<script type="text/javascript">
-						    var editor_impl_'.$i.' = ace.edit("editor-impl-'.$i.'");
-						    editor_impl_'.$i.'.setTheme("ace/theme/chrome");
-						    editor_impl_'.$i.'.getSession().setMode("ace/mode-opal");
-						    var editor_sign_'.$i.' = ace.edit("editor-sign-'.$i.'");
-						    editor_sign_'.$i.'.setTheme("ace/theme/chrome");
-						    editor_sign_'.$i.'.getSession().setMode("ace/mode-opal");
-						</script>');
 					echo('</div>');
 				}
 				?>
@@ -155,45 +155,15 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 				</div>
 				<div id="sendcontainer">
 					Zum Ausf&uuml;hren den Knopf dr&uuml;cken:<br>
-					<input type="submit" onclick="submitform()" name="button1" value="Ausf&uuml;hren" >
-					<?php echo('<script>
-					function submitform(){
-					var form = document.createElement("form");
-					form.method = "POST";
-					form.action = "index.php";
-					');
-					for($i = 0;$i<$_SESSION['structnr'];$i++){
-						//sign
-						echo('var input_sign_'.$i.'=document.createElement("input");');
-						echo('input_sign_'.$i.'.setAttribute("type", "hidden");');
-						echo('input_sign_'.$i.'.setAttribute("value", editor_sign_'.$i.'.getValue());');
-						echo('input_sign_'.$i.'.setAttribute("name", "sign_eingabe['.$i.']");');
-						echo('form.appendChild(input_sign_'.$i.');');
-						//impl
-						echo('var input_impl_'.$i.'=document.createElement("input");');
-						echo('input_impl_'.$i.'.setAttribute("type", "hidden");');
-						echo('input_impl_'.$i.'.setAttribute("value", editor_impl_'.$i.'.getValue());');
-						echo('input_impl_'.$i.'.setAttribute("name", "impl_eingabe['.$i.']");');
-						echo('form.appendChild(input_impl_'.$i.');');
-					}
-					echo('var childs = document.getElementById("form").childnodes;
-					for(var child in childs){
-						form.appendChild(child);
-					}
-					');
-					echo('document.body.appendChild(form);');
-					echo('form.submit();');
-					echo('document.body.removeChild(form);');
-					echo('}');
-					echo('</script>'); ?>
+					<input type="button" name="button1" id="button1" value="Ausf&uuml;hren" >
 				</div>
+			</form>
 				<div id="outputcontainer">
-					<textarea name="output" cols="110" rows="10"><?php
+					<textarea id="output" name="output" cols="110" rows="10"><?php
 							echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus']));
 										?>
 					</textarea>
 				</div>
-		</form>
 		<div id="download">
 			<span>Download als Tarball:</span>
 			<form action="index.php" id="downloadform" method="post">
@@ -235,47 +205,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 
 	/* Run Oasys Code */
 	function runOasys($imps,$signs,$cmd,$names,$focus) {
-		global $TIMEOUT,$TIMEOUTTXT;
-		if($cmd==""){return "Keine Funktion angegeben.";}
-		if($imps[$focus]==""){return "Fokussierte Implementation ist leer.";}
-
-		/* Generate a random number for the directory and create the directory */
-		$ranFile = md5(time().str_shuffle(time()));
-		$_SESSION['randNum']=$ranFile;
-		$dirStr = "./uploads/".$ranFile;
-		mkdir($dirStr);
-
-		file_put_contents($dirStr."/time.stamp", time());
-
-		/* Create impl and sign files for every structure with a non empty impl */
-		for($i=0;$i<$_SESSION['structnr'];$i++){
-			if($imps[$i]!=""){
-
-				/* Check if structure contains bad things */
-				$pattern = '~(.+Com.+)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-				if(preg_match($pattern, $imps[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
-
-				/* Check if name contains bad things */
-				$pattern = '~[^a-zA-Z0-9]~sm'; 
-				if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
-
-				/* Create impl and sign files for the structure */
-				$signStr = "SIGNATURE ".$names[$i];
-				$implStr = "IMPLEMENTATION ".$names[$i];
-				file_put_contents($dirStr."/".$names[$i].".sign",$signStr."\n".str_replace("\r","\n",$signs[$i]));
-				file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$imps[$i]));		
-			}
-		}
-		/* Run focussed Structure */
-		file_put_contents($dirStr."/".$names[$focus].".exec","a ".$names[$focus]."\nf ".$names[$focus].".impl\ne ".$cmd);
-		shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < ".$names[$focus].".exec > ".$names[$focus].".log;echo '".$TIMEOUTTXT."' >> ".$names[$focus].".log");
-
-		/* Return log */
-		$result=file_get_contents($dirStr."/".$names[$focus].".log");
-		$result=explode(">e ",$result);
-		$result=preg_replace("~(checking.+\n)|(compiling.+\n)~","",$result);
-		$result=str_replace($names[$focus].".impl>^D (quit)\n".$TIMEOUTTXT,"",$result[1]);
-		return $result;
+	return "";
 	}
 	$output = ob_get_clean();
 	ignore_user_abort(true);
