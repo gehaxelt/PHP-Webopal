@@ -132,6 +132,8 @@ $last=event.which;
 <body>
 	<div id="wrapper">
 		<h1>WebOpal v0.1a</h1>
+		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.
+</noscript>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
 		<?php
 		//First Visit? --> set cookie
