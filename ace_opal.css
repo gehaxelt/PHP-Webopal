@@ -1,3 +1,17 @@
-.ace_comment {
-	color:#999999;
+.ace_opalcomment {
+	color:blue;
+}
+.ace_opalhandler {
+	color:purple;
+}
+.ace_opalkeyword {
+	color:brown;
+	font-weight:bold;
+}
+.ace_opaltype {
+	color:green;
+	font-weight:bold;
+}
+.ace_opaldigit {
+	color:fuchsia;
 }
