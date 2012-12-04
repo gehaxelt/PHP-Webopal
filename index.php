@@ -106,6 +106,9 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		       'json'
 		    );
 		});
+		if (navigator.cookieEnabled != true) {
+		  $('#warning').html('<br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>')
+		}
 	});
 
 	</script>
@@ -131,11 +134,8 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 			$_SESSION['impl_eingabe'][0] = $EXAMPLECODE_IMPL;
 			$_SESSION['cmd'] = "hello";
 		}
-		//Cookietest
-		if(count($_COOKIE) == 0){
-					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
-		}
 		?>
+		<span id="warning"></span><br><br>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>" /><input type="submit" value="Anzahl der Strukturen &auml;ndern" />  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
 		<form action="index.php" method="post" id="mainsubmit">
 				<div id="accordion">
