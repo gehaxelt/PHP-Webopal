@@ -106,6 +106,13 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		       'json'
 		    );
 		});
+var $last=0;
+$('div').keydown(function(event) {
+if(event.which==32&&$last==17){
+alert("");
+}
+$last=event.which;
+});
 		if (navigator.cookieEnabled != true) {
 		  $('#warning').html('<br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>')
 		}
@@ -189,7 +196,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		<div id="github"><a href="https://github.com/gehaxelt/PHP-Webopal" id='githublink'>Fork us on GitHub:</a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&repo=PHP-Webopal&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20"></iframe></div>
 	<div id="contributors">
-		WebOpal (c) 2012 by <?php echo_contributors(); ?>, 
+		WebOpal (c) 2012 by <?php echo echo_contributors(); ?>, 
 		<a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a>
 	</div>
 	<br />
@@ -209,6 +216,5 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	header("Content-Encoding: none");
 	echo $output.str_repeat(' ', 1) ."\n\n\n";
 	flush(); //script send all data to the browser
-
 	run_gc(false);
 ?>
