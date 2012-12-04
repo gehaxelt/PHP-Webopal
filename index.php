@@ -92,8 +92,12 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 				$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
 				$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
 			});
+			$("#button1").attr("disabled","disabled")
+			$("#button1").attr("value","Lade...")
 		    $.get( 'oasys.php', $('#mainsubmit').serialize(), function(data) {
 			$('#output').text(data)
+			$("#button1").attr("value","Starten")
+			$("#button1").removeAttr("disabled")
 		       },
 		       'json'
 		    );
@@ -215,7 +219,7 @@ return false;
 				</div>
 				<div id="sendcontainer">
 					Zum Ausf&uuml;hren den Knopf dr&uuml;cken:<br>
-					<input type="button" name="button1" id="button1" value="Ausf&uuml;hren" >
+					<input type="button" name="button1" id="button1" value="Starten" >
 				</div>
 			</form>
 				<div id="outputcontainer">
