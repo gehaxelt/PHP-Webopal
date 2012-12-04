@@ -10,7 +10,7 @@ var Tokenizer = require("../tokenizer").Tokenizer;
 //var MatchingBraceOutdent = require("../matching_brace_outdent").MatchingBraceOutdent;
 
 // defines the language specific highlighters and folding rules
-var OpalHighlightRules = require("ace/mode/opal_highlight_rules").OpalHighlightRules;
+var OpalHighlightRules = require("ace/mode-opal_highlight_rules").OpalHighlightRules;
 //var MyNewFoldMode = require("./folding/mynew").MyNewFoldMode;
 
 var Mode = function() {
