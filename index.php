@@ -123,7 +123,7 @@ editors[s].selection.selectWordRight();
 if ( wordAtLeft.length < 2 ) return false;
 
 // mount the regex and get the matchs
-var possibleWords = new Array("IMPLEMENTATION","IMPORT","denotation");
+var possibleWords = new Array("IMPLEMENTATION","IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE","FUN","DEF","AND","OR","newline", "real","nat","char","LET","IN");
 var filteringWords = new Array();
 
 for(i=0;i<possibleWords.length;i++){
