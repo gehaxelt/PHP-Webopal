@@ -88,7 +88,16 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		    $.get( 'oasys.php', $('#mainsubmit').serialize(), function(data) {
 			$('#output').text(data)
 		       },
-		       'json' // I expect a JSON response
+		       'json'
+		    );
+		});
+		$("#download").click(function(){
+			$('#button1').click();
+		    $.post( 'download.php', "", function(data) {
+			$('#dialog').html(data);
+			$('#dialog').dialog({title: "Downloadinfo"});
+		       },
+		       'json'
 		    );
 		});
 	});
@@ -106,16 +115,16 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 </head>
 <body>
 	<div id="wrapper">
-		<h1>WebOpal v0.1a <? echo time();?></h1>
+		<h1>WebOpal v0.1a</h1>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
 		<?php
 		//First Visit? --> set cookie
-		/*if(!isset($_COOKIE['visited'])){
+		if(!isset($_COOKIE['visited'])){
 			setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
 			$_SESSION['sign_eingabe'][0] = $EXAMPLECODE_SIGN;
 			$_SESSION['impl_eingabe'][0] = $EXAMPLECODE_IMPL;
 			$_SESSION['cmd'] = "hello";
-		}*/
+		}
 		//Cookietest
 		if(count($_COOKIE) == 0){
 					echo("<h1>Bitte aktiviere Cookies!</h1> (was sind <a href=\"http://de.wikipedia.org/wiki/HTTP-Cookie\" target=\"_blank\">Cookies</a>?)");
@@ -159,21 +168,12 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 				</div>
 			</form>
 				<div id="outputcontainer">
-					<textarea id="output" name="output" cols="110" rows="10"><?php
-							echo htmlentities(runOasys($_SESSION['impl_eingabe'],$_SESSION['sign_eingabe'],$_SESSION['cmd'],$_SESSION['name'],$_SESSION['focus']));
-										?>
-					</textarea>
+					<textarea id="output" name="output" cols="110" rows="10"></textarea>
 				</div>
 		<div id="download">
 			<span>Download als Tarball:</span>
-			<form action="index.php" id="downloadform" method="post">
-				<input type="submit" name="Download" value="Download">
-			</form>
-			<?php
-				if(isset($_POST['Download'])) {
-					echo downloadURL();
-				}
-			?>
+			<input type="button" id="download" value="download">
+			<a target="_blank" href="google.de" id="downloadlink"></a>
 		</div>
 		<br>Bibliotheca Opalica Suche:
        		<div id="customsearch">
@@ -188,25 +188,13 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	</div>
 	<br />
 	</div>
+<div id="dialog"></div>
 	<?php include "piwik.php"; ?>
 </body>
 
 </html>
 
 <?php
-	/* Generate Tarball of Code */
-	function downloadURL() {
-		global $HOSTURL;
-		$ranName=str_shuffle($_SESSION['randNum']);
-		file_put_contents("./downloads/".$ranName.".stamp", time());
-		shell_exec("cd ./uploads/".$_SESSION['randNum']."; tar cfz ../../downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
-		return "<span><a href='".htmlentities($HOSTURL)."/downloads/".$ranName.".tgz'>Archiv ".$ranName.".tgz downloaden</a></span>";
-	}
-
-	/* Run Oasys Code */
-	function runOasys($imps,$signs,$cmd,$names,$focus) {
-	return "";
-	}
 	$output = ob_get_clean();
 	ignore_user_abort(true);
 	set_time_limit(0);

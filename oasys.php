@@ -6,7 +6,7 @@ if(isset($_GET['execute'])) {$_SESSION['cmd']=$_GET['execute'];}
 if(isset($_GET['name'])) {$_SESSION['name']=$_GET['name'];}
 if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
 include "config.php";
-echo json_encode($_SESSION['cmd'].runOasys($_GET['impl_eingabe'],$_GET['sign_eingabe'],$_GET['execute'],$_GET['name'],$_GET['focus']));
+echo json_encode(runOasys($_GET['impl_eingabe'],$_GET['sign_eingabe'],$_GET['execute'],$_GET['name'],$_GET['focus']));
 	function runOasys($imps,$signs,$cmd,$names,$focus) {
 		global $TIMEOUT,$TIMEOUTTXT;
 		if($cmd==""){return "Keine Funktion angegeben.";}
