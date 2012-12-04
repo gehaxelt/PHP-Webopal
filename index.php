@@ -175,7 +175,7 @@ $last=event.which;
 				<br>
 				<div id="funccontainer">
 					Eingabefeld: "Funktionsaufruf func(var1, var2, ...)":<br>
-					<input name="execute" type="text" size="43" maxlength="30" value="<?php echo htmlentities($_SESSION['cmd']);?>">
+					<input name="execute" type="text" size="43" value="<?php echo htmlentities($_SESSION['cmd']);?>">
 				</div>
 				<div id="sendcontainer">
 					Zum Ausf&uuml;hren den Knopf dr&uuml;cken:<br>
