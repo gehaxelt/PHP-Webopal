@@ -86,6 +86,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 			editors[sign].getSession().setMode("ace/mode/opal");
 			editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 		});
+
 		$("#button1").click(function(){
 			$(".struccontainer").each(function(index){
 				$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
@@ -106,12 +107,47 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		       'json'
 		    );
 		});
-var $last=0;
-$('div').keydown(function(event) {
-if(event.which==32&&$last==17){
-alert("");
+
+$(document).keydown(function(e){
+if( (e.ctrlKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " "){
+s=$('.ace_focus').attr("id");
+try { editors[s]; }
+catch (e) {return false;}
+
+//get word left from cursor
+editors[s].selection.selectWordLeft();
+var wordAtLeft = editors[s].session.getDocument().getTextRange(editors[s].selection.getRange())
+editors[s].selection.selectWordRight();
+
+// if wordAtLeft too small, dont try to complete
+if ( wordAtLeft.length < 2 ) return false;
+
+// mount the regex and get the matchs
+var possibleWords = new Array("IMPLEMENTATION","IMPORT","denotation");
+var filteringWords = new Array();
+
+for(i=0;i<possibleWords.length;i++){
+	var possibleWord = possibleWords[i];
+	if ( possibleWord !== undefined && possibleWord !== wordAtLeft &&
+	possibleWord.substring(0, wordAtLeft.length) === wordAtLeft &&
+	possibleWord !== 'length') {
+		// stop, if there is more than one possibility
+		if ( filteringWords.length === 1 ){ return false;}
+		// treat length word
+		if ( possibleWord !== 'length'  ){
+			filteringWords[ 0 ] = possibleWord;
+		}
+	}
 }
-$last=event.which;
+// if no word found, cancel
+if ( filteringWords.length === 0 ) return false;
+
+// insert found word
+editors[s].removeWordLeft();
+editors[s].insert( filteringWords[ 0 ] );
+
+return false;
+}
 });
 		if (navigator.cookieEnabled != true) {
 		  $('#warning').html('<br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>')

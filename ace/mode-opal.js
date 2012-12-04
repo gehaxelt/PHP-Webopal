@@ -100,7 +100,7 @@ var OpalHighlightRules = function() {
                 merge : true,
                 regex : ".+"
             }
-        ],
+        ]
     };
     
 }
