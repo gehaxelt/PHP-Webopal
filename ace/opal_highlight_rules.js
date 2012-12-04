@@ -11,7 +11,7 @@ var MyNewHighlightRules = function() {
    this.$rules = {
         "start" : [
             {
-                token: comment, // String, Array, or Function: the CSS token to apply
+                token: "comment", // String, Array, or Function: the CSS token to apply
                 regex: "--", // String or RegExp: the regexp to match
                 //next:  <next>   // [Optional] String: next state to enter
             }
