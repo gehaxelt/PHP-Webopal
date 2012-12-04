@@ -1,25 +1,25 @@
 //Template
 
-define(function(require, exports, module) {
+define('ace/mode/opal', function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
 // defines the parent mode
 var TextMode = require("./text").Mode;
 var Tokenizer = require("../tokenizer").Tokenizer;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
+//var MatchingBraceOutdent = require("../matching_brace_outdent").MatchingBraceOutdent;
 
 // defines the language specific highlighters and folding rules
-var MyNewHighlightRules = require("./opal_highlight_rules").MyNewHighlightRules;
+var OpalHighlightRules = require("ace/mode/opal_highlight_rules").OpalHighlightRules;
 //var MyNewFoldMode = require("./folding/mynew").MyNewFoldMode;
 
 var Mode = function() {
     // set everything up
-    var highlighter = new MyNewHighlightRules();
-    this.$outdent = new MatchingBraceOutdent();
+    this.$tokenizer = new Tokenizer(new OpalHighlightRules().getRules());
+//    this.$outdent = new MatchingBraceOutdent();
     //this.foldingRules = new MyNewFoldMode();
 
-    this.$tokenizer = new Tokenizer(highlighter.getRules());
+
 };
 oop.inherits(Mode, TextMode);
 
@@ -50,4 +50,28 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
+});
+
+define('ace/mode/opal_highlight_rules', function(require, exports, module) {
+
+var oop = require("ace/lib/oop");
+var TextHighlightRules = require("ace/mode/text_highlight_rules").TextHighlightRules;
+
+var OpalHighlightRules = function() {
+
+   this.$rules = {
+        "start" : [
+            {
+                token: "comment", // String, Array, or Function: the CSS token to apply
+                regex: /-- .+$/, // String or RegExp: the regexp to match
+                //next:  <next>   // [Optional] String: next state to enter
+            }
+        ]
+    };
+    
+}
+
+oop.inherits(OpalHighlightRules, TextHighlightRules);
+
+exports.OpalHighlightRules = OpalHighlightRules;
 });

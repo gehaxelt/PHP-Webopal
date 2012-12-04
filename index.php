@@ -79,11 +79,11 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 			sign = $(this).find(".sign").attr("id");
 			editors[impl] = ace.edit(impl);
 			editors[impl].setTheme("ace/theme/chrome");
-			editors[impl].getSession().setMode("ace/mode-opal");
+			editors[impl].getSession().setMode("ace/mode/opal");
 			editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
 			editors[sign] = ace.edit(sign);
 			editors[sign].setTheme("ace/theme/chrome");
-			editors[sign].getSession().setMode("ace/mode-opal");
+			editors[sign].getSession().setMode("ace/mode/javascript");
 			editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 		});
 		$("#button1").click(function(){
