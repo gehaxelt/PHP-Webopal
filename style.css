@@ -6,8 +6,11 @@
 }
 
 body, .ui-widget {
-	background-color: #292527;
 	font-family: 'Rambla', Verdana, Arial, sans-serif;
+}
+
+body {
+	background-color: #292527;
 }
 
 #customsearch {
