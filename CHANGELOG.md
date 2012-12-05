@@ -1,6 +1,14 @@
 Changelog WebOpal
 ==================================
 
+##0.2 2012-12-05##
+
+- NEW FEATURE: ACE Editor anstatt Editarea (mit OPAL Syntax Highlighting)
+- NEW FEATURE: Multiple Funktionen ausführen (z.B. "func(x,y);foo(x)")
+- NEW FEATURE: Code-Completion (Strg-Space)
+- NEW FEATURE: Umstellung des Absendens auf AJAX
+- Minor: Link zu GitHub, Contributer-Liste
+
 ##0.1a 2012-11-28##
 
 - NEW FEATURE: Multiple Dateien (default 3) möglich (Akkordeonstruktur von JQUERY UI)
