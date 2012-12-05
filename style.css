@@ -29,7 +29,7 @@ body {
 #wrapper {
 	background-color: #FA9200;
 	margin: 0px auto 0px auto;
-	width: 1024px;
+	width: 1124px;
 	-webkit-border-radius: 5px;
 	-webkit-border-top-right-radius: 10px;
 	-moz-border-radius: 5px;
@@ -48,7 +48,7 @@ body {
 .implcontainer {
 	float:left;
 	position:relative;
-	width:500px;
+	width:550px;
 	height:250px;
 	margin-top:10px;
 }
@@ -60,7 +60,7 @@ body {
 .signcontainer {
 	float:right;
 	position:relative;
-	width:500px;
+	width:550px;
 	height:250px;
 	margin-top:10px;
 }

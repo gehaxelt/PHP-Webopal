@@ -48,8 +48,33 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 		}
 	}
 	/* initialize further $_SESSION if necessary */
-	if(!isset($_SESSION['implInput'][$i])) {$_SESSION['implInput'][$i]=""; }
-	if(!isset($_SESSION['signInput'][$i])) {$_SESSION['signInput'][$i]=""; }
+	if(!isset($_SESSION['implInput'][$i])) {
+		$_SESSION['implInput'][$i]="";
+	}
+
+	//random filename for upload
+	$base = "tmp";
+	$ranFile = md5($i.time().str_shuffle(time()));
+	//uploaded code set it in impl
+	if(isset($_FILES["impl-".$i]["tmp_name"])) {
+		move_uploaded_file($_FILES["impl-".$i]["tmp_name"], $base."/"."impl-".$i.$ranFile);
+		if(file_exists($base."/"."impl-".$i.$ranFile)){
+			$_SESSION['implInput'][$i]=file_get_contents($base."/"."impl-".$i.$ranFile);
+			unlink($base."/"."impl-".$i.$ranFile);
+		}
+	}
+
+	if(!isset($_SESSION['signInput'][$i])) {
+		$_SESSION['signInput'][$i]="";
+	}
+	//uploaded code set it in impl-0 and sign-0
+	if(isset($_FILES["sign-".$i]["tmp_name"])) {
+		move_uploaded_file($_FILES["sign-".$i]["tmp_name"], $base."/"."sign-".$i.$ranFile);
+		if(file_exists($base."/"."sign-".$i.$ranFile)){
+			$_SESSION['signInput'][$i]=file_get_contents($base."/"."sign-".$i.$ranFile);
+			unlink($base."/"."sign-".$i.$ranFile);
+		}
+	}
 }
 
 //First Visit? --> set cookie
@@ -248,7 +273,7 @@ if(!isset($_COOKIE['visited'])){
 		<a href="#" id="restore_exampl">Beispiel-Code anzeigen</a>
 		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>"><input type="submit" value="Anzahl der Strukturen &auml;ndern">  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
-		<form action="index.php" method="post" id="mainsubmit">
+		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -261,14 +286,15 @@ if(!isset($_COOKIE['visited'])){
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
 						<div class="implcontainer">
-							Implementation:
+							Implementation: <input type="file" name="impl-'.$i.'" /><input type="hidden" name="MAX_FILE_SIZE" value="100000" /><input type="submit" value="Upload">
 							<div class="impl" id="editor-impl-'.$i.'"></div>
 							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i]).'" name="implInput['.$i.']" >
 						</div>
 						<div class="signcontainer">
-							Signatur:
+							Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" /><input type="file" name="sign-'.$i.'" /><input type="submit" value="Upload">
 							<div class="sign" id="editor-sign-'.$i.'"></div>
 							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i]).'" name="signInput['.$i.']" >
+		
 						</div>
 					</div>';
 				}
