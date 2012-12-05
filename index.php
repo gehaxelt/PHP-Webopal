@@ -143,20 +143,23 @@ if(!isset($_COOKIE['visited'])){
 		});
 
 		$(document).on("click",'.delStruc',function(event){
-			num=$(this).parent().find('.num').val();
-			$('.filename:eq('+num+')').remove();
-			$('.struccontainer:eq('+num+')').remove();
-			$('#focus option:eq('+num+')').remove();
-			currentStruc--;
-			if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
-			$('#structnr').val(currentStruc);
-			$.get(
-					'ajax.php',
-					"page=update&structnr="+currentStruc+"&delete="+num,
-					function() {},
-					'json'
-			);
-
+			name=$(this).parent().find('.nameInput').val();
+			var answer = confirm (name+" wirklich löschen?")
+			if(answer){
+				num=$(this).parent().find('.num').val();
+				$('.filename:eq('+num+')').remove();
+				$('.struccontainer:eq('+num+')').remove();
+				$('#focus option:eq('+num+')').remove();
+				currentStruc--;
+				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
+				$('#structnr').val(currentStruc);
+				$.get(
+						'ajax.php',
+						"page=update&structnr="+currentStruc+"&delete="+num,
+						function() {},
+						'json'
+				);
+			}
 		});
 
 		$('#addStruc').click(function(){
