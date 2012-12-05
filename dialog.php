@@ -21,6 +21,7 @@ if(file_exists($s.".md")){
 }
 
 function download(){
+	global $HOSTURL;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
 	file_put_contents("./downloads/".$ranName.".stamp", time());

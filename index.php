@@ -59,7 +59,10 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	if(isset($_FILES["impl-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["impl-".$i]["tmp_name"], $base."/"."impl-".$i.$ranFile);
 		if(file_exists($base."/"."impl-".$i.$ranFile)){
-			$_SESSION['implInput'][$i]=file_get_contents($base."/"."impl-".$i.$ranFile);
+			$impl=file_get_contents($base."/"."impl-".$i.$ranFile);
+			$_SESSION['implInput'][$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impl);
+			preg_match('/IMPLEMENTATION\s*([A-Za-z0-9]*)\s*/',$impl,$matches);
+			$_SESSION['fileName'][$i]=$matches[1];
 			unlink($base."/"."impl-".$i.$ranFile);
 		}
 	}
@@ -71,7 +74,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	if(isset($_FILES["sign-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["sign-".$i]["tmp_name"], $base."/"."sign-".$i.$ranFile);
 		if(file_exists($base."/"."sign-".$i.$ranFile)){
-			$_SESSION['signInput'][$i]=file_get_contents($base."/"."sign-".$i.$ranFile);
+			$_SESSION['signInput'][$i]=preg_replace('/SIGNATURE.+.\n/',"",file_get_contents($base."/"."sign-".$i.$ranFile));
 			unlink($base."/"."sign-".$i.$ranFile);
 		}
 	}
@@ -82,7 +85,7 @@ if(!isset($_COOKIE['visited'])){
 	setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
 	$_SESSION['signInput'][0] = $EXAMPLECODE_SIGN;
 	$_SESSION['implInput'][0] = $EXAMPLECODE_IMPL;
-	$_SESSION['runFunction'] = "hello";
+	$_SESSION['runFunction'] = $EXAMPLECODE_CMD;
 }
 
 ?>
@@ -130,10 +133,12 @@ if(!isset($_COOKIE['visited'])){
 			editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 		});
 
-		<?php echo('$("#restore_exampl").click(function(){
-				editors["editor-impl-0"].setValue(\''.$EXAMPLECODE_IMPL.'\');
-				editors["editor-sign-0"].setValue(\''.$EXAMPLECODE_SIGN.'\');
-		    });'); ?>
+		$("#restore_exampl").click(function(){
+			editors["editor-impl-0"].setValue('<?php echo $EXAMPLECODE_IMPL;?>');
+			editors["editor-sign-0"].setValue('<?php echo $EXAMPLECODE_SIGN;?>');
+			$('#runFunction').val('<?php echo $EXAMPLECODE_CMD;?>');
+			$('.focus:first').attr("checked","checked");
+		});
 
 
 		/* Bind click action to execute button */
@@ -269,8 +274,7 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br></noscript>
-		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
-		<a href="#" id="restore_exampl">Beispiel-Code anzeigen</a>
+		<a href="#" id="restore_exampl">Hello World!</a>
 		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>"><input type="submit" value="Anzahl der Strukturen &auml;ndern">  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
@@ -281,8 +285,8 @@ if(!isset($_COOKIE['visited'])){
 					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
 					echo '
 					<h3 class="filename">
-					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="name_eingabe" name="name['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
-					<input type="radio" name="focus" value="'.$i.'" '.$checked.'> Fokus
+					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="name_eingabe" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+					<input type="radio" name="focus" value="'.$i.'" '.$checked.' class="focus"> Fokus
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
 						<div class="implcontainer">
@@ -303,7 +307,7 @@ if(!isset($_COOKIE['visited'])){
 				<br>
 				<div id="funccontainer">
 					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
-					<input name="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
+					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 				</div>
 				<div id="sendcontainer">
 					<br>
