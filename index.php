@@ -15,30 +15,23 @@ if(isset($_SESSION['sessionstart'])){
 } else {
 	$_SESSION['sessionstart'] = time();
 }
-
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
-if(!isset($_SESSION['structnr'])) {$_SESSION['structnr']=$MINFILES;}
-
-/* Check if $_POST['structnr'] is set, if yes, update $_SESSION */
-if(isset($_POST['structnr'])) {
-	try{
-		if(intval($_POST['structnr'])>$MAXFILES){	
-			$_SESSION['structnr']=$MAXFILES;
-		} else if(intval($_POST['structnr'])<=0){
-			$_SESSION['structnr']=$MINFILES;
-		} else {
-			$_SESSION['structnr']=intval($_POST['structnr']);
-		}
-	} catch (Exception $e) {
-		echo('<script>alert("Error: '. $e->getMessage() .'");</script>');
+if(!isset($_SESSION['structnr'])) {
+	$_SESSION['structnr']=$MINFILES;
+	for($i=0;$i<$MINFILES;$i++){
+	init($i);
+	}
+}else{
+	foreach($_SESSION['fileName'] as $i => $impl){
+	init($i);
 	}
 }
 
 /* initialize structure names, etc. */
-for($i=0;$i<$_SESSION['structnr'];$i++){
+function init($i){
 	/* If the structure has no name, create one */
 	if(!isset($_SESSION['fileName'][$i])) {
 		$_SESSION['fileName'][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
@@ -103,7 +96,9 @@ if(!isset($_COOKIE['visited'])){
 	<script language="javascript" type="text/javascript">
 	/* Array for all the ACE editors */
 	var editors = new Array();
-	
+	var currentStruc = <?php echo $_SESSION['structnr']; ?>;
+	var maxStruc = <?php echo $MAXFILES; ?>;
+	var strucPre = "<?php echo substr($_SESSION['randNum'],0,4); ?>";
 	/* Execute if DOM is ready */
    $(function() {
    	
@@ -137,9 +132,73 @@ if(!isset($_COOKIE['visited'])){
 			editors["editor-impl-0"].setValue('<?php echo $EXAMPLECODE_IMPL;?>');
 			editors["editor-sign-0"].setValue('<?php echo $EXAMPLECODE_SIGN;?>');
 			$('#runFunction').val('<?php echo $EXAMPLECODE_CMD;?>');
-			$('.focus:first').attr("checked","checked");
+			//$('.focus:first').attr("checked","checked");
 		});
 
+		$(document).on("change",'.nameInput',function(event){
+			num=$(this).parent().find('.num').val();
+			name=$(this).val();
+			$('#focus option:eq('+num+')').html(name);
+		});
+
+		$(document).on("click",'.delStruc',function(event){
+			num=$(this).parent().find('.num').val();
+			$('.filename:eq('+num+')').remove();
+			$('.struccontainer:eq('+num+')').remove();
+			$('#focus option:eq('+num+')').remove();
+			currentStruc--;
+			$('#structnr').val(currentStruc);
+			$.get(
+					'ajax.php',
+					"page=update&structnr="+currentStruc+"&delete="+num,
+					function() {},
+					'json'
+			);
+		});
+
+		$('#addStruc').click(function(){
+				currentStruc++;
+				strucNum=currentStruc-1;
+				name= strucPre+"datei"+strucNum
+				$('#accordion').append(
+					'<h3 class="filename">'+
+					'	<span style="float:right" class="delStruc" v>Löschen</span>'+
+					'	Struktur '+currentStruc+'; Name: <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
+					'	<input value="'+strucNum+'" class="num">'+
+					'</h3>'+
+					'<div class="struccontainer" style="padding:10px;">'+
+					'	<div class="implcontainer">'+
+					'		Implementation: <input type="file" name="impl-'+strucNum+'"><input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="submit" value="Upload">'+
+					'		<div class="impl" id="editor-impl-'+strucNum+'"></div>'+
+					'		<input type="hidden" class="impl_hidden" value="" name="implInput['+strucNum+']" >'+
+					'	</div>'+
+					'	<div class="signcontainer">'+
+					'		Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="file" name="sign-'+strucNum+'" ><input type="submit" value="Upload">'+
+					'		<div class="sign" id="editor-sign-'+strucNum+'"></div>'+
+					'		<input type="hidden" class="sign_hidden" value="" name="signInput['+strucNum+']" >'+
+					'	</div>'+
+					'</div>'
+				).accordion('destroy').accordion();
+				impl = "editor-impl-"+strucNum;
+				sign = "editor-sign-"+strucNum;
+				editors[impl] = ace.edit(impl);
+				editors[impl].setTheme("ace/theme/chrome");
+				editors[impl].getSession().setMode("ace/mode/opal");
+				editors[sign] = ace.edit(sign);
+				editors[sign].setTheme("ace/theme/chrome");
+				editors[sign].getSession().setMode("ace/mode/opal");
+				$('#focus').append('<option value="'+strucNum+'">'+name+'</option>');
+				$('#structnr').val(currentStruc);
+				$.get(
+					'ajax.php',
+					"page=update&structnr="+currentStruc,
+					function() {},
+					'json'
+				);
+			if(currentStruc==maxStruc){
+    			$("#addStruc").attr("disabled","disabled")
+    		}
+		});
 
 		/* Bind click action to execute button */
 		$("#execute").click(function(){
@@ -178,7 +237,7 @@ if(!isset($_COOKIE['visited'])){
 				w=300;
 			}
 			$.get(
-				'dialog.php',
+				'ajax.php',
 				"page="+name,
 				function(data) {
 					$('#dialog').html(data.text);
@@ -276,26 +335,25 @@ if(!isset($_COOKIE['visited'])){
 		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br></noscript>
 		<a href="#" id="restore_exampl">Hello World!</a>
 		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
-		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>"><input type="submit" value="Anzahl der Strukturen &auml;ndern">  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
-				for($i=0;$i<$_SESSION['structnr'];$i++){
-					if($i==$_SESSION['focus']){$checked="checked";}else{$checked="";}
+				foreach($_SESSION['fileName'] as $i => $fn){
 					echo '
 					<h3 class="filename">
-					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="name_eingabe" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
-					<input type="radio" name="focus" value="'.$i.'" '.$checked.' class="focus"> Fokus
+					<span style="float:right" class="delStruc">Löschen</span>
+					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+					<input value="'.$i.'" class="num">
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
 						<div class="implcontainer">
-							Implementation: <input type="file" name="impl-'.$i.'" /><input type="hidden" name="MAX_FILE_SIZE" value="100000" /><input type="submit" value="Upload">
+							Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload">
 							<div class="impl" id="editor-impl-'.$i.'"></div>
 							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i]).'" name="implInput['.$i.']" >
 						</div>
 						<div class="signcontainer">
-							Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" /><input type="file" name="sign-'.$i.'" /><input type="submit" value="Upload">
+							Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload">
 							<div class="sign" id="editor-sign-'.$i.'"></div>
 							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i]).'" name="signInput['.$i.']" >
 		
@@ -304,13 +362,24 @@ if(!isset($_COOKIE['visited'])){
 				}
 				?>
 				</div>
+				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo "disabled";} ;?>>
+				<input type="text" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
 				<br>
 				<div id="funccontainer">
 					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
 					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 				</div>
 				<div id="sendcontainer">
-					<br>
+					<br>Fokus : <select name="focus" id="focus">
+					<?php
+					/* Print Signature & Implementation Areas */
+					foreach($_SESSION['fileName'] as $i => $fn){
+						if($i==$_SESSION['focus']){$selected="selected";}else{$selected="";}
+						echo '
+						<option value="'.$i.'">'.htmlentities($_SESSION['fileName'][$i]).'</option>';
+					}
+					?>
+					</select>
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
 				</div>
 			</form>

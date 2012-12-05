@@ -8,6 +8,19 @@ if(isset($_GET["page"])){$page=$_GET["page"];}
 
 if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
+}else if($page=="update"){
+if(isset($_GET['implInput'])) {$_SESSION['implInput']=$_GET['implInput'];}
+if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
+if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
+if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
+if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
+if(isset($_GET['structnr'])) {$_SESSION['structnr']=$_GET['structnr'];}
+if(isset($_GET["delete"])){
+$i=$_GET["delete"];
+if(isset($_SESSION['implInput'][$i])) {unset($_SESSION['implInput'][$i]);}
+if(isset($_SESSION['signInput'][$i])) {unset($_SESSION['signInput'][$i]);}
+if(isset($_SESSION['fileName'][$i])) {unset($_SESSION['fileName'][$i]);}
+}
 }else{
 	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
 }

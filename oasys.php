@@ -8,6 +8,7 @@ if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
 if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
 if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
+if(isset($_GET['structnr'])) {$_SESSION['structnr']=$_GET['structnr'];}
 
 /* Return interpretation of OPAL code */
 echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
@@ -32,7 +33,7 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	file_put_contents($dirStr."/time.stamp", time());
 
 	/* Create impl and sign files for every structure with a non empty impl */
-	for($i=0;$i<$_SESSION['structnr'];$i++){
+	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
 
 			/* Check if structure contains bad things */
