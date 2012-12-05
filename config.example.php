@@ -8,4 +8,5 @@ $TIMEOUTTXT='Your program maybe timed out (>'.$TIMEOUT.'s)'; //text shown, if pr
 $SESSIONTIMEOUT=600; //time in seconds until the session expire
 $EXAMPLECODE_IMPL = "DEF hello == \"Hello World!\"";
 $EXAMPLECODE_SIGN = "FUN hello : denotation";
+$EXAMPLECODE_CMD = "hello";
 ?>

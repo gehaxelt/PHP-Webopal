@@ -13,11 +13,11 @@ if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
 echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
 //echo json_encode($_GET['runFunction'].$_GET['focus']);
 
-function runOasys($imps,$signs,$cmd,$names,$focus) {
+function runOasys($impls,$signs,$cmd,$names,$focus) {
 	global $TIMEOUT,$TIMEOUTTXT;
 
 	if($cmd==""){return "Keine Funktion angegeben.";}
-	if($imps[$focus]==""){return "Fokussierte Implementation ist leer.";}
+	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
 	
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
@@ -33,20 +33,24 @@ function runOasys($imps,$signs,$cmd,$names,$focus) {
 
 	/* Create impl and sign files for every structure with a non empty impl */
 	for($i=0;$i<$_SESSION['structnr'];$i++){
-		if($imps[$i]!=""){
+		if($impls[$i]!=""){
+
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $imps[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
+			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
 			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
+			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
+			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
+
 			/* Create impl and sign files for the structure */
 			$signStr = "SIGNATURE ".$names[$i];
 			$implStr = "IMPLEMENTATION ".$names[$i];
 			file_put_contents($dirStr."/".$names[$i].".sign",$signStr."\n".str_replace("\r","\n",$signs[$i]));
-			file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$imps[$i]));		
+			file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$impls[$i]));		
 		}
 	}
 	
