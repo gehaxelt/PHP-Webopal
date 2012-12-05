@@ -11,6 +11,8 @@ if(isset($_SESSION['sessionstart'])){
 	if($sessionlife > $SESSIONTIMEOUT){
 		session_unset();
 		session_destroy();
+	} else if($sessionlife < $SESSIONTIMEOUT){
+		$_SESSION['sessionstart'] = time();
 	}
 } else {
 	$_SESSION['sessionstart'] = time();
