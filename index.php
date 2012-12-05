@@ -129,8 +129,9 @@ if(!isset($_COOKIE['visited'])){
 		});
 
 		$("#restore_exampl").click(function(){
-			editors["editor-impl-0"].setValue('<?php echo $EXAMPLECODE_IMPL;?>');
-			editors["editor-sign-0"].setValue('<?php echo $EXAMPLECODE_SIGN;?>');
+			num=$('.num:first').val();
+			editors["editor-impl-"+num].setValue('<?php echo $EXAMPLECODE_IMPL;?>');
+			editors["editor-sign-"+num].setValue('<?php echo $EXAMPLECODE_SIGN;?>');
 			$('#runFunction').val('<?php echo $EXAMPLECODE_CMD;?>');
 			//$('.focus:first').attr("checked","checked");
 		});
@@ -158,13 +159,13 @@ if(!isset($_COOKIE['visited'])){
 
 		$('#addStruc').click(function(){
 				currentStruc++;
-				strucNum=currentStruc-1;
+				strucNum=$('.num:last').val()+1;
 				name= strucPre+"datei"+strucNum
 				$('#accordion').append(
 					'<h3 class="filename">'+
 					'	<span style="float:right" class="delStruc" v>Löschen</span>'+
 					'	Struktur '+currentStruc+'; Name: <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
-					'	<input value="'+strucNum+'" class="num">'+
+					'	<input type="hidden" value="'+strucNum+'" class="num">'+
 					'</h3>'+
 					'<div class="struccontainer" style="padding:10px;">'+
 					'	<div class="implcontainer">'+
@@ -191,7 +192,7 @@ if(!isset($_COOKIE['visited'])){
 				$('#structnr').val(currentStruc);
 				$.get(
 					'ajax.php',
-					"page=update&structnr="+currentStruc,
+					"page=update&file="+strucNum+"&structnr="+currentStruc,
 					function() {},
 					'json'
 				);
@@ -344,7 +345,7 @@ if(!isset($_COOKIE['visited'])){
 					<h3 class="filename">
 					<span style="float:right" class="delStruc">Löschen</span>
 					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
-					<input value="'.$i.'" class="num">
+					<input type="hidden" value="'.$i.'" class="num">
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
 						<div class="implcontainer">
@@ -363,7 +364,7 @@ if(!isset($_COOKIE['visited'])){
 				?>
 				</div>
 				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo "disabled";} ;?>>
-				<input type="text" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
+				<input type="hidden" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
 				<br>
 				<div id="funccontainer">
 					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
