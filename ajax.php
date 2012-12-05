@@ -16,7 +16,7 @@ if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
 if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
 if(isset($_GET['structnr'])) {
 $_SESSION['structnr']=$_GET['structnr'];
-if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=$_SESSION['randNum'],0,4)."datei".$_GET['file'];}
+if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
 }
 if(isset($_GET["delete"])){
 $i=$_GET["delete"];

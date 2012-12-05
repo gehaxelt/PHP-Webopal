@@ -148,6 +148,7 @@ if(!isset($_COOKIE['visited'])){
 			$('.struccontainer:eq('+num+')').remove();
 			$('#focus option:eq('+num+')').remove();
 			currentStruc--;
+			if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 			$('#structnr').val(currentStruc);
 			$.get(
 					'ajax.php',
@@ -155,11 +156,12 @@ if(!isset($_COOKIE['visited'])){
 					function() {},
 					'json'
 			);
+
 		});
 
 		$('#addStruc').click(function(){
 				currentStruc++;
-				strucNum=$('.num:last').val()+1;
+				strucNum=parseInt($('.num:last').val())+1;
 				name= strucPre+"datei"+strucNum
 				$('#accordion').append(
 					'<h3 class="filename">'+
