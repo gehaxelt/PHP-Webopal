@@ -272,7 +272,7 @@ if(!isset($_COOKIE['visited'])){
 	<div id="wrapper">
 		<div id="heading">
 			<h1 style="display:inline;">WebOpal v0.2  </h1>   
-			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a>
+			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br></noscript>
