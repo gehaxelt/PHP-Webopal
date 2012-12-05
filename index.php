@@ -105,6 +105,12 @@ if(!isset($_COOKIE['visited'])){
 			editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 		});
 
+		<?php echo('$("#restore_exampl").click(function(){
+				editors["editor-impl-0"].setValue(\''.$EXAMPLECODE_IMPL.'\');
+				editors["editor-sign-0"].setValue(\''.$EXAMPLECODE_SIGN.'\');
+		    });'); ?>
+
+
 		/* Bind click action to execute button */
 		$("#execute").click(function(){
 			
@@ -239,6 +245,7 @@ if(!isset($_COOKIE['visited'])){
 		<hr style="margin:0px -10px;"><br>
 		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br></noscript>
 		<span>Bitte in der Impl bzw. Sign die IMPLEMENTATION bzw. SIGNATURE weglassen. </span>
+		<a href="#" id="restore_exampl">Beispiel-Code anzeigen</a>
 		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
 		<form action="index.php" method="POST"><input type="text" name="structnr" value="<?php echo($_SESSION['structnr']); ?>"><input type="submit" value="Anzahl der Strukturen &auml;ndern">  (Maximal <?php echo($MAXFILES); ?> Strukturen m&ouml;glich)</form>
 		<form action="index.php" method="post" id="mainsubmit">
