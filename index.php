@@ -139,7 +139,7 @@ if(!isset($_COOKIE['visited'])){
 			if(name=="download"){
 				/* Execute OPAL Code */
 				$('#execute').click();
-				w='auto';
+				w=300;
 			}
 			$.get(
 				'dialog.php',
