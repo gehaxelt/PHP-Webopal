@@ -60,8 +60,8 @@ function runOasys($imps,$signs,$cmd,$names,$focus) {
 	/* Return log */
 	$result=file_get_contents($dirStr."/".$names[$focus].".log");
 	$result=preg_replace("/\n/","\n  ",$result);
-	$result=preg_replace("~(>[af].+\n..)|($names[$focus].impl)|(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.\n..You.+.)~","",$result);
-	$result=preg_replace("/..>e/",">e",$result);
+	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.\n..You.+.)~","",$result);
+	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	return $result;
 }
 ?>

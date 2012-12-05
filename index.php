@@ -59,7 +59,10 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	if(isset($_FILES["impl-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["impl-".$i]["tmp_name"], $base."/"."impl-".$i.$ranFile);
 		if(file_exists($base."/"."impl-".$i.$ranFile)){
-			$_SESSION['implInput'][$i]=file_get_contents($base."/"."impl-".$i.$ranFile);
+			$impl=file_get_contents($base."/"."impl-".$i.$ranFile);
+			$_SESSION['implInput'][$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impl);
+			preg_match('/IMPLEMENTATION\s*([A-Za-z0-9]*)\s*/',$impl,$matches);
+			$_SESSION['fileName'][$i]=$matches[1];
 			unlink($base."/"."impl-".$i.$ranFile);
 		}
 	}
@@ -71,7 +74,7 @@ for($i=0;$i<$_SESSION['structnr'];$i++){
 	if(isset($_FILES["sign-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["sign-".$i]["tmp_name"], $base."/"."sign-".$i.$ranFile);
 		if(file_exists($base."/"."sign-".$i.$ranFile)){
-			$_SESSION['signInput'][$i]=file_get_contents($base."/"."sign-".$i.$ranFile);
+			$_SESSION['signInput'][$i]=preg_replace('/SIGNATURE.+.\n/',"",file_get_contents($base."/"."sign-".$i.$ranFile));
 			unlink($base."/"."sign-".$i.$ranFile);
 		}
 	}
