@@ -143,22 +143,26 @@ if(!isset($_COOKIE['visited'])){
 		});
 
 		$(document).on("click",'.delStruc',function(event){
-			name=$(this).parent().find('.nameInput').val();
-			var answer = confirm (name+" wirklich löschen?")
-			if(answer){
-				num=$(this).parent().find('.num').val();
-				$('.filename:eq('+num+')').remove();
-				$('.struccontainer:eq('+num+')').remove();
-				$('#focus option:eq('+num+')').remove();
-				currentStruc--;
-				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
-				$('#structnr').val(currentStruc);
-				$.get(
-						'ajax.php',
-						"page=update&structnr="+currentStruc+"&delete="+num,
-						function() {},
-						'json'
-				);
+			if($('.delStruc').size()>1){
+				name=$(this).parent().find('.nameInput').val();
+				var answer = confirm (name+" wirklich löschen?")
+				if(answer){
+					num=$(this).parent().find('.num').val();
+					$('.filename:eq('+num+')').remove();
+					$('.struccontainer:eq('+num+')').remove();
+					$('#focus option:eq('+num+')').remove();
+					currentStruc--;
+					if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
+					$('#structnr').val(currentStruc);
+					if($('.delStruc').size()<=1){$('.delStruc').hide();}
+					$('#accordion').accordion( "option", "active", num-1);
+					$.get(
+							'ajax.php',
+							"page=update&structnr="+currentStruc+"&delete="+num,
+							function() {},
+							'json'
+					);
+				}
 			}
 		});
 
@@ -195,6 +199,7 @@ if(!isset($_COOKIE['visited'])){
 				editors[sign].getSession().setMode("ace/mode/opal");
 				$('#focus').append('<option value="'+strucNum+'">'+name+'</option>');
 				$('#structnr').val(currentStruc);
+				if($('.delStruc').size()>1){$('.delStruc').show();}
 				$.get(
 					'ajax.php',
 					"page=update&file="+strucNum+"&structnr="+currentStruc,
@@ -205,7 +210,7 @@ if(!isset($_COOKIE['visited'])){
     			$("#addStruc").attr("disabled","disabled")
     		}
 		});
-
+		
 		/* Bind click action to execute button */
 		$("#execute").click(function(){
 			
@@ -318,6 +323,9 @@ if(!isset($_COOKIE['visited'])){
 		if (navigator.cookieEnabled != true) {
 		  $('#warning').show()
 		}
+		if($('.delStruc').size()<=1){
+		$('.delStruc').hide();
+		}
 	});
 
 	</script>
@@ -369,7 +377,7 @@ if(!isset($_COOKIE['visited'])){
 				?>
 				</div>
 				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo "disabled";} ;?>>
-				<input type="hidden" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
+				<input type="text" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
 				<br>
 				<div id="funccontainer">
 					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
