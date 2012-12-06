@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /ace/
+Disallow: /downloads/
+Disallow: /fonts/
+Disallow: /tmp/
+Disallow: /uploads/
