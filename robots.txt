@@ -2,5 +2,5 @@ User-agent: *
 Disallow: /ace/
 Disallow: /downloads/
 Disallow: /fonts/
-Disallow: /tmpt/
+Disallow: /tmp/
 Disallow: /uploads/
