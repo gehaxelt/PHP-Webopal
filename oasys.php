@@ -14,7 +14,7 @@ echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSIO
 //echo json_encode($_GET['runFunction'].$_GET['focus']);
 
 function runOasys($impls,$signs,$cmd,$names,$focus) {
-	global $TIMEOUT,$TIMEOUTTXT;
+	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT;
 
 	if($cmd==""){return "Keine Funktion angegeben.";}
 	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
@@ -49,8 +49,9 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 			/* Create impl and sign files for the structure */
 			$signStr = "SIGNATURE ".$names[$i];
 			$implStr = "IMPLEMENTATION ".$names[$i];
-			file_put_contents($dirStr."/".$names[$i].".sign",$signStr."\n".str_replace("\r","\n",$signs[$i]));
-			file_put_contents($dirStr."/".$names[$i].".impl",$implStr."\n".str_replace("\r","\n",$impls[$i]));		
+			
+			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r","\n",$signs[$i]));
+			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r","\n",$impls[$i]));
 		}
 	}
 	
