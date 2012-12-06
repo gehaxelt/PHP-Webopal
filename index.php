@@ -2,8 +2,17 @@
 session_start();
 ob_start(); //start output buffering
 include 'config.php';
-include 'contributors.php';
-include 'gc.php';
+include 'inc/contributors.php';
+include 'inc/gc.php';
+
+if(!is_dir('tmp')){
+exit("Bitte erstell ein Verzeichnis 'tmp' und gib dem Skript Schreibrechte auf dieses");
+}else{
+if(!is_dir('tmp/downloads')){mkdir('tmp/downloads/');}
+if(!is_dir('tmp/files')){mkdir('tmp/files/');}
+if(!is_dir('tmp/uploads')){mkdir('tmp/uploads/');}
+
+}
 
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
@@ -48,7 +57,7 @@ function init($i){
 	}
 
 	//random filename for upload
-	$base = "tmp";
+	$base = "tmp/uploads/";
 	$ranFile = md5($i.time().str_shuffle(time()));
 	//uploaded code set it in impl
 	if(isset($_FILES["impl-".$i]["tmp_name"])) {
@@ -159,7 +168,7 @@ if(!isset($_COOKIE['visited'])){
 					if($('.delStruc').size()<=1){$('.delStruc').hide();}
 					$('#accordion').accordion( "option", "active", num-1);
 					$.get(
-							'ajax.php',
+							'inc/ajax.php',
 							"page=update&structnr="+currentStruc+"&delete="+num,
 							function() {},
 							'json'
@@ -203,7 +212,7 @@ if(!isset($_COOKIE['visited'])){
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()>1){$('.delStruc').show();}
 				$.get(
-					'ajax.php',
+					'inc/ajax.php',
 					"page=update&file="+strucNum+"&structnr="+currentStruc,
 					function() {},
 					'json'
@@ -225,11 +234,11 @@ if(!isset($_COOKIE['visited'])){
 			/* Deactivate Button */
 			$("#execute").attr("disabled","disabled")
 			$("#execute").attr("value","Lade...")
-			
+			alert($('#mainsubmit').serialize());
 			/* GET Request */
 			$.get(
-				'oasys.php', 
-				$('#mainsubmit').serialize(),
+				'inc/ajax.php', 
+				$('#mainsubmit').serialize()+"&oasys=true&page=update",
 				/* Populate output and activate button on success */
 				function(data) {
 					$('#output').text(data)
@@ -250,7 +259,7 @@ if(!isset($_COOKIE['visited'])){
 				w=300;
 			}
 			$.get(
-				'ajax.php',
+				'inc/ajax.php',
 				"page="+name,
 				function(data) {
 					$('#dialog').html(data.text);
@@ -426,7 +435,7 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 	</div>
 <div id="dialog"></div>
-	<?php include "piwik.php"; ?>
+	<?php include "inc/piwik.php"; ?>
 </body>
 
 </html>

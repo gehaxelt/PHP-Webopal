@@ -2,5 +2,7 @@ User-agent: *
 Disallow: /ace/
 Disallow: /downloads/
 Disallow: /fonts/
+Disallow: /markdown/
+Disallow: /inc/
 Disallow: /tmp/
 Disallow: /uploads/
