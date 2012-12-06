@@ -10,5 +10,5 @@ $EXAMPLECODE_IMPL = "DEF hello == \"Hello World!\"";
 $EXAMPLECODE_SIGN = "FUN hello : denotation";
 $EXAMPLECODE_CMD = "hello";
 $VERSION = "v0.2";
-$ADVERTCOMMENT = "-- created with WebOpal ".$VERSION;
+$ADVERTCOMMENT = "-- created with WebOpal ".$VERSION." (https://github.com/gehaxelt/PHP-Webopal) on Server ".$HOSTURL;
 ?>

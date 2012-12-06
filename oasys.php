@@ -14,7 +14,7 @@ echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSIO
 //echo json_encode($_GET['runFunction'].$_GET['focus']);
 
 function runOasys($impls,$signs,$cmd,$names,$focus) {
-	global $TIMEOUT,$TIMEOUTTXT;
+	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT;
 
 	if($cmd==""){return "Keine Funktion angegeben.";}
 	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
