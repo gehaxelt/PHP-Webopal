@@ -191,6 +191,13 @@ if(!isset($_COOKIE['visited'])){
 			);
 		});
 
+		$('#runFunction').keypress(function(e){
+			if (e.which == 13) {
+				e.preventDefault();
+				$("#execute").click();
+			}
+		});
+
 		/* Bind action for ctrl+space code completion */
 		$(document).keydown(function(e){
 			if( (e.ctrlKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " "){
