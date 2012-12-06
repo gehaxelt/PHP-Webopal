@@ -1,15 +1,21 @@
 Changelog WebOpal
 ==================================
 
-##0.2 2012-12-05##
+##???: WebOpal v0.3 ##
+- NEW FEATURE: Dynamisches Hinzufügen und Löschen von Strukturen
+- Minor: Drücken von Enter in der Befehlszeile wird den Code ausführen
+- Backend: Code aufgeräumt/sortiert
+
+##2012-12-05: WebOpal v0.2 ##
 
 - NEW FEATURE: ACE Editor anstatt Editarea (mit OPAL Syntax Highlighting)
 - NEW FEATURE: Multiple Funktionen ausführen (z.B. "func(x,y);foo(x)")
 - NEW FEATURE: Code-Completion (Strg-Space)
 - NEW FEATURE: Umstellung des Absendens auf AJAX
+- NEW FEATURE: Uploaden von *.impl und *.sign Dateien
 - Minor: Link zu GitHub, Contributer-Liste
 
-##0.1a 2012-11-28##
+##2012-11-2: WebOpal v0.1a 8##
 
 - NEW FEATURE: Multiple Dateien (default 3) möglich (Akkordeonstruktur von JQUERY UI)
 - NEW FEATURE: Benennung der Strukturen möglich (wenn nicht benannt, wird zufällig ein Name gewählt)
@@ -19,7 +25,7 @@ Changelog WebOpal
 - Bugfix: CHANGELOG.md erstellt
 - Bugfix: WebOpal W3C verfiziert
 
-##0.1 2012-11-24##
+##2012-11-24: WebOpal v0.1 ##
 
 - Eingabe vom Implementation-, bzw. Signatureteil
 - Eingabe des auszuführenden Befehls
