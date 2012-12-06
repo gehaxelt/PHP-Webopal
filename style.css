@@ -1,5 +1,3 @@
-@import "ace_opal.css";
-
 @font-face {
   font-family: 'Rambla';
   font-style: normal;
@@ -137,3 +135,28 @@ input[type="file"], input[type="submit"] {
 	font-size: 0.7em;
 }
 
+/* ACE_Styles */
+
+.ace_opalcomment {
+	color:blue;
+}
+.ace_opalhandler {
+	color:purple;
+}
+.ace_opalkeyword {
+	color:brown;
+	font-weight:bold;
+}
+.ace_opaltype {
+	color:green;
+	font-weight:bold;
+}
+.ace_opaldigit {
+	color:fuchsia;
+}
+.ace_opalbool {
+	color:fuchsia;
+}
+.ace_opaloperator {
+	color:fuchsia;
+}
