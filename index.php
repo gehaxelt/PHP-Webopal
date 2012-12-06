@@ -117,7 +117,7 @@ if(!isset($_COOKIE['visited'])){
 	var cmdEx = '<?php echo $EXAMPLECODE_CMD;?>';
 	/* Execute if DOM is ready */
    $(function() {
-		weOpal();
+		webOpal();
 	});
 
 	</script>
