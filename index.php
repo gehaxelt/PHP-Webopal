@@ -96,7 +96,7 @@ if(!isset($_COOKIE['visited'])){
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-	<title>WebOpal v0.2</title>
+	<title>WebOpal <?php echo $VERSION ?></title>
 	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
@@ -271,7 +271,7 @@ if(!isset($_COOKIE['visited'])){
 <body>
 	<div id="wrapper">
 		<div id="heading">
-			<h1 style="display:inline;">WebOpal v0.2  </h1>   
+			<h1 style="display:inline;">WebOpal <?php echo $VERSION ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>

@@ -9,4 +9,6 @@ $SESSIONTIMEOUT=600; //time in seconds until the session expire
 $EXAMPLECODE_IMPL = "DEF hello == \"Hello World!\"";
 $EXAMPLECODE_SIGN = "FUN hello : denotation";
 $EXAMPLECODE_CMD = "hello";
+$VERSION = "v0.2";
+$ADVERTCOMMENT = "-- created with WebOpal ".$VERSION;
 ?>
