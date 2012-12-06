@@ -11,7 +11,7 @@ You need to install [Opal](https://projects.uebb.tu-berlin.de/opal/trac) on your
 ##2.Installation##
 
 - 1. Clone this repository into your webservers document root.
-- 2. Create the directories 'uploads' and 'downloads'.
-- 3. Make the dirs 'uploads' and 'downloads' writeable by the webserver
+- 2. Create the directories 'tmp'.
+- 3. Make the dir 'tmp' writeable by the webserver
 - 4. Rename config.example.php to config.php
 - 5. Edit config.php
