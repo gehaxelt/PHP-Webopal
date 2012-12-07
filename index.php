@@ -52,6 +52,7 @@ if(!isset($_SESSION['structnr'])) {
 
 /* initialize structure names, etc. */
 function init($i){
+	global $TMPDIR;
 	/* If the structure has no name, create one */
 	if(!isset($_SESSION['fileName'][$i])) {
 		$_SESSION['fileName'][$i]=substr($_SESSION['randNum'],0,4)."datei".$i;
