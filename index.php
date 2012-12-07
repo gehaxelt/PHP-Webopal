@@ -8,17 +8,17 @@ include 'inc/gc.php';
 
 //Escape all variables
 
-if(!is_dir('tmp')){
-	exit("Bitte erstell ein Verzeichnis 'tmp' und gib dem Skript Schreibrechte auf dieses");
+if(!is_dir($TMPDIR)){
+	exit("Bitte erstell ein Verzeichnis '".$TMPDIR."' und gib dem Skript Schreibrechte auf dieses");
 }else{
-	if(!is_dir('tmp/downloads')){
-		mkdir('tmp/downloads/')
+	if(!is_dir($TMPDIR.'/downloads')){
+		mkdir($TMPDIR.'/downloads/')
 	;}
-	if(!is_dir('tmp/files')){
-		mkdir('tmp/files/');
+	if(!is_dir($TMPDIR.'/files')){
+		mkdir($TMPDIR.'/files/');
 	}
-	if(!is_dir('tmp/uploads')){
-		mkdir('tmp/uploads/');
+	if(!is_dir($TMPDIR.'/uploads')){
+		mkdir($TMPDIR.'/uploads/');
 	}
 
 }
@@ -66,7 +66,7 @@ function init($i){
 	}
 
 	//random filename for upload
-	$base = "tmp/uploads/";
+	$base = $TMPDIR."/uploads/";
 	$ranFile = md5($i.time().str_shuffle(time()));
 	//uploaded code set it in impl
 	if(isset($_FILES["impl-".$i]["tmp_name"])) {

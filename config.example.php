@@ -11,4 +11,5 @@ $EXAMPLECODE_SIGN = "FUN hello : denotation";
 $EXAMPLECODE_CMD = "hello";
 $VERSION = "v0.2";
 $ADVERTCOMMENT = "-- created with WebOpal ".$VERSION." (https://github.com/gehaxelt/PHP-Webopal) on Server ".$HOSTURL;
+$TMPDIR = "tmp"; //temp-directory
 ?>

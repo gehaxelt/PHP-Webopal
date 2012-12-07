@@ -56,13 +56,13 @@ function download(){
 	global $HOSTURL;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
-	file_put_contents("../tmp/downloads/".$ranName.".stamp", time());
+	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time());
 
 	//if there is something to archive, archive it and send the download link
 	//else tell the user that there is nothing to archive
-	if(is_dir("../tmp/files/".$_SESSION['randNum'])){
-		shell_exec("cd ../tmp/files/".$_SESSION['randNum']."; tar cfz ../../../tmp/downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
-		return "Download m&ouml;glich:<br><a href='".$HOSTURL."/tmp/downloads/".$ranName.".tgz' target='_blank'>Archiv herunterladen</a>";
+	if(is_dir("../".$TMPDIR."/files/".$_SESSION['randNum'])){
+		shell_exec("cd ../".$TMPDIR."/files/".$_SESSION['randNum']."; tar cfz ../../../".$TMPDIR."/downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
+		return "Download m&ouml;glich:<br><a href='".$HOSTURL."/".$TMPDIR."/downloads/".$ranName.".tgz' target='_blank'>Archiv herunterladen</a>";
 	}else{
 		return"Kein Download m&ouml;glich, bitte erst einmal Dateien mit Inhalt f&uuml;llen und eine Funktion ausf&uuml;hren!";
 	}
@@ -77,7 +77,7 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
-		$dirStr = "../tmp/files/".$ranFile;
+		$dirStr = "../".$TMPDIR."/files/".$ranFile;
 		if(!is_dir($dirStr)){break;}else if($i==4){return "Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!";}
 	}
 	$old=$_SESSION['randNum'];
