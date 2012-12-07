@@ -23,7 +23,7 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
-		$dirStr = "./uploads/".$ranFile;
+		$dirStr = "./tmp/uploads/".$ranFile;
 		if(!is_dir($dirStr)){break;}else if($i==4){return "Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!";}
 	}
 	$old=$_SESSION['randNum'];

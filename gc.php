@@ -11,11 +11,11 @@ if(isset($_GET['output'])){
 
 function run_gc($output=false){
 	global $SESSIONTIMEOUT;
-	$dirs = scandir("./uploads");
+	$dirs = scandir("./tmp/uploads");
 	$delfiles = 0;
 	foreach($dirs as $entry){
 		if($entry === '.' or $entry === '..') continue;
-		$dir = "./uploads/".$entry;
+		$dir = "./tmp/uploads/".$entry;
 		if(is_dir($dir)){
 			$timestamp = "";
 			$filename = $dir."/time.stamp";
@@ -33,11 +33,11 @@ function run_gc($output=false){
 		echo($delfiles." folder(s) deleted");
 		echo("<br />");
 	}
-	$files = scandir("./downloads");
+	$files = scandir("./tmp/downloads");
 	$delfiles = 0;
 	foreach($files as $entry){
 		if($entry === '.' or $entry === '..') continue;
-		$filename = "./downloads/".$entry;
+		$filename = "./tmp/downloads/".$entry;
 		if(is_dir($filename)) continue;
 		if(endsWith($filename,"stamp")){
 			$timestamp = "";
