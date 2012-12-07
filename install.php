@@ -21,21 +21,23 @@ if(isset($_GET['addslashes'])) {
 		'?>';
 	}
 } else {
-	$inst = $inst.'<?php'."\n".
-	'$HOSTURL=\''.$_GET['hosturl'].'\';'."\n".
-	'$IMPRESSUM=\''.$_GET['impressum'].'\';'."\n".
-	'$MINFILES='.$_GET['minfiles'].';'."\n".
-	'$MAXFILES='.$_GET['maxfiles'].';'."\n".
-	'$TIMEOUT='.$_GET['timeout'].';'."\n".
-	'$TIMEOUTTXT=\''.$_GET['timeouttxt'].'\';'."\n".
-	'$SESSIONTIMEOUT='.$_GET['sessiontimeout'].';'."\n".
-	'$EXAMPLECODE_IMPL=\''.$_GET['examplecode_impl'].'\';'."\n".
-	'$EXAMPLECODE_SIGN=\''.$_GET['examplecode_sign'].'\';'."\n".
-	'$EXAMPLECODE_CMD=\''.$_GET['examplecode_cmd'].'\';'."\n".
-	'$VERSION=\''.$_GET['version'].'\';'."\n".
-	'$ADVERTCOMMENT=\''.$_GET['advertcomment'].'\';'."\n".
-	'$TMPDIR=\''.$_GET['tmpdir'].'\';'."\n".
-	'?>';
+	if(isset($_GET['hosturl'])){
+		$inst = $inst.'<?php'."\n".
+		'$HOSTURL=\''.$_GET['hosturl'].'\';'."\n".
+		'$IMPRESSUM=\''.$_GET['impressum'].'\';'."\n".
+		'$MINFILES='.$_GET['minfiles'].';'."\n".
+		'$MAXFILES='.$_GET['maxfiles'].';'."\n".
+		'$TIMEOUT='.$_GET['timeout'].';'."\n".
+		'$TIMEOUTTXT=\''.$_GET['timeouttxt'].'\';'."\n".
+		'$SESSIONTIMEOUT='.$_GET['sessiontimeout'].';'."\n".
+		'$EXAMPLECODE_IMPL=\''.$_GET['examplecode_impl'].'\';'."\n".
+		'$EXAMPLECODE_SIGN=\''.$_GET['examplecode_sign'].'\';'."\n".
+		'$EXAMPLECODE_CMD=\''.$_GET['examplecode_cmd'].'\';'."\n".
+		'$VERSION=\''.$_GET['version'].'\';'."\n".
+		'$ADVERTCOMMENT=\''.$_GET['advertcomment'].'\';'."\n".
+		'$TMPDIR=\''.$_GET['tmpdir'].'\';'."\n".
+		'?>';
+	}
 }
 
 file_put_contents($filename,$inst);
