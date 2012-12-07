@@ -53,7 +53,7 @@ if(file_exists("../markdown/".$s.".md")){
 }
 
 function download(){
-	global $HOSTURL;
+	global $HOSTURL, $RUNMAX;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
 	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time());
@@ -64,7 +64,7 @@ function download(){
 		shell_exec("cd ../".$TMPDIR."/files/".$_SESSION['randNum']."; tar cfz ../../../".$TMPDIR."/downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
 		return "Download m&ouml;glich:<br><a href='".$HOSTURL."/".$TMPDIR."/downloads/".$ranName.".tgz' target='_blank'>Archiv herunterladen</a>";
 	}else{
-		return"Kein Download m&ouml;glich, bitte erst einmal Dateien mit Inhalt f&uuml;llen und eine Funktion ausf&uuml;hren!";
+		return "Kein Download m&ouml;glich, bitte erst einmal Dateien mit Inhalt f&uuml;llen und eine Funktion ausf&uuml;hren!";
 	}
 }
 
@@ -112,6 +112,9 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	
 	//Split commands at ;
 	$cmd=str_replace(";","\ne ",$cmd);
+	if(count($cmd)>$RUNMAX){
+		return "critical error, DDoS attempt"; //senseless error description
+	}
 	
 	/* Run focussed Structure */
 	file_put_contents($dirStr."/".$names[$focus].".exec","a ".$names[$focus]."\nf ".$names[$focus].".impl\ne ".$cmd);
