@@ -12,4 +12,5 @@ $EXAMPLECODE_CMD = "hello";
 $VERSION = "v0.2"; //the current version
 $ADVERTCOMMENT = "-- created with WebOpal ".$VERSION." (https://github.com/gehaxelt/PHP-Webopal) on Server ".$HOSTURL; //comment, which appears in files
 $TMPDIR = "tmp"; //temp-directory
+$RUNMAX = 10;
 ?>
