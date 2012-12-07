@@ -112,7 +112,8 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	
 	//Split commands at ;
 	$cmd=str_replace(";","\ne ",$cmd);
-	if(count($cmd)>$RUNMAX){
+	if(substr_count($cmd,";")<$RUNMAX) {
+	//if(count($cmd)>$RUNMAX){
 		return "critical error, DDoS attempt"; //senseless error description
 	}
 	
