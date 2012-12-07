@@ -6,11 +6,17 @@ include 'inc/contributors.php';
 include 'inc/gc.php';
 
 if(!is_dir('tmp')){
-exit("Bitte erstell ein Verzeichnis 'tmp' und gib dem Skript Schreibrechte auf dieses");
+	exit("Bitte erstell ein Verzeichnis 'tmp' und gib dem Skript Schreibrechte auf dieses");
 }else{
-if(!is_dir('tmp/downloads')){mkdir('tmp/downloads/');}
-if(!is_dir('tmp/files')){mkdir('tmp/files/');}
-if(!is_dir('tmp/uploads')){mkdir('tmp/uploads/');}
+	if(!is_dir('tmp/downloads')){
+		mkdir('tmp/downloads/')
+	;}
+	if(!is_dir('tmp/files')){
+		mkdir('tmp/files/');
+	}
+	if(!is_dir('tmp/uploads')){
+		mkdir('tmp/uploads/');
+	}
 
 }
 
