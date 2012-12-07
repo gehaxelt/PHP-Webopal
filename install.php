@@ -34,6 +34,7 @@ if(isset($_GET['addslashes'])) {
 	'$EXAMPLECODE_CMD=\''.$_GET['examplecode_cmd'].'\';'."\n".
 	'$VERSION=\''.$_GET['version'].'\';'."\n".
 	'$ADVERTCOMMENT=\''.$_GET['advertcomment'].'\';'."\n".
+	'$TMPDIR=\''.$_GET['tmpdir'].'\';'."\n".
 	'?>';
 }
 
@@ -59,6 +60,7 @@ Examplecode-SIGN: <input type="text" name="examplecode_sign" value="FUN hello : 
 Examplecode-CMD: <input type="text" name="examplecode_cmd" value="hello" /><br>
 Version: <input type="text" name="version" value="v0.2" /><br>
 Advertcomment: <input type="text" name="advertcomment" value="-- created with WebOpal '.$VERSION.' (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL" /><br>
+Tempdir: <input type="text" name="tmpdir" value="tmp" /><br>
 Add slashes? <input type="checkbox" name="addslashes" value="on" />
 <input type="submit" value="Install" />
 </form>
