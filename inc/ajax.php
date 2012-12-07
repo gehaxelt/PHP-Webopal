@@ -69,7 +69,7 @@ function download(){
 }
 
 function runOasys($impls,$signs,$cmd,$names,$focus) {
-	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT;
+	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$RUNMAX;
 
 	if($cmd==""){return "Keine Funktion angegeben.";}
 	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
@@ -112,9 +112,9 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	
 	//Split commands at ;
 	$cmd=str_replace(";","\ne ",$cmd);
-	if(substr_count($cmd,";")<$RUNMAX) {
+	if(substr_count($cmd,";")>$RUNMAX) {
 	//if(count($cmd)>$RUNMAX){
-		return "critical error, DDoS attempt"; //senseless error description
+		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
 	}
 	
 	/* Run focussed Structure */
