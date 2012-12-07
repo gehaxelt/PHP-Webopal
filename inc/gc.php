@@ -27,12 +27,12 @@ function run_gc($output=false){
 			if((time() - intval($time)) > $SESSIONTIMEOUT){
 				rrmdir($dir);
 				$delfiles++;
-				if($output) echo("Deleted folder: ".$dir."<br />");
+				if($output) echo(htmlentities("Deleted folder: ".$dir."<br />"));
 			}
 		}
 	}
 	if($output){
-		echo($delfiles." folder(s) deleted");
+		echo(intVal($delfiles)." folder(s) deleted");
 		echo("<br />");
 	}
 	$files = scandir("../tmp/downloads");
@@ -55,11 +55,11 @@ function run_gc($output=false){
 					unlink($filename);
 				}
 				$delfiles++;
-				if($output) echo("Deleted file: ".$fname."<br />");
+				if($output) echo(htmlentities("Deleted file: ".$fname."<br />"));
 			}
 		}
 	}
-	if($output) echo($delfiles." file(s) deleted");
+	if($output) echo(IntVal($delfiles)." file(s) deleted");
 }
 
 function endsWith( $str, $sub ) {

@@ -5,6 +5,9 @@ include 'config.php';
 include 'inc/contributors.php';
 include 'inc/gc.php';
 
+
+//Escape all variables
+
 if(!is_dir('tmp')){
 	exit("Bitte erstell ein Verzeichnis 'tmp' und gib dem Skript Schreibrechte auf dieses");
 }else{
@@ -39,11 +42,11 @@ if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(ti
 if(!isset($_SESSION['structnr'])) {
 	$_SESSION['structnr']=$MINFILES;
 	for($i=0;$i<$MINFILES;$i++){
-	init($i);
+		init($i);
 	}
 }else{
 	foreach($_SESSION['fileName'] as $i => $impl){
-	init($i);
+		init($i);
 	}
 }
 
@@ -80,6 +83,7 @@ function init($i){
 	if(!isset($_SESSION['signInput'][$i])) {
 		$_SESSION['signInput'][$i]="";
 	}
+
 	//uploaded code set it in impl-0 and sign-0
 	if(isset($_FILES["sign-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["sign-".$i]["tmp_name"], $base."/"."sign-".$i.$ranFile);
@@ -140,7 +144,7 @@ if(!isset($_COOKIE['visited'])){
 <body>
 	<div id="wrapper">
 		<div id="heading">
-			<h1 style="display:inline;">WebOpal <?php echo $VERSION ?>  </h1>   
+			<h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>
@@ -174,8 +178,8 @@ if(!isset($_COOKIE['visited'])){
 				}
 				?>
 				</div>
-				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo "disabled";} ;?>>
-				<input type="text" id="structnr" name="structnr" value="<?php echo $_SESSION['structnr'];?>">
+				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
+				<input type="text" id="structnr" name="structnr" value="<?php echo htmlentities($_SESSION['structnr']);?>">
 				<br>
 				<div id="funccontainer">
 					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
