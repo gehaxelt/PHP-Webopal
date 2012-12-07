@@ -47,13 +47,16 @@ function webOpal(){
 			var answer = confirm (name+" wirklich löschen?")
 			if(answer){
 				num=$(this).parent().find('.num').val();
-				$('.filename:eq('+num+')').remove();
-				$('.struccontainer:eq('+num+')').remove();
-				$('#focus option:eq('+num+')').remove();
+				$('.nameInput[name="fileName['+num+']"]').parent().remove();
+				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
+			//	$('.filename:eq('+num+')').remove();
+			//	$('.struccontainer:eq('+num+')').remove();
+				$('#focus option[value="'+num+'"]').remove();
 				currentStruc--;
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
+			//	$('#accordion').accordion( "option", "active", num-1);
 				$('#accordion').accordion( "option", "active", num-1);
 				$.get(
 						'inc/ajax.php',
