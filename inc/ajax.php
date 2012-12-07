@@ -4,7 +4,7 @@ include "../config.php";
 require('markdown.php');
 $page="";
 
-//Escaping all Variables
+//Escaping all variables
 if(isset($_GET['implInput'])) { $_GET['implInput']=htmlentities($_GET['implInput']); }
 if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
 if(isset($_GET['runFunction'])) { $_GET['runFunction']=htmlentities($_GET['runFunction']); }
@@ -12,9 +12,9 @@ if(isset($_GET['fileName'])) { $_GET['fileName']=htmlentities($_GET['fileName'])
 if(isset($_GET['focus'])) { $_GET['focus']=htmlentities($_GET['focus']); }
 if(isset($_GET['structnr'])) { $_GET['structnr']=IntVal($_GET['structnr']); }
 if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
-if(isset($_GET['delete'])) { $_GET['delete']=IntVal($_GET['delete']); }
+if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
-if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
+if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
 
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
