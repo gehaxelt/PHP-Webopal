@@ -5,8 +5,8 @@ require('markdown.php');
 $page="";
 
 //Escaping all variables
-if(isset($_GET['implInput'])) { $_GET['implInput']=htmlentities($_GET['implInput']); }
-if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
+//if(isset($_GET['implInput'])) { $_GET['implInput']=htmlentities($_GET['implInput']); }
+//if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
 if(isset($_GET['runFunction'])) { $_GET['runFunction']=htmlentities($_GET['runFunction']); }
 if(isset($_GET['fileName'])) { $_GET['fileName']=htmlentities($_GET['fileName']); }
 if(isset($_GET['focus'])) { $_GET['focus']=htmlentities($_GET['focus']); }
@@ -111,12 +111,14 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	}
 	
 	//Split commands at ;
+	$cmd=str_replace("&lt;","<",$cmd);
+	$cmd=str_replace("&gt;",">",$cmd);
 	$cmd=str_replace(";","\ne ",$cmd);
 	if(substr_count($cmd,";")>$RUNMAX) {
 	//if(count($cmd)>$RUNMAX){
 		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
 	}
-	
+		
 	/* Run focussed Structure */
 	file_put_contents($dirStr."/".$names[$focus].".exec","a ".$names[$focus]."\nf ".$names[$focus].".impl\ne ".$cmd);
 	shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < ".$names[$focus].".exec > ".$names[$focus].".log;echo '".$TIMEOUTTXT."' >> ".$names[$focus].".log");
