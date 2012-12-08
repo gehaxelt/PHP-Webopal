@@ -111,6 +111,7 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	}
 	
 	//Split commands at ;
+	$cmd=str_replace("&quot;","\"",$cmd);
 	$cmd=str_replace("&lt;","<",$cmd);
 	$cmd=str_replace("&gt;",">",$cmd);
 	$cmd=str_replace(";","\ne ",$cmd);
