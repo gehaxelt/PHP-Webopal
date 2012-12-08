@@ -53,7 +53,7 @@ if(file_exists("../markdown/".$s.".md")){
 }
 
 function download(){
-	global $HOSTURL, $RUNMAX;
+	global $HOSTURL, $RUNMAX,$TMPDIR;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
 	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time());
@@ -69,7 +69,7 @@ function download(){
 }
 
 function runOasys($impls,$signs,$cmd,$names,$focus) {
-	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$RUNMAX;
+	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
 	if($cmd==""){return "Keine Funktion angegeben.";}
 	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
