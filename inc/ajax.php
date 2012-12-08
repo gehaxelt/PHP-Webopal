@@ -105,8 +105,8 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 			$signStr = "SIGNATURE ".$names[$i];
 			$implStr = "IMPLEMENTATION ".$names[$i];
 			
-			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r","\n",$signs[$i]));
-			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r","\n",$impls[$i]));
+			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
+			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));
 		}
 	}
 	
