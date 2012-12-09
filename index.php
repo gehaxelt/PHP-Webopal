@@ -153,6 +153,7 @@ if(!isset($_COOKIE['visited'])){
 		<a href="#" id="restore_exampl">Hello World!</a>
 		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
+				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -179,7 +180,6 @@ if(!isset($_COOKIE['visited'])){
 				}
 				?>
 				</div>
-				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<input type="text" id="structnr" name="structnr" value="<?php echo htmlentities($_SESSION['structnr']);?>">
 				<br>
 				<div id="funccontainer">

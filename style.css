@@ -164,3 +164,8 @@ input[type="file"], input[type="submit"] {
 	display:none;
 }
 
+#addStruc{
+	position:relative;
+	top:-45px;
+	left:980px;
+}
