@@ -58,12 +58,17 @@ function webOpal(){
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
 			//	$('#accordion').accordion( "option", "active", num-1);
 				$('#accordion').accordion( "option", "active", num-1);
-				$.get(
-						'inc/ajax.php',
-						"page=update&structnr="+currentStruc+"&delete="+num,
-						function() {},
-						'json'
-				);
+				$.ajax({
+					url : 'inc/ajax.php',
+					type : 'GET',
+					dataType: "json",
+					data : "page=update&structnr="+currentStruc+"&delete="+num,
+					success : function() {},
+					error : function(data) {
+						$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+						$('#dialog').dialog({title: "ERROR", width: 700});
+					}
+				});
 			}
 		}
 	});
@@ -102,12 +107,17 @@ function webOpal(){
 			$('#focus').append('<option value="'+strucNum+'">'+name+'</option>');
 			$('#structnr').val(currentStruc);
 			if($('.delStruc').size()>1){$('.delStruc').show();}
-			$.get(
-				'inc/ajax.php',
-				"page=update&file="+strucNum+"&structnr="+currentStruc,
-				function() {},
-				'json'
-			);
+			$.ajax({
+				url : 'inc/ajax.php',
+				type : 'GET',
+				dataType: "json",
+				data : "page=update&file="+strucNum+"&structnr="+currentStruc,
+				success : function() {},
+				error : function(data) {
+					$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+					$('#dialog').dialog({title: "ERROR", width: 700});
+				}
+			});
 		if(currentStruc==maxStruc){
 			$("#addStruc").attr("disabled","disabled")
 		}
@@ -126,19 +136,26 @@ function webOpal(){
 		$("#execute").attr("disabled","disabled")
 		$("#execute").attr("value","Lade...")
 		/* GET Request */
-		$.get(
-			'inc/ajax.php', 
-			$('#mainsubmit').serialize()+"&oasys=true&page=update",
+		$.ajax({
+			url : 'inc/ajax.php',
+			type : 'GET',
+			dataType: "json",
+			data: $('#mainsubmit').serialize()+"&oasys=true&page=update",
 			/* Populate output and activate button on success */
-			function(data) {
+			success: function(data) {
 				curdate = new Date();
 				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
 				$('#output').text("Letzte Ausfu&ouml;hrung: "+ lastrun + "\n" + data)
 				$("#execute").attr("value","Programm ausführen")
 				$("#execute").removeAttr("disabled")
 			},
-			'json'
-		);
+			error : function(data) {
+				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+				$("#execute").attr("value","Programm ausführen")
+				$("#execute").removeAttr("disabled")
+			}
+		 });
 	});
 
 	/* Bind click functions for download, changelog, etc  */
@@ -150,16 +167,20 @@ function webOpal(){
 			$('#execute').click();
 			w=300;
 		}
-		$.get(
-			'inc/ajax.php',
-			"page="+name,
-			function(data) {
-				$('#dialog').html(data.text);
+		$.ajax({
+			url : 'inc/ajax.php',
+			type : 'GET',
+			dataType: "json",
+			data : "page="+name,
+			success : function(data) {
 				$('#dialog').html(data.text);
 				$('#dialog').dialog({title: data.title, width: w});
 			},
-			'json'
-		);
+			error : function(data) {
+				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+			}
+		});
 	});
 
 	$('#runFunction').keypress(function(e){
@@ -240,4 +261,14 @@ function webOpal(){
 	if($('.delStruc').size()<=1){
 		$('.delStruc').hide();
 	}
+	
+	function objToString (obj) {
+    var str = '';
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str += p + '::' + obj[p] + '\n';
+        }
+    }
+    return str;
+}
 }
