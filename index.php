@@ -110,7 +110,7 @@ if(!isset($_COOKIE['visited'])){
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal <?php echo $VERSION ?></title>
-	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<? if(file_exists('js/jquery-ui.min.js')){
 	echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>

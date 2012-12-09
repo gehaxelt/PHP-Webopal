@@ -1,4 +1,5 @@
 config.php
 tmp
-externs
-script.min.js
+js/jquery*
+js/script.min.js
+.htaccess
