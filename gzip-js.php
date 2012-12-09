@@ -10,7 +10,7 @@
    header ("cache-control: must-revalidate");
  
    // set variable for duration of cached content
-   $offset = 60 * 60;
+   $offset = 60 * 60 * 24 * 7; //one week
  
    // set variable specifying format of expiration header
    $expire = "expires: " . gmdate ("D, d M Y H:i:s", time() + $offset) . " GMT";
