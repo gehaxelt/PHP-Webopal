@@ -1,19 +1,20 @@
 <FilesMatch "\.(txt|html|htm|php)">
     ForceType application/x-httpd-php
- #modify the paths!!!
-    php_value auto_prepend_file "/opt/lampp/htdocs/PHP-Webopal/gzip-php.php"
+    
+    php_value auto_prepend_file "tools/gzip-php.php"
  
 </FilesMatch>
 
 <FilesMatch "\.(css)">
     ForceType application/x-httpd-php
  
-    php_value auto_prepend_file "/opt/lampp/htdocs/PHP-Webopal/gzip-css.php"
+    php_value auto_prepend_file "tools/gzip-css.php"
  
 </FilesMatch>
 <FilesMatch "\.(js)">
     ForceType application/x-httpd-php
  
-    php_value auto_prepend_file "/opt/lampp/htdocs/PHP-Webopal/gzip-js.php"
+    php_value auto_prepend_file "../tools/gzip-js.php"
  
 </FilesMatch>
+

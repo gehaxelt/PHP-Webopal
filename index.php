@@ -3,7 +3,7 @@ session_start();
 ob_start(); //start output buffering
 include 'config.php';
 include 'inc/contributors.php';
-include 'inc/gc.php';
+include 'tools/gc.php';
 
 
 //Escape all variables
@@ -110,12 +110,21 @@ if(!isset($_COOKIE['visited'])){
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal <?php echo $VERSION ?></title>
-	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<script type="text/javascript" src="externs/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="externs/jquery-ui.min.js"></script>
-	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="script.min.js" type="text/javascript" charset="utf-8"></script>
+	<? if(file_exists('js/jquery-ui.min.js')){
+	echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>';
+	}else{
+	echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
+	}?>
+	<script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
+	<? if(file_exists('js/script.min.js')){
+	echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
+	}else{
+	echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
+	}?>
 	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';

@@ -8,10 +8,10 @@ TOOLS = ./tools/closure-compiler/compiler.jar
 
 OUTPUT = script.min.js
 
-EXTERNSURL = http://code.jquery.com/ui/1.9.1/jquery-ui.min.js http://code.jquery.com/jquery-1.8.3.min.js
+EXTERNSURL = http://code.jquery.com/ui/1.9.2/jquery-ui.min.js http://code.jquery.com/jquery-1.8.3.min.js
 
-EXTERNS = ./externs/jquery-ui.min.js ./externs/jquery-1.8.3.min.js
-EXTERNS += ace/ace.js ace/ext-static_highlight.js ace/ext-textarea.js ace/keybinding-emacs.js ace/keybinding-vim.js ace/theme-chrome.js
+EXTERNS = ./js/jquery-ui.min.js ./js/jquery-1.8.3.min.js
+EXTERNS += js/ace.js js/ext-static_highlight.js js/ext-textarea.js js/keybinding-emacs.js js/keybinding-vim.js js/theme-chrome.js
 
 all: help
 
