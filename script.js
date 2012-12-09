@@ -169,6 +169,9 @@ function webOpal(){
 
 	/* Bind action for ctrl+space code completion */
 	$(document).keydown(function(e){
+		if( (e.ctrlKey||e.metaKey) && (e.charCode || e.keyCode) == 13 ) {
+			$('#execute').click();
+		}
 		if( (e.ctrlKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " "){
 		
 			//Find focused ACE editor
