@@ -2,11 +2,11 @@
 
 LOG_LEVEL = QUIET
 
-JS = script.js
+JS = js/script.js
 
 TOOLS = ./tools/closure-compiler/compiler.jar
 
-OUTPUT = script.min.js
+OUTPUT = js/script.min.js
 
 EXTERNSURL = http://code.jquery.com/ui/1.9.2/jquery-ui.min.js http://code.jquery.com/jquery-1.8.3.min.js
 
@@ -22,8 +22,7 @@ standard-optimize: $(JS) download-externs
 		java -jar $(TOOLS) --compilation_level SIMPLE_OPTIMIZATIONS $(foreach var,$(JS),--js $(var)) $(foreach var,$(EXTERNS),--externs $(var)) --js_output_file $(OUTPUT) --warning_level $(LOG_LEVEL)
 
 download-externs:
-		mkdir -p externs
-		cd externs; wget $(EXTERNSURL) -N
+		cd js; wget $(EXTERNSURL) -N
 
 help:
 	echo "use \"make advanced-optimize\" for better JS compression\n and \"make standard-optimze\" for standard compression"
