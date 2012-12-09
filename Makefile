@@ -2,13 +2,11 @@
 
 LOG_LEVEL = QUIET
 
-JS = script.js ace/mode-opal.js
+JS = script.js
 
 TOOLS = ./tools/closure-compiler/compiler.jar
 
 OUTPUT = script.min.js
-
-MERGEOUTPUT = all.min.js
 
 EXTERNSURL = http://code.jquery.com/ui/1.9.1/jquery-ui.min.js http://code.jquery.com/jquery-1.8.3.min.js
 
