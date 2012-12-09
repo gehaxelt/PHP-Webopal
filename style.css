@@ -160,3 +160,7 @@ input[type="file"], input[type="submit"] {
 .ace_opaloperator {
 	color:fuchsia;
 }
+#structnr {
+	display:none;
+}
+
