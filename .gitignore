@@ -1,2 +1,5 @@
 config.php
 tmp
+js/jquery*
+js/script.min.js
+.htaccess

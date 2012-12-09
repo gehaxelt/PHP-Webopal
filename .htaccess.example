@@ -1,0 +1,22 @@
+# If you want to enable gzip please adjust the paths (absolute paths!) and rename the file to .htaccess
+
+<FilesMatch "\.(txt|html|htm|php)">
+    ForceType application/x-httpd-php
+    # Please adjust the path
+    php_value auto_prepend_file "foo/tools/gzip-php.php"
+ 
+</FilesMatch>
+
+<FilesMatch "\.(css)">
+    ForceType application/x-httpd-php
+ 
+    php_value auto_prepend_file "foo/tools/gzip-css.php"
+ 
+</FilesMatch>
+<FilesMatch "\.(js)">
+    ForceType application/x-httpd-php
+ 
+    php_value auto_prepend_file "foo/tools/gzip-js.php"
+ 
+</FilesMatch>
+

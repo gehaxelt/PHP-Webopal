@@ -1,6 +1,7 @@
 User-agent: *
-Disallow: /ace/
 Disallow: /fonts/
-Disallow: /markdown/
 Disallow: /inc/
+Disallow: /js/
+Disallow: /markdown/
 Disallow: /tmp/
+Disallow: /tools/
