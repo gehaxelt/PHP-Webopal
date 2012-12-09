@@ -26,7 +26,7 @@ download-externs:
 		cd externs; wget $(EXTERNSURL) -N
 
 help:
-	echo "use advanced-optimize flag for better JS compression\n and standard-optimze for standard compression"
+	echo "use \"make advanced-optimize\" for better JS compression\n and \"make standard-optimze\" for standard compression"
 
 clean:
 	rm $(OUTPUT)

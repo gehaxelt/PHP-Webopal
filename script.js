@@ -241,3 +241,19 @@ function webOpal(){
 		$('.delStruc').hide();
 	}
 }
+
+//bootstrap code
+/* Array for all the ACE editors */
+	var editors = new Array();
+	var currentStruc = 1;
+	var maxStruc = 3;
+	var strucPre = "c91c";
+	var actTab = 0;
+	var implEx = 'DEF hello == "Hello World!"';
+	var signEx = 'FUN hello : denotation';
+	var cmdEx = 'hello';
+	/* Execute if DOM is ready */
+   $(function() {
+		webOpal();
+	});
+

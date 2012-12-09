@@ -117,22 +117,6 @@ if(!isset($_COOKIE['visited'])){
 	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="script.min.js" type="text/javascript" charset="utf-8"></script>
 	<script language="javascript" type="text/javascript">
-	/* Array for all the ACE editors */
-	var editors = new Array();
-	var currentStruc = <?php echo $_SESSION['structnr']; ?>;
-	var maxStruc = <?php echo $MAXFILES; ?>;
-	var strucPre = "<?php echo substr($_SESSION['randNum'],0,4); ?>";
-	var actTab = <?php echo $_SESSION['focus'];?>;
-	var implEx = '<?php echo $EXAMPLECODE_IMPL;?>';
-	var signEx = '<?php echo $EXAMPLECODE_SIGN;?>';
-	var cmdEx = '<?php echo $EXAMPLECODE_CMD;?>';
-	/* Execute if DOM is ready */
-   $(function() {
-		webOpal();
-	});
-
-	</script>
-	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
 	    var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
