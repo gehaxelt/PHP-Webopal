@@ -16,7 +16,7 @@ EXTERNS += ace/ace.js ace/ext-static_highlight.js ace/ext-textarea.js ace/keybin
 all: help
 
 advanced-optimize: $(JS) download-externs
-		java -jar $(TOOLS) --compilation_level ADVANCED_OPTIMIZATIONS  $(foreach var,$(EXTERNS),--externs $(var);) --js $(JS) --js_output_file $(OUTPUT) --warning_level $(LOG_LEVEL)
+		java -jar $(TOOLS) --compilation_level ADVANCED_OPTIMIZATIONS  $(foreach var,$(EXTERNS),--externs $(var)) --js $(JS) --js_output_file $(OUTPUT) --warning_level $(LOG_LEVEL)
 
 standard-optimize: $(JS) download-externs
 		java -jar $(TOOLS) --compilation_level SIMPLE_OPTIMIZATIONS $(foreach var,$(JS),--js $(var)) $(foreach var,$(EXTERNS),--externs $(var)) --js_output_file $(OUTPUT) --warning_level $(LOG_LEVEL)
