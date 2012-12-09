@@ -112,26 +112,10 @@ if(!isset($_COOKIE['visited'])){
 	<title>WebOpal <?php echo $VERSION ?></title>
 	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="externs/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="externs/jquery-ui.min.js"></script>
 	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="script.js" type="text/javascript" charset="utf-8"></script>
-	<script language="javascript" type="text/javascript">
-	/* Array for all the ACE editors */
-	var editors = new Array();
-	var currentStruc = <?php echo $_SESSION['structnr']; ?>;
-	var maxStruc = <?php echo $MAXFILES; ?>;
-	var strucPre = "<?php echo substr($_SESSION['randNum'],0,4); ?>";
-	var actTab = <?php echo $_SESSION['focus'];?>;
-	var implEx = '<?php echo $EXAMPLECODE_IMPL;?>';
-	var signEx = '<?php echo $EXAMPLECODE_SIGN;?>';
-	var cmdEx = '<?php echo $EXAMPLECODE_CMD;?>';
-	/* Execute if DOM is ready */
-   $(function() {
-		webOpal();
-	});
-
-	</script>
+	<script src="script.min.js" type="text/javascript" charset="utf-8"></script>
 	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
@@ -231,7 +215,6 @@ if(!isset($_COOKIE['visited'])){
 	set_time_limit(0);
 	header("Connection: close");
 	header("Content-Length: ".strlen($output));
-	header("Content-Encoding: none");
 	echo $output.str_repeat(' ', 1) ."\n\n\n";
 	flush(); //script send all data to the browser
 	run_gc(false);
