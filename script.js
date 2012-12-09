@@ -133,7 +133,7 @@ function webOpal(){
 			function(data) {
 				curdate = new Date();
 				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').text("Letzte Ausf√hrung: "+ lastrun + "\n" + data)
+				$('#output').text("Letzte Ausfu&ouml;hrung: "+ lastrun + "\n" + data)
 				$("#execute").attr("value","Programm ausf√ºhren")
 				$("#execute").removeAttr("disabled")
 			},
