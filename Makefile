@@ -12,7 +12,7 @@ TOOLS = ./tools/closure-compiler/compiler.jar
 SASSC = sass
 
 # ADVANCED_OPTIMIZATIONS or SIMPLE_OPTIMIZATIONS
-JSOPTIMIZE = ADVANCED_OPTIMIZATIONS
+JSOPTIMIZE = SIMPLE_OPTIMIZATIONS
 
 
 JSOUTPUT = js/script.min.js
@@ -30,13 +30,18 @@ $(JSOUTPUT): $(JS) $(EXTERNS)
 $(CSSOUT): $(CSS)
 		$(SASSC) $(CSS) > $(CSSOUT)
 
-compile: $(CSS) $(JSOUTPUT)
+compile: $(CSSOUT) $(JSOUTPUT)
+
+compile-js: $(JSOUTPUT)
+
+compile-css: $(CSSOUT)
 
 $(EXTERNS):
 		cd js; wget $(EXTERNSURL) -N
 
 help:
-	echo "use \"make advanced-optimize\" for better JS compression\n and \"make standard-optimze\" for standard compression"
+	echo "use \"make compile\" for compiling JavaScript and CSS\n or \"make compile-js\" or \"make compile-css\" to compile seperately\n or you can specify which optimzation with \"make compile JSOPTIMIZE=ADVANCED_OPTIMIZATIONS\""
 
 clean:
-	rm $(OUTPUT)
+	rm $(JSOUTPUT)
+	rm $(CSSOUT)
