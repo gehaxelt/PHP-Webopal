@@ -10,6 +10,7 @@ CSSOUT = css/style.css
 TOOLS = ./tools/closure-compiler/compiler.jar
 
 SASSC = sass
+SASSFLAGS = --style compressed
 
 # ADVANCED_OPTIMIZATIONS or SIMPLE_OPTIMIZATIONS
 JSOPTIMIZE = SIMPLE_OPTIMIZATIONS
@@ -28,7 +29,7 @@ $(JSOUTPUT): $(JS) $(EXTERNS)
 		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(EXTERNS),--externs $(var)) --js $(JS) --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
 
 $(CSSOUT): $(CSS)
-		$(SASSC) $(CSS) > $(CSSOUT)
+		$(SASSC) $(SASSFLAGS) $(CSS) > $(CSSOUT)
 
 compile: $(CSSOUT) $(JSOUTPUT)
 
