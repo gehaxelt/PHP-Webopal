@@ -4,7 +4,12 @@ LOG_LEVEL = QUIET
 
 JS = js/script.js
 
+CSS = css/style.scss
+CSSOUT = css/style.css
+
 TOOLS = ./tools/closure-compiler/compiler.jar
+
+SASSC = sass
 
 OUTPUT = js/script.min.js
 
@@ -14,6 +19,13 @@ EXTERNS = ./js/jquery-ui.min.js ./js/jquery-1.8.3.min.js
 EXTERNS += js/ace.js js/ext-static_highlight.js js/ext-textarea.js js/keybinding-emacs.js js/keybinding-vim.js js/theme-chrome.js
 
 all: help
+
+compile-js: $(JS) standard-optimize
+
+compile-css: $(CSS)
+		$(SASSC) $(CSS) > $(CSSOUT)
+
+compile: compile-js compile-css
 
 advanced-optimize: $(JS) download-externs
 		java -jar $(TOOLS) --compilation_level ADVANCED_OPTIMIZATIONS  $(foreach var,$(EXTERNS),--externs $(var)) --js $(JS) --js_output_file $(OUTPUT) --warning_level $(LOG_LEVEL)
