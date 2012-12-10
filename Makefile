@@ -4,7 +4,7 @@ LOG_LEVEL = QUIET
 
 JS = js/script.js
 
-CSS = css/style.scss
+CSS = css/style.scss css/ace.scss css/extern.scss
 CSSOUT = css/style.css
 
 TOOLS = ./tools/closure-compiler/compiler.jar
@@ -29,7 +29,7 @@ $(JSOUTPUT): $(JS) $(EXTERNS)
 		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(EXTERNS),--externs $(var)) --js $(JS) --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
 
 $(CSSOUT): $(CSS)
-		$(SASSC) $(SASSFLAGS) $(CSS) > $(CSSOUT)
+		$(SASSC) $(SASSFLAGS) $< > $@
 
 compile: $(CSSOUT) $(JSOUTPUT)
 
