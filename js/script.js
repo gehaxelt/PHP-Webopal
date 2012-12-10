@@ -1,4 +1,3 @@
-
 function webOpal(){
 	/* initialize Accordion */
 	$("#accordion").accordion({
@@ -145,7 +144,7 @@ function webOpal(){
 			success: function(data) {
 				curdate = new Date();
 				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').text("Letzte Ausfu&ouml;hrung: "+ lastrun + "\n" + data)
+				$('#output').text("Letzte Ausf\u00FChrung: "+ lastrun + "\n" + data)
 				$("#execute").attr("value","Programm ausführen")
 				$("#execute").removeAttr("disabled")
 			},
