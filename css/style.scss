@@ -13,6 +13,13 @@ body, .ui-widget {
 	font-size:1em;
 }
 
+$scale: 10%;
+#logo {
+	vertical-align: middle;
+	height: $scale;
+	width: $scale;
+}
+
 body {
 	background-color: #292527;
 }
