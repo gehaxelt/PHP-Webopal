@@ -7,6 +7,7 @@ WebOpal - A webinterface for Opal
 ##1.Requirements##
 
 You need to install [Opal](https://projects.uebb.tu-berlin.de/opal/trac) on your server.
+You need [Sass](http://sass-lang.com/) on your server.
 
 ##2.Installation##
 
@@ -15,3 +16,4 @@ You need to install [Opal](https://projects.uebb.tu-berlin.de/opal/trac) on your
 - 3. Make the dir 'tmp' writeable by the webserver
 - 4. Rename config.example.php to config.php
 - 5. Edit config.php
+- 6. Run `make compile`
