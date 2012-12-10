@@ -35,9 +35,9 @@ $(CSSOUT): $(CSS)
 
 compile: check $(CSSOUT) $(JSOUTPUT)
 
-compile-js: $(JSOUTPUT)
+compile-js: check $(JSOUTPUT)
 
-compile-css: $(CSSOUT)
+compile-css: check $(CSSOUT)
 
 $(JSEXTERNS):
 		cd js; wget $(EXTERNSURL)
