@@ -33,7 +33,7 @@ $(JSOUTPUT): $(JS) $(JSEXTERNS)
 $(CSSOUT): $(CSS)
 		$(SASSC) $(SASSFLAGS) $< > $@
 
-compile: $(CSSOUT) $(JSOUTPUT)
+compile: check $(CSSOUT) $(JSOUTPUT)
 
 compile-js: $(JSOUTPUT)
 
@@ -45,6 +45,12 @@ $(JSEXTERNS):
 
 help:
 	echo "use \"make compile\" for compiling JavaScript and CSS\n or \"make compile-js\" or \"make compile-css\" to compile seperately\n or you can specify which optimzation with \"make compile JSOPTIMIZE=ADVANCED_OPTIMIZATIONS\""
+
+#test if dependencies installed
+check: SASS-installed
+
+SASS-installed: 
+		@which sass > /dev/null || echo "please install sass (http://sass-lang.com/)"
 
 clean:
 	rm $(JSOUTPUT)
