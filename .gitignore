@@ -5,3 +5,4 @@ js/script.min.js
 .htaccess
 css/.sass-cache/*
 .sass-cache/*
+css/style.css
