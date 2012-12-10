@@ -3,3 +3,5 @@ tmp
 js/jquery*
 js/script.min.js
 .htaccess
+css/.sass-cache/*
+.sass-cache/*
