@@ -5,9 +5,9 @@ Changelog WebOpal
 - NEW FEATURE: Optimierung der Ladezeiten
 - NEW FEATURE: Dynamisches Hinzufügen und Löschen von Strukturen
 - Minor: Drücken von Enter in der Befehlszeile wird den Code ausführen
-- Minor: Dr�cken von Strg+Enter f�hrt den Code von �berall aus.
+- Minor: Drücken von Strg+Enter führt den Code von überall aus.
 - Minor: Logo hinzugefügt
-- Minor: Letzte Ausf�hrung wird angezeigt
+- Minor: Letzte Ausführung wird angezeigt
 - Backend: Code aufgeräumt/sortiert
 
 ##2012-12-05: WebOpal v0.2 ##
