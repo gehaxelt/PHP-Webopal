@@ -155,7 +155,6 @@ if(!isset($_COOKIE['visited'])){
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
 		<br><br>
-		<input type="text" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<div id="accordion">
@@ -224,6 +223,9 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+		<div id="forJavascript">
+			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>
 
