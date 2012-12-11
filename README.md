@@ -38,7 +38,7 @@ For CSS Optimization you will need [Sass](https://sass-lang.com/)
 - For optimizing CSS: Run `make compile-css`
 
 ###4.3. Why?###
-This optimization fastenes the Speed of the PHP-Webopal on old PCs.
+This optimization fastenes the speed of the PHP-Webopal on old PCs and/or smartphones/mobiles.
 
 ###4.4. What if I dont want to do this?###
 If you don't want to use the optimized versions, there are fallback CSS and Javascript available, which will be chosen, if you never run `make compile`.
