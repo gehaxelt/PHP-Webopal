@@ -29,6 +29,7 @@ You need to install [Opal](https://projects.uebb.tu-berlin.de/opal/trac) on your
 ##4. Optimize Javascript & CSS##
 ###4.1. Requirements###
 For Javascript Optimization you will need a [JRE](https://en.wikipedia.org/wiki/JRE) like [OpenJDK](https://openjdk.java.net/) or [Java](https://java.com)
+
 For CSS Optimization you will need [Sass](https://sass-lang.com/)
 
 ###4.2. How to###
@@ -41,10 +42,11 @@ This optimization fastenes the Speed of the PHP-Webopal on old PCs.
 
 ###4.4. What if I dont want to do this?###
 If you don't want to use the optimized versions, there are fallback CSS and Javascript available, which will be chosen, if you never run `make compile`.
+
 Please note, that once you did run `make compile` you will need to run it after each update or delete the following files:
-**js/jquery-*.min.js**
-**js/script.min.js**
-**css/style.css**
+- **js/jquery-*.min.js**
+- **js/script.min.js**
+- **css/style.css**
 
 ##5. Enable gzip compression##
 In order to shrink server load, you are able to enable gzip compression:
