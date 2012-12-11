@@ -3,20 +3,20 @@
 <FilesMatch "\.(txt|html|htm|php)">
     ForceType application/x-httpd-php
     # Please adjust the path
-    php_value auto_prepend_file "foo/tools/gzip-php.php"
+    php_value auto_prepend_file "/foo/tools/gzip/gzip-php.php"
  
 </FilesMatch>
 
 <FilesMatch "\.(css)">
     ForceType application/x-httpd-php
- 
-    php_value auto_prepend_file "foo/tools/gzip-css.php"
+    # Please adjust the path
+    php_value auto_prepend_file "/foo/tools/gzip/gzip-css.php"
  
 </FilesMatch>
 <FilesMatch "\.(js)">
     ForceType application/x-httpd-php
- 
-    php_value auto_prepend_file "foo/tools/gzip-js.php"
+    # Please adjust the path
+    php_value auto_prepend_file "/foo/tools/gzip/gzip-js.php"
  
 </FilesMatch>
 

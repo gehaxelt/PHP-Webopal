@@ -1,8 +1,11 @@
+.htaccess
 config.php
 tmp
+
 js/jquery*
 js/script.min.js
-.htaccess
-css/.sass-cache/*
+
 .sass-cache/*
+css/.sass-cache/*
 css/style.css
+css/sasslog
