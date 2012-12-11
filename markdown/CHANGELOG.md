@@ -2,8 +2,12 @@ Changelog WebOpal
 ==================================
 
 ##???: WebOpal v0.3 ##
+- NEW FEATURE: Optimierung der Ladezeiten
 - NEW FEATURE: Dynamisches Hinzuf√ºgen und L√∂schen von Strukturen
 - Minor: Dr√ºcken von Enter in der Befehlszeile wird den Code ausf√ºhren
+- Minor: Dr√cken von Strg+Enter f√hrt den Code von √berall aus.
+- Minor: Logo hinzugef√ºgt
+- Minor: Letzte Ausf√hrung wird angezeigt
 - Backend: Code aufger√§umt/sortiert
 
 ##2012-12-05: WebOpal v0.2 ##

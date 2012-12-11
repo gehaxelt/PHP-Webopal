@@ -39,6 +39,7 @@ if(isset($_SESSION['sessionstart'])){
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
 if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
+
 if(!isset($_SESSION['structnr'])) {
 	$_SESSION['structnr']=$MINFILES;
 	for($i=0;$i<$MINFILES;$i++){
@@ -111,23 +112,23 @@ if(!isset($_COOKIE['visited'])){
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal <?php echo $VERSION ?></title>
 	<?if(file_exists('css/style.css')){
-	echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
+		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
-	echo '<link rel="stylesheet" type="text/css" href="css/style.fallback.css">';
+		echo '<link rel="stylesheet" type="text/css" href="css/style.fallback.css">';
 	}
 	if(file_exists('js/jquery-ui.min.js')){
-	echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui.min.js"></script>';
+		echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script><script type="text/javascript" src="js/jquery-ui.min.js"></script>';
 	}else{
-	echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
-	}?>
+		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
+	}
+	?>
 	<script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
 	<? if(file_exists('js/script.min.js')){
-	echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
+		echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
 	}else{
-	echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
-	}?>
+		echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
+	}
+	?>
 	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
@@ -145,9 +146,15 @@ if(!isset($_COOKIE['visited'])){
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>
-		<noscript><span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br></noscript>
+		<noscript>
+			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
+		</noscript>
 		<a href="#" id="restore_exampl">Hello World!</a>
-		<div id="warning" style="display:none;"><br><br><h1 style="display:inline;">Bitte aktiviere Cookies!</h1><span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span></div><br><br>
+		<div id="warning" style="display:none;"><br><br>
+			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
+			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
+		</div>
+		<br><br>
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<div id="accordion">
@@ -204,9 +211,9 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		<br>
 		Bibliotheca Opalica Suche:
-    	<div id="customsearch">
+    		<div id="customsearch">
 			<div class="gcse-search"></div>
-      </div>		
+      		</div>		
 		<div id="github">
 			<a href="https://github.com/gehaxelt/PHP-Webopal" id='githublink'>Fork us on GitHub:</a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&amp;repo=PHP-Webopal&amp;type=fork&amp;count=true" frameborder="0" scrolling="NO" width="95" height="20"></iframe>
@@ -214,10 +221,10 @@ if(!isset($_COOKIE['visited'])){
 		<div id="contributors">
 			WebOpal (c) 2012 by <?php echo echo_contributors(); ?>, <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a>
 		</div>
-	</div>
-<div id="dialog"></div>
-	<?php include "inc/piwik.php"; ?>
-</body>
+		</div>
+		<div id="dialog"></div>
+			<?php include "inc/piwik.php"; ?>
+	</body>
 
 </html>
 
