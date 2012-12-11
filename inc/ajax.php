@@ -38,7 +38,11 @@ if($page=="download"){
 		if(isset($_SESSION['fileName'][$i])) {unset($_SESSION['fileName'][$i]);}
 	}
 	if(isset($_GET["oasys"])){
-		echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
+		if(isset($_SESSION['implInput'])) {
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
+		} else {
+			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
+		}
 	}
 }else{
 	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
