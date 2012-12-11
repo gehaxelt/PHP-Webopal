@@ -190,7 +190,6 @@ $(function() {
 
 	/* Bind click action to execute button */
 	$("#execute").click(function(){
-		sessionEnd=new Date().getTime()+sessionTimeOut;
 		/* copy content of ACE to hidden inputs */
 		$(".struccontainer").each(function(index){
 			$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
