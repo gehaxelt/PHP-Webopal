@@ -47,10 +47,14 @@ help:
 	echo "use \"make compile\" for compiling JavaScript and CSS\n or \"make compile-js\" or \"make compile-css\" to compile seperately\n or you can specify which optimzation with \"make compile JSOPTIMIZE=ADVANCED_OPTIMIZATIONS\""
 
 #test if dependencies installed
-check: SASS-installed
+check: SASS-installed RUBY-installed
 
-SASS-installed: 
-		@which sass > /dev/null || echo "please install sass (http://sass-lang.com/)"
+SASS-installed:
+		@which sass > /dev/null || { echo "please install sass (http://sass-lang.com/)"; exit 1; }
+
+RUBY-installed:
+		@which ruby > /dev/null || { echo "please install ruby (http://www.ruby-lang.org/)"; exit 1; }
+		@which gem > /dev/null || { echo "please install ruby (http://www.ruby-lang.org/)"; exit 1; }
 
 clean:
 	rm $(JSOUTPUT)
