@@ -143,7 +143,7 @@ if(!isset($_COOKIE['visited'])){
 	<div id="wrapper">
 		<div id="heading">
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
-			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
+			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> &middot; <a href="http://www.google.com/recaptcha/mailhide/d?k=01M0dYTMCuPqN19l68KrnpNg==&c=seajqciD0-neGCa5l4e69Gy61tsTJ711z5vvQZx23p8=">[Bugmelder]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript>
