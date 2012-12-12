@@ -288,9 +288,11 @@ $(function() {
     			height : $(window).height()*0.8,
     			modal:true,
     			open: function(){
+    				$('.ui-dialog').css("position","fixed");
     				clearInterval(timeOutId);
     			},
     			close: function(){
+    				$('.ui-dialog').css("position","absolute");
     				if(!checkIfTimeOut()){
 	    				timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
     				}

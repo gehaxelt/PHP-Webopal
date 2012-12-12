@@ -133,14 +133,18 @@ if(!isset($_COOKIE['visited'])){
 		echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
 	}
 	?>
-
-	<script language="javascript" type="text/javascript">
+	<?php if($BUGREPORT){
+		echo 
+		'<script language="javascript" type="text/javascript">
 		function showRecaptcha(element) {
-			Recaptcha.create("<?php echo $PUBLICKEY;?>", element, {
+			Recaptcha.create("'.$PUBLICKEY.'?>", element, {
 				theme: "red",
 				callback: Recaptcha.focus_response_field
 			});
 		}
+		</script>'
+	;}?>
+	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
 	    var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
@@ -154,8 +158,8 @@ if(!isset($_COOKIE['visited'])){
 	<div id="wrapper">
 		<div id="heading">
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
-			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> &middot; 
-			<a href="#" id="bugReport">[Bug- & Ideenreport]</a>
+			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
+			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript>
