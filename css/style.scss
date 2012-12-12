@@ -158,19 +158,25 @@ input[type="file"], input[type="submit"] {
 
 #issueList,#reportForm{
 	width:49%;
-	background-color:red;
-	height:99%;
 	position:absolute;
 }
 
 #reportForm{
-	background-color:green;
 	left:50%;
 }
 
-#issueList h3,#reportForm h3{
+#issueList h3.title,#reportForm h3.title{
 margin-left:15px;
 }
-#issueList div,#reportForm div{
+#issueList div.content,#reportForm div.content{
 margin:25px;
+}
+
+#reportData label.error{
+float:right;
+}
+
+p.issueDescription {
+margin-left:10px;
+font-style:italic;
 }

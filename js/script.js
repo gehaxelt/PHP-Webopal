@@ -2,54 +2,6 @@ var editors = new Array();
 var sessionEnd = 0;
 var timeOutId = 0;
 var sessionTimeOut = 0;
-function checkIfTimeOut() {
-	if(new Date().getTime()>sessionEnd){
-     	$('#dialog').dialog();
-     	$('#dialog').dialog( "destroy" );
-		$('#dialog').html("Hallo Du,<br>Deine Session ist abgelaufen. Wir wollen nat&uuml;rlich nicht, dass du deine Daten verlierst.<br>Wenn du willst kannst du also die Session erneuern und weiterarbeiten und deine Daten herunterladen oder alles l&ouml;schen");
-		$('#dialog').dialog({
-		resizable:false,
-			modal: true,
-			draggable:false,
-			title: "Session abgelaufen",
-			width: 500,
-			closeOnEscape: false,
-		   open: function() { $(".ui-dialog-titlebar-close").hide(); },
-			buttons: {
-			       "Session erneuern": function() {
-	       				$(".struccontainer").each(function(index){
-								$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
-								$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
-							});
-							$( "#dialog" ).dialog( "option", "title", "Warte" );
-							$( "#dialog" ).dialog( "option", "buttons", [] );
-							$('#dialog').html("Versuche Session zu erneuern");
-							$.ajax({
-								url : 'inc/ajax.php',
-								type : 'GET',
-								dataType: "json",
-								data : $('#mainsubmit').serialize()+"&page=update",
-								success : function() {
-									sessionEnd = new Date().getTime()+sessionTimeOut;
-									timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
-			                 	$("#dialog").dialog( "destroy" );
-								},
-								error : function() {
-									$('#dialog').html("Wir konnten leider deine Session nicht wiederherstellen!<br>Klicke auf okay, um eine neue Session zu starten");
-									$( "#dialog" ).dialog( "option", "buttons", [ { text: "Ok", click: function() { window.location.href="index.php"; } }] );
-								}
-							});
-
-	             },
-	             "Alles löschen": function() {
-							var answer = confirm ("Wirklich alles löschen?")
-							if(answer){window.location.href="index.php";}
-	             }
-		   }
-		});
-		clearInterval(timeOutId);
-	}
-}
 
 /* Execute if DOM is ready */
 $(function() {
@@ -327,27 +279,26 @@ $(function() {
 		$('.delStruc').hide();
 	}
 	
-	function objToString (obj) {
-    var str = '';
-    for (var p in obj) {
-        if (obj.hasOwnProperty(p)) {
-            str += p + '::' + obj[p] + '\n';
-        }
-    }
-    	return str;
-    }
-
     $('#bugReport').click(function(){
-     	$('#dialog').html("<div id='issueList'><h3>Issueliste</h3><div class='content'>Lädt</div></div><div id='reportForm'><h3>Reportformular</h3><div class='content'>Lädt</div></div>");
+     	$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
      	$('#dialog').dialog().dialog("destroy");
     	$('#dialog').dialog({
     			title : "Bugreport / Idee einreichen",
     			width : "80%",
     			height : $(window).height()*0.8,
     			modal:true,
-    			
+    			open: function(){
+    				clearInterval(timeOutId);
+    			},
+    			close: function(){
+    				if(!checkIfTimeOut()){
+	    				timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
+    				}
+    			}
     	});
-    	getIssueList();
     	getIssueForm();
+    	getIssueList();
     });
+   
+           
 });
