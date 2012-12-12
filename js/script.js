@@ -269,7 +269,23 @@ function webOpal(){
         }
     }
     return str;
+    
+
 }
+
+    $('#bugReport').click(function(){
+     	$('#dialog').html("<div id='issueList'><h3>Issueliste</h3><div class='content'>Lädt</div></div><div id='reportForm'><h3>Reportformular</h3><div class='content'>Lädt</div></div>");
+     	$('#dialog').dialog().dialog("destroy");
+    	$('#dialog').dialog({
+    			title : "Bugreport / Idee einreichen",
+    			width : "80%",
+    			height : $(window).height()*0.8,
+    			modal:true,
+    			
+    	});
+    	getIssueList();
+    	getIssueForm();
+    });
 }
 
 //bootstrap code

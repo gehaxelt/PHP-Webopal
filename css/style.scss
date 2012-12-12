@@ -154,3 +154,23 @@ input[type="file"], input[type="submit"] {
 	top:-45px;
 	left:980px;
 }
+
+
+#issueList,#reportForm{
+	width:49%;
+	background-color:red;
+	height:99%;
+	position:absolute;
+}
+
+#reportForm{
+	background-color:green;
+	left:50%;
+}
+
+#issueList h3,#reportForm h3{
+margin-left:15px;
+}
+#issueList div,#reportForm div{
+margin:25px;
+}
