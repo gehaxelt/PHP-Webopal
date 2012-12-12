@@ -223,6 +223,9 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+		<div id="forJavascript">
+			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>
 
