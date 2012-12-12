@@ -1,4 +1,70 @@
-function webOpal(){
+var editors = new Array();
+var sessionEnd = 0;
+var timeOutId = 0;
+var sessionTimeOut = 0;
+function checkIfTimeOut() {
+	if(new Date().getTime()>sessionEnd){
+     	$('#dialog').dialog();
+     	$('#dialog').dialog( "destroy" );
+		$('#dialog').html("Hallo Du,<br>Deine Session ist abgelaufen. Wir wollen nat&uuml;rlich nicht, dass du deine Daten verlierst.<br>Wenn du willst kannst du also die Session erneuern und weiterarbeiten und deine Daten herunterladen oder alles l&ouml;schen");
+		$('#dialog').dialog({
+		resizable:false,
+			modal: true,
+			draggable:false,
+			title: "Session abgelaufen",
+			width: 500,
+			closeOnEscape: false,
+		   open: function() { $(".ui-dialog-titlebar-close").hide(); },
+			buttons: {
+			       "Session erneuern": function() {
+	       				$(".struccontainer").each(function(index){
+								$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
+								$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
+							});
+							$( "#dialog" ).dialog( "option", "title", "Warte" );
+							$( "#dialog" ).dialog( "option", "buttons", [] );
+							$('#dialog').html("Versuche Session zu erneuern");
+							$.ajax({
+								url : 'inc/ajax.php',
+								type : 'GET',
+								dataType: "json",
+								data : $('#mainsubmit').serialize()+"&page=update",
+								success : function() {
+									sessionEnd = new Date().getTime()+sessionTimeOut;
+									timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
+			                 	$("#dialog").dialog( "destroy" );
+								},
+								error : function() {
+									$('#dialog').html("Wir konnten leider deine Session nicht wiederherstellen!<br>Klicke auf okay, um eine neue Session zu starten");
+									$( "#dialog" ).dialog( "option", "buttons", [ { text: "Ok", click: function() { window.location.href="index.php"; } }] );
+								}
+							});
+
+	             },
+	             "Alles löschen": function() {
+							var answer = confirm ("Wirklich alles löschen?")
+							if(answer){window.location.href="index.php";}
+	             }
+		   }
+		});
+		clearInterval(timeOutId);
+	}
+}
+
+/* Execute if DOM is ready */
+$(function() {
+	/* Array for all the ACE editors */
+	var currentStruc = 1;
+	var maxStruc = 3;
+	var strucPre = "c91c";
+	var actTab = 0;
+	var implEx = 'DEF hello == "Hello World!"';
+	var signEx = 'FUN hello : denotation';
+	var cmdEx = 'hello';
+	sessionTimeOut =  parseInt($('#timeOut').val());
+	sessionEnd = new Date().getTime()+sessionTimeOut;
+	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
+	
 	/* initialize Accordion */
 	$("#accordion").accordion({
 		collapsible:false,
@@ -62,7 +128,7 @@ function webOpal(){
 					type : 'GET',
 					dataType: "json",
 					data : "page=update&structnr="+currentStruc+"&delete="+num,
-					success : function() {},
+					success : function() {sessionEnd = new Date().getTime()+sessionTimeOut;},
 					error : function(data) {
 						$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
 						$('#dialog').dialog({title: "ERROR", width: 700});
@@ -111,7 +177,7 @@ function webOpal(){
 				type : 'GET',
 				dataType: "json",
 				data : "page=update&file="+strucNum+"&structnr="+currentStruc,
-				success : function() {},
+				success : function() {	sessionEnd = new Date().getTime()+sessionTimeOut;},
 				error : function(data) {
 					$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
 					$('#dialog').dialog({title: "ERROR", width: 700});
@@ -124,13 +190,11 @@ function webOpal(){
 
 	/* Bind click action to execute button */
 	$("#execute").click(function(){
-	
 		/* copy content of ACE to hidden inputs */
 		$(".struccontainer").each(function(index){
 			$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
 			$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
 		});
-	
 		/* Deactivate Button */
 		$("#execute").attr("disabled","disabled")
 		$("#execute").attr("value","Lade...")
@@ -144,14 +208,15 @@ function webOpal(){
 			success: function(data) {
 				curdate = new Date();
 				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').text("Letzte Ausf\u00FChrung: "+ lastrun + "\n" + data)
-				$("#execute").attr("value","Programm ausführen")
-				$("#execute").removeAttr("disabled")
+				$('#output').text("Letzte Ausf\u00FChrung: "+ lastrun + "\n" + data);
+				$("#execute").attr("value","Programm ausführen");
+				$("#execute").removeAttr("disabled");
+				sessionEnd = new Date().getTime()+sessionTimeOut;
 			},
 			error : function(data) {
 				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
 				$('#dialog').dialog({title: "ERROR", width: 700});
-				$("#execute").attr("value","Programm ausführen")
+				$("#execute").attr("value","Programm ausf\u00FChren")
 				$("#execute").removeAttr("disabled")
 			}
 		 });
@@ -174,6 +239,7 @@ function webOpal(){
 			success : function(data) {
 				$('#dialog').html(data.text);
 				$('#dialog').dialog({title: data.title, width: w});
+				sessionEnd = new Date().getTime()+sessionTimeOut;
 			},
 			error : function(data) {
 				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
@@ -268,10 +334,8 @@ function webOpal(){
             str += p + '::' + obj[p] + '\n';
         }
     }
-    return str;
-    
-
-}
+    	return str;
+    }
 
     $('#bugReport').click(function(){
      	$('#dialog').html("<div id='issueList'><h3>Issueliste</h3><div class='content'>Lädt</div></div><div id='reportForm'><h3>Reportformular</h3><div class='content'>Lädt</div></div>");
@@ -286,20 +350,4 @@ function webOpal(){
     	getIssueList();
     	getIssueForm();
     });
-}
-
-//bootstrap code
-/* Array for all the ACE editors */
-	var editors = new Array();
-	var currentStruc = 1;
-	var maxStruc = 3;
-	var strucPre = "c91c";
-	var actTab = 0;
-	var implEx = 'DEF hello == "Hello World!"';
-	var signEx = 'FUN hello : denotation';
-	var cmdEx = 'hello';
-	/* Execute if DOM is ready */
-   $(function() {
-		webOpal();
-	});
-
+});

@@ -142,7 +142,7 @@ if(!isset($_COOKIE['visited'])){
 <body>
 	<div id="wrapper">
 		<div id="heading">
-			<img src="img/logo.png" id="logo" /><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
+			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> &middot; 
 			<a href="#" id="bugReport">[Bug- & Ideenreport]</a>
 		</div>
@@ -224,6 +224,9 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+		<div id="forJavascript">
+			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>
 
