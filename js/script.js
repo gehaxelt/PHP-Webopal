@@ -1,12 +1,16 @@
 function webOpal(){
+	var keySwitch=false;
 	/* initialize Accordion */
 	$("#accordion").accordion({
 		collapsible:false,
 		heightStyle: "content",
 		event: "mouseup",
 		activate: function(event, ui){
+			if(!keySwitch){
 			s = ui.newPanel.find(".impl").attr("id");
 			editors[s].focus();
+			}
+			keySwitch=false;
 		}
 	});
 	$('#accordion').accordion( "option", "active", actTab);
@@ -52,6 +56,10 @@ function webOpal(){
 			//	$('.struccontainer:eq('+num+')').remove();
 				$('#focus option[value="'+num+'"]').remove();
 				currentStruc--;
+				impl = "editor-impl-"+num;
+				sign = "editor-sign-"+num;
+				delete(editors[impl]);
+				delete(editors[sign]);
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
@@ -249,6 +257,32 @@ function webOpal(){
 			editors[s].insert( foundWords[ 0 ] );
 
 			return false;
+		}else if( (e.altKey||e.metaKey) && (-1!=$.inArray(String.fromCharCode(e.charCode || e.keyCode), ["W","A","S","D"]))){
+			e.preventDefault();
+			var editorPos = new Array();
+			for(editor in editors){
+				editorPos.push(editor);
+			}
+			var pos=$.inArray($('.ace_focus').attr("id"),editorPos);
+			if(pos!=-1){
+			  switch (String.fromCharCode(e.charCode || e.keyCode)) {
+				 case "W":
+					if(pos-2<0){pos=editorPos.length-2+pos%2;}else{pos=pos-2;}
+				 break;
+				 case "A":
+					if(pos-1<0){pos=editorPos.length-1;}else{pos=pos-1;}
+				 break;
+				 case "S":
+					if(pos+2>editorPos.length-1){pos=pos%2;}else{pos=pos+2;}
+				 break;
+				 case "D":
+					if(pos+1>editorPos.length-1){pos=0;}else{pos=pos+1;}
+				 break;
+			  }
+			  	keySwitch=true;
+				$('#accordion').accordion( "option", "active", (pos-(pos%2))/2);
+				editors[editorPos[pos]].focus();
+			}
 		}
 	});
 
