@@ -142,14 +142,6 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	return $result;
 }
 
-function formatIssue($s)  
-{
-  $s=preg_replace('/\n/','<br>',$s);
-  $s=preg_replace('/\*\*(.*)?\*\*/','<b>$1</b>',$s);
-  $s=preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank">$1</a>', $s);
-  return $s;
-}  
-
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;
 include "../tools/githubapi/vendor/autoload.php";
@@ -162,7 +154,7 @@ if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(
 $echo.="<h3>".htmlentities("#".$issue["number"].": ".$issue["title"]).$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
-			<p class='issueDescription'>".formatIssue(htmlentities($issue["body"]))."</p>
+			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"]))."</p>
 			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
 }
@@ -205,7 +197,7 @@ function checkCaptcha(){
 		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
-			<p class='issueDescription'>".formatIssue(htmlentities($github["body"]))."</p>
+			<p class='issueDescription'>".MARKDOWN(htmlentities($github["body"]))."</p>
 		</div>";
 		return $_POST;
 	} else {
