@@ -13,6 +13,11 @@ $(function() {
 	var implEx = 'DEF hello == "Hello World!"';
 	var signEx = 'FUN hello : denotation';
 	var cmdEx = 'hello';
+	var keySwitch=false;
+	var gWasPressed = false;
+	var clearKeyState = function() {
+    gWasPressed = false;
+}
 	sessionTimeOut =  parseInt($('#timeOut').val());
 	sessionEnd = new Date().getTime()+sessionTimeOut;
 	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
@@ -23,8 +28,11 @@ $(function() {
 		heightStyle: "content",
 		event: "mouseup",
 		activate: function(event, ui){
-			s = ui.newPanel.find(".impl").attr("id");
-			editors[s].focus();
+			if(!keySwitch){
+				s = ui.newPanel.find(".impl").attr("id");
+				editors[s].focus();
+			}
+			keySwitch=false;
 		}
 	});
 	$('#accordion').accordion( "option", "active", actTab);
@@ -70,10 +78,13 @@ $(function() {
 			//	$('.struccontainer:eq('+num+')').remove();
 				$('#focus option[value="'+num+'"]').remove();
 				currentStruc--;
+				impl = "editor-impl-"+num;
+				sign = "editor-sign-"+num;
+				delete(editors[impl]);
+				delete(editors[sign]);
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
-			//	$('#accordion').accordion( "option", "active", num-1);
 				$('#accordion').accordion( "option", "active", num-1);
 				$.ajax({
 					url : 'inc/ajax.php',
@@ -267,6 +278,47 @@ $(function() {
 			editors[s].insert( foundWords[ 0 ] );
 
 			return false;
+		
+		/* For the future, if Alt-G is pressed activate "jumpModus */
+		//}else if( (e.altKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode)=="G"){
+		//	e.preventDefault();
+		//	gWasPressed = true;
+		//	setTimeout(clearKeyState, 3000);
+		/* Jump with Alt-Numpad[2,4,6,8] */
+		
+		}else if(
+				//(gWasPressed && someAction)|| 
+				((e.altKey||e.metaKey) && (e.ctrlKey) && (-1!=$.inArray((e.charCode || e.keyCode), [98,100,102,104])))
+		){
+			e.preventDefault();
+			var editorPos = new Array();
+			for(editor in editors){
+				editorPos.push(editor);
+			}
+			
+			var pos=$.inArray($('.ace_focus').attr("id"),editorPos);
+			
+			if(pos!=-1){
+				switch (e.charCode || e.keyCode) {
+					case 104:
+						if(pos-2<0){pos=editorPos.length-2+pos%2;}else{pos=pos-2;}
+						break;
+					case 100:
+						if(pos-1<0){pos=editorPos.length-1;}else{pos=pos-1;}
+						break;
+					case 98:
+						if(pos+2>editorPos.length-1){pos=pos%2;}else{pos=pos+2;}
+						break;
+					case 102:
+						if(pos+1>editorPos.length-1){pos=0;}else{pos=pos+1;}
+						break;
+				}
+			
+				keySwitch=true;
+			
+				$('#accordion').accordion( "option", "active", (pos-(pos%2))/2);
+				editors[editorPos[pos]].focus();
+			}
 		}
 	});
 
@@ -302,5 +354,14 @@ $(function() {
     	getIssueList();
     });
    
-           
 });
+
+function objToString (obj) {
+    var str = '';
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str += p + '::' + obj[p] + '\n';
+        }
+    }
+    return str;
+}
