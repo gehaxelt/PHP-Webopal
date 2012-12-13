@@ -2,8 +2,7 @@
 
 LOG_LEVEL = QUIET
 
-JS = js/script.js
-JS2 = js/functions.js
+JS = js/script.js js/functions.js
 
 CSS = css/style.scss css/ace.scss css/extern.scss
 CSSOUT = css/style.css
@@ -28,7 +27,7 @@ JSEXTERNS += js/ace.js js/ext-static_highlight.js js/ext-textarea.js js/keybindi
 all: help
 
 $(JSOUTPUT): $(JS) $(JS2) $(JSEXTERNS)
-		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(JSEXTERNS),--externs $(var)) --js $(JS2) --js $(JS) --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
+		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(JSEXTERNS),--externs $(var)) $(foreach var,$(JS),--js $(var))  --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
 
 $(CSSOUT): $(CSS)
 		$(SASSC) $(SASSFLAGS) $< > $@
