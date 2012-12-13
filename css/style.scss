@@ -35,7 +35,7 @@ body {
 }
 
 #wrapper {
-	background-color: #FA9200;
+	background-color: desaturate(darken(adjust-hue(#FA9200, 130%), 15%), 10%);
 	margin: 0px auto 0px auto;
 	width: 1124px;
 	-webkit-border-radius: 5px;
