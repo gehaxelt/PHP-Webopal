@@ -14,6 +14,7 @@ function checkIfTimeOut() {
 		   open: function() { $(".ui-dialog-titlebar-close").hide(); },
 			buttons: {
 			       "Session erneuern": function() {
+				if(navigator.onLine){
 	       				$(".struccontainer").each(function(index){
 								$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
 								$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
@@ -36,7 +37,10 @@ function checkIfTimeOut() {
 									$( "#dialog" ).dialog( "option", "buttons", [ { text: "Ok", click: function() { window.location.href="index.php"; } }] );
 								}
 							});
-
+			} else {
+				alert("Keine Internetverbindung");
+				//TODO: add cookie-based saving via JS
+			}
 	             },
 	             "Alles löschen": function() {
 							var answer = confirm ("Wirklich alles löschen?")
