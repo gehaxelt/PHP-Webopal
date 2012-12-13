@@ -9,7 +9,7 @@ $SESSIONTIMEOUT=600; //time in seconds until the session expire
 $EXAMPLECODE_IMPL = 'DEF hello == "Hello World!"';
 $EXAMPLECODE_SIGN = 'FUN hello : denotation';
 $EXAMPLECODE_CMD = 'hello';
-$VERSION = 'v0.2'; //the current version
+$VERSION = 'v0.3'; //the current version
 $ADVERTCOMMENT = '-- created with WebOpal '.$VERSION.' (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL; //comment, which appears in files
 $TMPDIR = 'tmp'; //temp-directory
 $RUNMAX = 10;
