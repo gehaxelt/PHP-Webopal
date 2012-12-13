@@ -13,6 +13,21 @@ body, .ui-widget {
 	font-size:1em;
 }
 
+$bgcolor: #757FDC;
+a:link {
+	color: black;
+}
+
+a:visited {
+	color: black;
+}
+
+a:hover {
+	color: lighten(saturate(invert($bgcolor), 10%), 10%);
+}
+
+
+
 $scale: 10%;
 #logo {
 	vertical-align: middle;
@@ -33,9 +48,9 @@ body {
 #downloadform {
 	display: inline;
 }
-
+$oldcolor: desaturate(darken(adjust-hue(#FA9200, 130%), 15%), 10%);
 #wrapper {
-	background-color: desaturate(darken(adjust-hue(#FA9200, 130%), 15%), 10%);
+	background-color: #757FDC;
 	margin: 0px auto 0px auto;
 	width: 1124px;
 	-webkit-border-radius: 5px;
