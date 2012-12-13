@@ -285,9 +285,10 @@ $(function() {
 		//	gWasPressed = true;
 		//	setTimeout(clearKeyState, 3000);
 		/* Jump with Alt-Numpad[2,4,6,8] */
+		
 		}else if(
 				//(gWasPressed && someAction)|| 
-				((e.altKey||e.metaKey) && (-1!=$.inArray((e.charCode || e.keyCode), [98,100,102,104])))
+				((e.altKey||e.metaKey) && (e.ctrlKey) && (-1!=$.inArray((e.charCode || e.keyCode), [98,100,102,104])))
 		){
 			e.preventDefault();
 			var editorPos = new Array();
@@ -353,5 +354,14 @@ $(function() {
     	getIssueList();
     });
    
-           
 });
+
+function objToString (obj) {
+    var str = '';
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str += p + '::' + obj[p] + '\n';
+        }
+    }
+    return str;
+}
