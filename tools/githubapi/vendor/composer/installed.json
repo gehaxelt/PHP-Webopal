@@ -1,0 +1,49 @@
+[
+    {
+        "name": "kriswallsmith/buzz",
+        "version": "v0.7",
+        "version_normalized": "0.7.0.0",
+        "source": {
+            "type": "git",
+            "url": "http://github.com/kriswallsmith/Buzz.git",
+            "reference": "v0.7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://github.com/kriswallsmith/Buzz/zipball/v0.7",
+            "reference": "v0.7",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "suggest": {
+            "ext-curl": "*"
+        },
+        "time": "2012-06-25 12:01:38",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Buzz": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Kris Wallsmith",
+                "email": "kris.wallsmith@gmail.com",
+                "homepage": "http://kriswallsmith.net/"
+            }
+        ],
+        "description": "Lightweight HTTP client",
+        "homepage": "https://github.com/kriswallsmith/Buzz",
+        "keywords": [
+            "curl",
+            "http client"
+        ]
+    }
+]

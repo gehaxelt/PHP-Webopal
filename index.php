@@ -111,6 +111,8 @@ if(!isset($_COOKIE['visited'])){
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal <?php echo $VERSION ?></title>
+	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+
 	<?if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
@@ -122,13 +124,26 @@ if(!isset($_COOKIE['visited'])){
 		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
 	}
 	?>
+		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 	<script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
 	<? if(file_exists('js/script.min.js')){
 		echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
 	}else{
+		echo '<script src="js/functions.js" type="text/javascript" charset="utf-8"></script>';
 		echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
 	}
 	?>
+	<?php if($BUGREPORT){
+		echo 
+		'<script language="javascript" type="text/javascript">
+		function showRecaptcha(element) {
+			Recaptcha.create("'.$PUBLICKEY.'?>", element, {
+				theme: "red",
+				callback: Recaptcha.focus_response_field
+			});
+		}
+		</script>'
+	;}?>
 	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
@@ -143,7 +158,8 @@ if(!isset($_COOKIE['visited'])){
 	<div id="wrapper">
 		<div id="heading">
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
-			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a>
+			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
+			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript>
