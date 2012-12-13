@@ -29,6 +29,9 @@ $PRIVATEKEY = '';		//Private Key of reCaptcha (can be obtained here http://recap
 
 //DONT CHANGE BELOW HERE
 if($ISSUEREPO==''||$ISSUEUSER== ''||$GITHUBUSER==''||$GITHUBPW==''||$PUBLICKEY == ''||$PRIVATEKEY == ''){
-$BUGREPORT = false; 
+	$BUGREPORT = false; 
+}
+if (!in_array('curl', get_loaded_extensions())) {
+	$BUGREPORT = false;
 }
 ?>
