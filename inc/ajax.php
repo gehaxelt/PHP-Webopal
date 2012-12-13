@@ -44,6 +44,12 @@ if($page=="download"){
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
 	}
+}else if($page=="checkCaptcha"){
+	echo 	json_encode(checkCaptcha());
+}else if($page=="issueList"){
+	echo 	json_encode(getIssues());
+}else if($page=="issueForm"){
+	echo 	json_encode(getIssueForm());
 }else{
 	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
 }
@@ -134,6 +140,69 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	return $result;
+}
+
+function getIssues(){
+global $ISSUEUSER,$ISSUEREPO;
+include "../tools/githubapi/vendor/autoload.php";
+$echo="";
+$client = new Github\Client();
+$issues = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+foreach($issues as $issue){
+$token="";
+if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";}
+$echo.="<h3>".htmlentities("#".$issue["number"].": ".$issue["title"]).$token."</h3>
+		<div class='issue'>
+			<p>Beschreibung Problem:</p>
+			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"]))."</p>
+			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
+		</div>";
+}
+return $echo;
+}
+
+function getIssueForm(){
+$error="";
+$echo='<form id="reportData">
+			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
+			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
+			<div><label for="description">Beschreibung:</label><br>
+			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
+			<div><input type="checkbox" name="agree"><label for="agree">Ich versichere, dass ich mir die Issueliste links angeguckt habe und keine Dopplung auftritt.</label></div><br>
+			<div id="reCaptcha"></div>
+			<div style="color: red;" id="captchaStatus">&nbsp;</div>
+			<input id="issueSubmit" type="button" value="Absenden">
+		 </form>';
+return $echo;
+}
+
+function checkCaptcha(){
+	global $_POST,$_GET,$ISSUEUSER,$ISSUEREPO,$GITHUBUSER,$GITHUBPW,$PUBLICKEY,$PRIVATEKEY;
+	require_once('../tools/recaptchalib.php');
+
+	$resp = recaptcha_check_answer ($PRIVATEKEY,
+		                             $_SERVER["REMOTE_ADDR"],
+		                             $_POST["recaptcha_challenge_field"],
+		                             $_POST["recaptcha_response_field"]);
+
+	if ($resp->is_valid) {
+		require_once "../tools/githubapi/vendor/autoload.php";
+		$echo="";
+		$client = new Github\Client();
+		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
+		$token="";
+		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
+		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".$_POST["description"]));
+		$_POST['success']=true;
+		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
+		<div class='issue'>
+			<p>Beschreibung Problem:</p>
+			<p class='issueDescription'>".MARKDOWN(htmlentities($github["body"]))."</p>
+		</div>";
+		return $_POST;
+	} else {
+		return "Captcha falsch:".$resp->error;
+	}
 }
 
 ?>

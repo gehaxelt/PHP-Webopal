@@ -2,6 +2,7 @@ Changelog WebOpal
 ==================================
 
 ##???: WebOpal v0.3 ##
+- NEW FEATURE: Bugreport / Featurevorschläge
 - NEW FEATURE: Optimierung der Ladezeiten
 - NEW FEATURE: Dynamisches Hinzufügen und Löschen von Strukturen
 - Minor: Drücken von Enter in der Befehlszeile wird den Code ausführen
