@@ -10,7 +10,6 @@ $_SESSION['sessionstart'] = time();
 //if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
 //if(isset($_GET['fileName'])) { $_GET['fileName']=htmlentities($_GET['fileName']); }
 if(isset($_GET['runFunction'])) { $_GET['runFunction']=htmlentities($_GET['runFunction']); }
-if(isset($_GET['focus'])) { $_GET['focus']=htmlentities($_GET['focus']); }
 if(isset($_GET['structnr'])) { $_GET['structnr']=htmlentities($_GET['structnr']); }
 if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
 if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
@@ -26,7 +25,6 @@ if($page=="download"){
 	if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
 	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
-	if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -39,7 +37,7 @@ if($page=="download"){
 	}
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
-			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']));
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
@@ -78,11 +76,10 @@ function download(){
 	}
 }
 
-function runOasys($impls,$signs,$cmd,$names,$focus) {
+function runOasys($impls,$signs,$cmd,$names) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
-	if($cmd==""){return "Keine Funktion angegeben.";}
-	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
+	if($cmd==""){return "Keine Funktion(en) angegeben.";}
 	
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
@@ -109,7 +106,9 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
 			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
+			//$impls[$i]=preg_replace('/  +/u'," ",$impls[$i]);
 			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
+//			$impls[$i]=preg_replace('/  +/u'," ",$signs[$i]);
 
 			/* Create impl and sign files for the structure */
 			$signStr = "SIGNATURE ".$names[$i];
@@ -124,18 +123,56 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	$cmd=str_replace("&quot;","\"",$cmd);
 	$cmd=str_replace("&lt;","<",$cmd);
 	$cmd=str_replace("&gt;",">",$cmd);
-	$cmd=str_replace(";","\ne ",$cmd);
-	if(substr_count($cmd,";")>$RUNMAX) {
+	$cmds=explode(";",$cmd);
+	if(count($cmds)>$RUNMAX) {
 	//if(count($cmd)>$RUNMAX){
 		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
 	}
-		
+	$runOrder="";
+	$lastFocus="";
+	$added=Array();
+	$focus="";
+	foreach($cmds as $c){
+		$k=explode("=>",$c);
+		if($c!=""){
+			if(count($k)==1){
+				$searchToken=$k[0];
+				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/', $impls);
+				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
+				else if(count($cmdInImpl)==1){
+					$focus=array_keys($cmdInImpl)[0];
+				}else{
+					$focus='';
+				}
+			}else if(count($k)==2){
+				$k[0]=preg_replace("/(.impl)|(.sign)|(\]|\[)/","",$k[0]);
+				$c=$k[1];
+				$focus=array_search($k[0],$names);
+			}else{
+				return "Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!";
+			}
+			if($focus!=''){
+				if(!in_array($names[$focus],$added)){
+				$runOrder.="a ".$names[$focus]."\n";
+				$added[]=$names[$focus];
+				}
+				if($lastFocus!=$names[$focus]){
+				$runOrder.="f ".$names[$focus].".impl\n";
+				$lastFocus=$names[$focus];
+				}
+			}
+			$runOrder.="e ".$c."\n";
+		}
+	}
+
+	//var_dump($echo);
+	
 	/* Run focussed Structure */
-	file_put_contents($dirStr."/".$names[$focus].".exec","a ".$names[$focus]."\nf ".$names[$focus].".impl\ne ".$cmd);
-	shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < ".$names[$focus].".exec > ".$names[$focus].".log;echo '".$TIMEOUTTXT."' >> ".$names[$focus].".log");
+	file_put_contents($dirStr."/runOpal.exec",$runOrder);
+	shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < runOpal.exec > runOpal.log;echo '".$TIMEOUTTXT."' >> runOpal.log");
 	
 	/* Return log */
-	$result=file_get_contents($dirStr."/".$names[$focus].".log");
+	$result=file_get_contents($dirStr."/runOpal.log");
 	$result=preg_replace("/\n/","\n  ",$result);
 	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
