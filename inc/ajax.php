@@ -136,11 +136,12 @@ function runOasys($impls,$signs,$cmd,$names) {
 		$k=explode("=>",$c);
 		if($c!=""){
 			if(count($k)==1){
-				$searchToken=$k[0];
-				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/', $impls);
+				$searchToken=preg_replace('/\(.+\)/','',$k[0]);
+				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
 				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
 				else if(count($cmdInImpl)==1){
 					$focus=array_keys($cmdInImpl)[0];
+					$focussed=true;
 				}else{
 					$focus='';
 				}
@@ -151,7 +152,7 @@ function runOasys($impls,$signs,$cmd,$names) {
 			}else{
 				return "Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!";
 			}
-			if($focus!=''){
+			if($focus!=""||$focussed){
 				if(!in_array($names[$focus],$added)){
 				$runOrder.="a ".$names[$focus]."\n";
 				$added[]=$names[$focus];
@@ -165,7 +166,6 @@ function runOasys($impls,$signs,$cmd,$names) {
 		}
 	}
 
-	//var_dump($echo);
 	
 	/* Run focussed Structure */
 	file_put_contents($dirStr."/runOpal.exec",$runOrder);
