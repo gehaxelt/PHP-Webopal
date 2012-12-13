@@ -8,6 +8,7 @@ include 'tools/gc.php';
 
 //Escape all variables
 
+//check if the standard dirs has been created
 if(!is_dir($TMPDIR)){
 	exit("Bitte erstell ein Verzeichnis '".$TMPDIR."' und gib dem Skript Schreibrechte auf dieses");
 }else{
@@ -248,6 +249,7 @@ if(!isset($_COOKIE['visited'])){
 </html>
 
 <?php
+	//Output buffering for parallel gargabe collection and other things
 	$output = ob_get_clean();
 	ignore_user_abort(true);
 	set_time_limit(0);

@@ -141,7 +141,7 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	return $result;
 }
-
+// function for fetching issues from github, used for bug reporting feature
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;
 include "../tools/githubapi/vendor/autoload.php";

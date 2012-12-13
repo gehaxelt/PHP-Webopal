@@ -1,5 +1,5 @@
 <?php
-
+//simple contributors list with adaptive punctation
 $contributors = array();
 $contributors[] = "Sebastian Neef";
 $contributors[] = "Tim M&uuml;ller";

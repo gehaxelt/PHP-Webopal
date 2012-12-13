@@ -1,3 +1,4 @@
+//timeout for session expiration
 function checkIfTimeOut() {
 	if(new Date().getTime()>sessionEnd){
      	$('#dialog').dialog();
