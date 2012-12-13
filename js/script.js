@@ -2,54 +2,6 @@ var editors = new Array();
 var sessionEnd = 0;
 var timeOutId = 0;
 var sessionTimeOut = 0;
-function checkIfTimeOut() {
-	if(new Date().getTime()>sessionEnd){
-     	$('#dialog').dialog();
-     	$('#dialog').dialog( "destroy" );
-		$('#dialog').html("Hallo Du,<br>Deine Session ist abgelaufen. Wir wollen nat&uuml;rlich nicht, dass du deine Daten verlierst.<br>Wenn du willst kannst du also die Session erneuern und weiterarbeiten und deine Daten herunterladen oder alles l&ouml;schen");
-		$('#dialog').dialog({
-		resizable:false,
-			modal: true,
-			draggable:false,
-			title: "Session abgelaufen",
-			width: 500,
-			closeOnEscape: false,
-		   open: function() { $(".ui-dialog-titlebar-close").hide(); },
-			buttons: {
-			       "Session erneuern": function() {
-	       				$(".struccontainer").each(function(index){
-								$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
-								$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
-							});
-							$( "#dialog" ).dialog( "option", "title", "Warte" );
-							$( "#dialog" ).dialog( "option", "buttons", [] );
-							$('#dialog').html("Versuche Session zu erneuern");
-							$.ajax({
-								url : 'inc/ajax.php',
-								type : 'GET',
-								dataType: "json",
-								data : $('#mainsubmit').serialize()+"&page=update",
-								success : function() {
-									sessionEnd = new Date().getTime()+sessionTimeOut;
-									timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
-			                 	$("#dialog").dialog( "destroy" );
-								},
-								error : function() {
-									$('#dialog').html("Wir konnten leider deine Session nicht wiederherstellen!<br>Klicke auf okay, um eine neue Session zu starten");
-									$( "#dialog" ).dialog( "option", "buttons", [ { text: "Ok", click: function() { window.location.href="index.php"; } }] );
-								}
-							});
-
-	             },
-	             "Alles löschen": function() {
-							var answer = confirm ("Wirklich alles löschen?")
-							if(answer){window.location.href="index.php";}
-	             }
-		   }
-		});
-		clearInterval(timeOutId);
-	}
-}
 
 /* Execute if DOM is ready */
 $(function() {
@@ -61,6 +13,11 @@ $(function() {
 	var implEx = 'DEF hello == "Hello World!"';
 	var signEx = 'FUN hello : denotation';
 	var cmdEx = 'hello';
+	var keySwitch=false;
+	var gWasPressed = false;
+	var clearKeyState = function() {
+    gWasPressed = false;
+}
 	sessionTimeOut =  parseInt($('#timeOut').val());
 	sessionEnd = new Date().getTime()+sessionTimeOut;
 	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
@@ -71,8 +28,11 @@ $(function() {
 		heightStyle: "content",
 		event: "mouseup",
 		activate: function(event, ui){
-			s = ui.newPanel.find(".impl").attr("id");
-			editors[s].focus();
+			if(!keySwitch){
+				s = ui.newPanel.find(".impl").attr("id");
+				editors[s].focus();
+			}
+			keySwitch=false;
 		}
 	});
 	$('#accordion').accordion( "option", "active", actTab);
@@ -118,10 +78,13 @@ $(function() {
 			//	$('.struccontainer:eq('+num+')').remove();
 				$('#focus option[value="'+num+'"]').remove();
 				currentStruc--;
+				impl = "editor-impl-"+num;
+				sign = "editor-sign-"+num;
+				delete(editors[impl]);
+				delete(editors[sign]);
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
-			//	$('#accordion').accordion( "option", "active", num-1);
 				$('#accordion').accordion( "option", "active", num-1);
 				$.ajax({
 					url : 'inc/ajax.php',
@@ -315,6 +278,47 @@ $(function() {
 			editors[s].insert( foundWords[ 0 ] );
 
 			return false;
+		
+		/* For the future, if Alt-G is pressed activate "jumpModus */
+		//}else if( (e.altKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode)=="G"){
+		//	e.preventDefault();
+		//	gWasPressed = true;
+		//	setTimeout(clearKeyState, 3000);
+		/* Jump with Alt-Numpad[2,4,6,8] */
+		
+		}else if(
+				//(gWasPressed && someAction)|| 
+				((e.altKey||e.metaKey) && (e.ctrlKey) && (-1!=$.inArray((e.charCode || e.keyCode), [98,100,102,104])))
+		){
+			e.preventDefault();
+			var editorPos = new Array();
+			for(editor in editors){
+				editorPos.push(editor);
+			}
+			
+			var pos=$.inArray($('.ace_focus').attr("id"),editorPos);
+			
+			if(pos!=-1){
+				switch (e.charCode || e.keyCode) {
+					case 104:
+						if(pos-2<0){pos=editorPos.length-2+pos%2;}else{pos=pos-2;}
+						break;
+					case 100:
+						if(pos-1<0){pos=editorPos.length-1;}else{pos=pos-1;}
+						break;
+					case 98:
+						if(pos+2>editorPos.length-1){pos=pos%2;}else{pos=pos+2;}
+						break;
+					case 102:
+						if(pos+1>editorPos.length-1){pos=0;}else{pos=pos+1;}
+						break;
+				}
+			
+				keySwitch=true;
+			
+				$('#accordion').accordion( "option", "active", (pos-(pos%2))/2);
+				editors[editorPos[pos]].focus();
+			}
 		}
 	});
 
@@ -327,7 +331,32 @@ $(function() {
 		$('.delStruc').hide();
 	}
 	
-	function objToString (obj) {
+    $('#bugReport').click(function(){
+     	$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
+     	$('#dialog').dialog().dialog("destroy");
+    	$('#dialog').dialog({
+    			title : "Bugreport / Idee einreichen",
+    			width : "80%",
+    			height : $(window).height()*0.8,
+    			modal:true,
+    			open: function(){
+    				$('.ui-dialog').css("position","fixed");
+    				clearInterval(timeOutId);
+    			},
+    			close: function(){
+    				$('.ui-dialog').css("position","absolute");
+    				if(!checkIfTimeOut()){
+	    				timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
+    				}
+    			}
+    	});
+    	getIssueForm();
+    	getIssueList();
+    });
+   
+});
+
+function objToString (obj) {
     var str = '';
     for (var p in obj) {
         if (obj.hasOwnProperty(p)) {
@@ -336,4 +365,3 @@ $(function() {
     }
     return str;
 }
-});

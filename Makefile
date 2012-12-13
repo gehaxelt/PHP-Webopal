@@ -2,7 +2,7 @@
 
 LOG_LEVEL = QUIET
 
-JS = js/script.js
+JS = js/script.js js/functions.js
 
 CSS = css/style.scss css/ace.scss css/extern.scss
 CSSOUT = css/style.css
@@ -17,7 +17,6 @@ SASSFLAGS = --style compressed
 # ADVANCED_OPTIMIZATIONS or SIMPLE_OPTIMIZATIONS
 JSOPTIMIZE = SIMPLE_OPTIMIZATIONS
 
-
 JSOUTPUT = js/script.min.js
 
 EXTERNSURL = http://code.jquery.com/ui/1.9.2/jquery-ui.min.js http://code.jquery.com/jquery-1.8.3.min.js
@@ -27,8 +26,8 @@ JSEXTERNS += js/ace.js js/ext-static_highlight.js js/ext-textarea.js js/keybindi
 
 all: help
 
-$(JSOUTPUT): $(JS) $(JSEXTERNS)
-		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(JSEXTERNS),--externs $(var)) --js $(JS) --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
+$(JSOUTPUT): $(JS) $(JS2) $(JSEXTERNS)
+		java -jar $(TOOLS) --compilation_level $(JSOPTIMIZE)  $(foreach var,$(JSEXTERNS),--externs $(var)) $(foreach var,$(JS),--js $(var))  --js_output_file $(JSOUTPUT) --warning_level $(LOG_LEVEL)
 
 $(CSSOUT): $(CSS)
 		$(SASSC) $(SASSFLAGS) $< > $@
