@@ -141,7 +141,8 @@ function runOasys($impls,$signs,$cmd,$names) {
 				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
 				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
 				else if(count($cmdInImpl)==1){
-					$focus=array_keys($cmdInImpl)[0];
+					$focus=array_keys($cmdInImpl);
+					$focus=$focus[0];
 					$focussed=true;
 				}else{
 					$focus='';
