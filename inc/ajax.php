@@ -151,10 +151,10 @@ $issues = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'
 foreach($issues as $issue){
 $token="";
 if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";}
-$echo.="<h3>".htmlentities("#".$issue["number"].": ".$issue["title"]).$token."</h3>
+$echo.="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
-			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"]))."</p>
+			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</p>
 			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
 }
