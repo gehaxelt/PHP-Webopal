@@ -180,9 +180,16 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$result=preg_replace("/\n/","\n\t\t",$result);
 	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
-	$result=preg_replace("/\n/","<br>",$result);
 	$result=preg_replace("/\t/","&nbsp;",$result);
-	return $result;
+	$results=explode("\n",$result);
+	$c=0;
+	foreach($results as $key=>$result){
+		if(preg_match("/ERROR \[(.+.)\.(.+.) at (\d+)\.(\d+)\-(\d+)\.(\d+)\]/",$result,$error)){
+			$err=Array("file"=>$error[1],"type"=>$error[2],"fromLine"=>$error[3]-2,"fromChar"=>$error[4],"toLine"=>$error[5]-2,"toChar"=>$error[6]);
+			$results[$key]=preg_replace("/(ERROR \[.+.\])/","<a href='#' class='errorJump' value='".json_encode($err)."'>$1</a>",$result);	
+		}
+	}
+	return implode("<br>",$results);
 }
 // function for fetching issues from github, used for bug reporting feature
 function getIssues(){
