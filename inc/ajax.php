@@ -133,6 +133,7 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$added=Array();
 	$focus="";
 	foreach($cmds as $c){
+		$focussed=false;
 		$k=explode("=>",$c);
 		if($c!=""){
 			if(count($k)==1){
