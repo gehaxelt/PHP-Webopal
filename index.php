@@ -210,7 +210,7 @@ if(!isset($_COOKIE['visited'])){
 				</div>
 			</form>
 				<div id="outputcontainer">
-					<textarea id="output" name="output" cols="110" rows="10">Ausgabe</textarea>
+					<div id="output" name="output">Ausgabe</div>
 				</div>
 		<div id="download">
 			<input type="button" name="download" class="dialog" value="Download als Tarball">

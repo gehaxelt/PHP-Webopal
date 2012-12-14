@@ -151,9 +151,11 @@ function runOasys($impls,$signs,$cmd,$names) {
 				$k[0]=preg_replace("/(.impl)|(.sign)|(\]|\[)/","",$k[0]);
 				$c=$k[1];
 				$focus=array_search($k[0],$names);
+				$focussed=true;
 			}else{
 				return "Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!";
 			}
+			
 			if($focus!=""||$focussed){
 				if(!in_array($names[$focus],$added)){
 				$runOrder.="a ".$names[$focus]."\n";
@@ -171,13 +173,15 @@ function runOasys($impls,$signs,$cmd,$names) {
 	
 	/* Run focussed Structure */
 	file_put_contents($dirStr."/runOpal.exec",$runOrder);
-	shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < runOpal.exec > runOpal.log;echo '".$TIMEOUTTXT."' >> runOpal.log");
+	shell_exec("cd ".	$dirStr."; timeout ".$TIMEOUT." oasys < runOpal.exec > runOpal.log;echo '".$TIMEOUTTXT."' >> runOpal.log");
 	
 	/* Return log */
 	$result=file_get_contents($dirStr."/runOpal.log");
-	$result=preg_replace("/\n/","\n  ",$result);
+	$result=preg_replace("/\n/","\n\t\t",$result);
 	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
+	$result=preg_replace("/\n/","<br>",$result);
+	$result=preg_replace("/\t/","&nbsp;",$result);
 	return $result;
 }
 // function for fetching issues from github, used for bug reporting feature

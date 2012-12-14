@@ -165,7 +165,7 @@ $(function() {
 			success: function(data) {
 				curdate = new Date();
 				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').text("Letzte Ausf\u00FChrung: "+ lastrun + "\n" + data);
+				$('#output').html("Letzte Ausf\u00FChrung: "+ lastrun + "<br>" + data);
 				$("#execute").attr("value","Programm ausführen");
 				$("#execute").removeAttr("disabled");
 				sessionEnd = new Date().getTime()+sessionTimeOut;
