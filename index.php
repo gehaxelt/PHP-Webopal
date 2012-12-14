@@ -38,7 +38,6 @@ if(isset($_SESSION['sessionstart'])){
 }
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
-if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
 
 if(!isset($_SESSION['structnr'])) {
@@ -207,16 +206,6 @@ if(!isset($_COOKIE['visited'])){
 					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 				</div>
 				<div id="sendcontainer">
-					<br>Fokus : <select name="focus" id="focus">
-					<?php
-					/* Print Signature & Implementation Areas */
-					foreach($_SESSION['fileName'] as $i => $fn){
-						if($i==$_SESSION['focus']){$selected="selected";}else{$selected="";}
-						echo '
-						<option value="'.$i.'">'.htmlentities($_SESSION['fileName'][$i]).'</option>';
-					}
-					?>
-					</select>
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
 				</div>
 			</form>

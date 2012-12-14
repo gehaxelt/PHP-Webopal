@@ -1,6 +1,9 @@
 Changelog WebOpal
 ==================================
 
+##???: WebOpal v0.4 ##
+- NEW FEATURE: AutoFokus: Strukturen müssen nicht mehr fokussiert werden. WebOpal fokussiert automatisch. Ist eine Funktion mehrfach definiert, kann sie über [struc]=>fun() fokussiert werden.
+
 ##2012-12-13: WebOpal v0.3 ##
 - NEW FEATURE: Bugreport / Featurevorschläge
 - NEW FEATURE: Optimierung der Ladezeiten
