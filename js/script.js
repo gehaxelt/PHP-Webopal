@@ -57,13 +57,11 @@ $(function() {
 		editors["editor-impl-"+num].setValue(implEx);
 		editors["editor-sign-"+num].setValue(signEx);
 		$('#runFunction').val(cmdEx);
-		//$('.focus:first').attr("checked","checked");
 	});
 
 	$(document).on("change",'.nameInput',function(event){
 		num=$(this).parent().find('.num').val();
 		name=$(this).val();
-		$('#focus option:eq('+num+')').html(name);
 	});
 
 	$(document).on("click",'.delStruc',function(event){
@@ -74,9 +72,6 @@ $(function() {
 				num=$(this).parent().find('.num').val();
 				$('.nameInput[name="fileName['+num+']"]').parent().remove();
 				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
-			//	$('.filename:eq('+num+')').remove();
-			//	$('.struccontainer:eq('+num+')').remove();
-				$('#focus option[value="'+num+'"]').remove();
 				currentStruc--;
 				impl = "editor-impl-"+num;
 				sign = "editor-sign-"+num;
@@ -132,7 +127,6 @@ $(function() {
 			editors[sign] = ace.edit(sign);
 			editors[sign].setTheme("ace/theme/chrome");
 			editors[sign].getSession().setMode("ace/mode/opal");
-			$('#focus').append('<option value="'+strucNum+'">'+name+'</option>');
 			$('#structnr').val(currentStruc);
 			if($('.delStruc').size()>1){$('.delStruc').show();}
 			$.ajax({
