@@ -112,7 +112,7 @@ if(!isset($_COOKIE['visited'])){
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 	<title>WebOpal <?php echo $VERSION ?></title>
 	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-
+	<link rel="shortcut icon" href="favicon.ico" />
 	<?if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
