@@ -64,6 +64,15 @@ $(function() {
 		name=$(this).val();
 	});
 
+	$(document).on("click",'.errorJump',function(event){
+		try{
+			var err = $.parseJSON($(this).attr("value"));
+   	}catch(e){
+			alert(e);
+    	}
+		alert("There is a Error in "+err.type+": "+err.file+" From line"+err.fromLine+"column"+err.fromChar+" to line"+err.toLine+"column"+err.toChar);
+	});
+
 	$(document).on("click",'.delStruc',function(event){
 		if($('.delStruc').size()>1){
 			name=$(this).parent().find('.nameInput').val();
@@ -163,9 +172,11 @@ $(function() {
 			data: $('#mainsubmit').serialize()+"&oasys=true&page=update",
 			/* Populate output and activate button on success */
 			success: function(data) {
-				curdate = new Date();
-				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').html("Letzte Ausf\u00FChrung: "+ lastrun + "<br>" + data);
+				var date = new Date();
+				var hh = date.getHours();if (hh < 10) {hh = "0"+hh;}
+				var mm = date.getMinutes();if (mm < 10) {mm = "0"+mm;}
+				var ss = date.getSeconds();if (ss < 10) {ss = "0"+ss;}
+				$('#output').html("Letzte Ausf&uuml;Chrung: "+ hh+":"+mm+":"+ss + "<br>" + data);
 				$("#execute").attr("value","Programm ausführen");
 				$("#execute").removeAttr("disabled");
 				sessionEnd = new Date().getTime()+sessionTimeOut;
