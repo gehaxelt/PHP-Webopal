@@ -4,6 +4,9 @@ WebOpal - A webinterface for Opal
 - 1. Requirements
 - 2. Installation
 - 3. Update
+- 4. Optimize Javascript & CSS
+- 5. Optional features
+- 5.1. Bugreportsystem
 
 ##1. Minimum Requirements##
 
@@ -27,6 +30,7 @@ You need to install [Opal](https://projects.uebb.tu-berlin.de/opal/trac) on your
 - 4. Upload it to your server
 
 ##4. Optimize Javascript & CSS##
+
 ###4.1. Requirements###
 For Javascript Optimization you will need a [JRE](https://en.wikipedia.org/wiki/JRE) like [OpenJDK](https://openjdk.java.net/) or [Java](https://java.com)
 
@@ -48,7 +52,20 @@ Please note, that once you did run `make compile` you will need to run it after 
 - **js/script.min.js**
 - **css/style.css**
 
-##5. Enable gzip compression##
+##4.5. Enable gzip compression##
 In order to shrink server load, you are able to enable gzip compression:
 - 1. Rename **.htaccess.example** to **.htaccess**
 - 2. Adjust the paths in **.htaccess** (Please note that absolute Paths are necessary!)
+
+##5. Optional features##
+
+###5.1. Bugreportsystem###
+
+We implemented an bugreportsystem, which will give your visitors the possibility of reportings bugs or ideas directly in WebOpal.
+
+- 1. Get a keypair for recaptcha from [Recaptcha.net](https://www.google.com/recaptcha/admin/create)
+- 2. Paste the keys in your **config.php** file
+- 3. Add your github username and password in your **config.php**
+- 4. Edit `$ISSUEUSER` and `$ISSUEREPO` in your **config.php**
+- 5. Set `$BUGREPORT` from `false` to `true` in your **config.php**
+
