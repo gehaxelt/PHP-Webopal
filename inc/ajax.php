@@ -184,8 +184,12 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$results=explode("\n",$result);
 	$c=0;
 	foreach($results as $key=>$result){
-		if(preg_match("/ERROR \[(.+.)\.(.+.) at (\d+)\.(\d+)\-(\d+)\.(\d+)\]/",$result,$error)){
-			$err=Array("file"=>$error[1],"type"=>$error[2],"fromLine"=>$error[3]-2,"fromChar"=>$error[4],"toLine"=>$error[5]-2,"toChar"=>$error[6]);
+		if(preg_match("/ERROR \[((.+.)\.(.+.) )?at (\d+)\.(\d+)(-(\d+)\.(\d+))?\]/",$result,$error)){
+			$err=Array("file"=>$error[2],"type"=>$error[3],"fromLine"=>$error[4]-2,"fromChar"=>$error[5]-1,"toLine"=>$error[4]-2,"toChar"=>$error[5]);
+			if(isset($error[6])){
+				$err["toLine"]=$error[7]-2;
+				$err["toChar"]=$error[8];
+			}
 			$results[$key]=preg_replace("/(ERROR \[.+.\])/","<a href='#' class='errorJump' value='".json_encode($err)."'>$1</a>",$result);	
 		}
 	}
