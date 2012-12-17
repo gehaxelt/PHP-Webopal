@@ -4,7 +4,7 @@ ob_start(); //start output buffering
 include 'config.php';
 include 'inc/contributors.php';
 include 'tools/gc.php';
-
+$VERSION = "v0.4&alpha;"; // Current Version
 
 //Escape all variables
 
@@ -38,6 +38,7 @@ if(isset($_SESSION['sessionstart'])){
 }
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
+if(!isset($_SESSION['actTab'])) {$_SESSION['actTab']=0; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
 
 if(!isset($_SESSION['structnr'])) {
@@ -110,7 +111,7 @@ if(!isset($_COOKIE['visited'])){
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-	<title>WebOpal <?php echo $VERSION ?></title>
+	<title>WebOpal <?php echo $VERSION; ?></title>
 	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 	<link rel="shortcut icon" href="favicon.ico" />
 	<?if(file_exists('css/style.css')){
@@ -157,7 +158,7 @@ if(!isset($_COOKIE['visited'])){
 <body>
 	<div id="wrapper">
 		<div id="heading">
-			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
+			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
@@ -165,14 +166,14 @@ if(!isset($_COOKIE['visited'])){
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
-		<a href="#" id="restore_exampl">Hello World!</a>
+		<a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
-		<br><br>
+		<br>
+		<br>
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
-				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -180,7 +181,7 @@ if(!isset($_COOKIE['visited'])){
 					echo '
 					<h3 class="filename">
 					<span style="float:right" class="delStruc">Löschen</span>
-					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+					Struktur <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
 					<input type="hidden" value="'.$i.'" class="num">
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
@@ -207,10 +208,11 @@ if(!isset($_COOKIE['visited'])){
 				</div>
 				<div id="sendcontainer">
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
+					<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 				</div>
 			</form>
 				<div id="outputcontainer">
-					<div id="output" name="output">Ausgabe</div>
+					<div id="output" name="output"><?php echo htmlentities($_SESSION['actTab']);?></div>
 				</div>
 		<div id="download">
 			<input type="button" name="download" class="dialog" value="Download als Tarball">
@@ -231,6 +233,11 @@ if(!isset($_COOKIE['visited'])){
 		<div id="dialog"></div>
 		<div id="forJavascript">
 			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
+			<input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
+			<input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
+			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
+			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
 		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>

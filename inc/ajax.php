@@ -15,16 +15,18 @@ if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
 if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
+if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
 if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
-	if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
-	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN($_GET['implInput'],$_SESSION['fileName']);}
-	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN($_GET['signInput'],$_SESSION['fileName']);}
+	if(isset($_GET['fileName'])) {$_SESSION['fileName']=  array_slice($_GET['fileName'] ,0,$MAXFILES,true);}
+	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN(array_slice($_GET['implInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
+	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN(array_slice($_GET['signInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
 	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
+	if(isset($_GET['actTab'])) {$_SESSION['actTab']=$_GET['actTab'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -37,7 +39,7 @@ if($page=="download"){
 	}
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
-			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']));
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']).$_SESSION['actTab']);
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}

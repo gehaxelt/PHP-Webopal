@@ -7,14 +7,33 @@ var markersEditor = new Array();
 /* Execute if DOM is ready */
 $(function() {
 	/* Array for all the ACE editors */
-	var currentStruc = 1;
-	var maxStruc = 3;
-	var strucPre = "c91c";
-	var actTab = 0;
-	var implEx = 'DEF hello == "Hello World!"';
-	var signEx = 'FUN hello : denotation';
-	var cmdEx = 'hello';
+	var currentStruc = $('.num').length;
+	var maxStruc = $('#maxStruc').val();
+	if(currentStruc>=maxStruc){$("#addStruc").attr("disabled","disabled");}
+	var strucPre = $('#strucPre').val();
+	var actTab = parseInt($('#actTab').val());
 	var keySwitch=false;
+	var preventTabSwitch=false;
+	var accordionAttr = {
+		collapsible: false,
+		heightStyle: "content",
+		event: "mouseup",
+		beforeActivate: function(event, ui){
+			if(preventTabSwitch){
+				preventTabSwitch=false;
+				event.preventDefault();
+			}
+		},
+		activate: function(event, ui){
+			actTab=$('.struccontainer').index(ui.newPanel);
+			$('#actTab').val(actTab);
+			if(!keySwitch){
+				s = ui.newPanel.find(".impl").attr("id");
+				editors[s].focus();
+			}
+			keySwitch=false;
+		}
+	};
 	var gWasPressed = false;
 	var clearKeyState = function() {
     gWasPressed = false;
@@ -24,40 +43,28 @@ $(function() {
 	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
 	
 	/* initialize Accordion */
-	$("#accordion").accordion({
-		collapsible:false,
-		heightStyle: "content",
-		event: "mouseup",
-		activate: function(event, ui){
-			if(!keySwitch){
-				s = ui.newPanel.find(".impl").attr("id");
-				editors[s].focus();
-			}
-			keySwitch=false;
-		}
-	});
-	$('#accordion').accordion( "option", "active", actTab);
+	$("#accordion").accordion(accordionAttr).accordion( "option", "active", actTab);
 
 	/* initialize ACE enviroments */
 	$(".struccontainer").each(function(index){
 		impl = $(this).find(".impl").attr("id");
 		sign = $(this).find(".sign").attr("id");
-		editors[impl] = ace.edit(impl);
-		editors[impl].setTheme("ace/theme/chrome");
-		editors[impl].getSession().setMode("ace/mode/opal");
-		editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
 		editors[sign] = ace.edit(sign);
 		editors[sign].setTheme("ace/theme/chrome");
 		editors[sign].getSession().setMode("ace/mode/opal");
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
+		editors[impl] = ace.edit(impl);
+		editors[impl].setTheme("ace/theme/chrome");
+		editors[impl].getSession().setMode("ace/mode/opal");
+		editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
 	});
 	
 
 	$("#restore_exampl").click(function(){
 		num=$('.num:first').val();
-		editors["editor-impl-"+num].setValue(implEx);
-		editors["editor-sign-"+num].setValue(signEx);
-		$('#runFunction').val(cmdEx);
+		editors["editor-impl-"+num].setValue($('#implEx').val());
+		editors["editor-sign-"+num].setValue($('#signEx').val());
+		$('#runFunction').val($('#cmdEx').val());
 	});
 
 	$(document).on("change",'.nameInput',function(event){
@@ -82,23 +89,39 @@ $(function() {
 		editors[editor].gotoLine(parseInt(err.toLine)+1,parseInt(err.toChar)+1,false);
 	});
 
+	$(document).on("mouseenter",'.delStruc',function(event){
+		preventTabSwitch=true;
+	});
+	
+	$(document).on("mouseleave",'.delStruc',function(event){
+		preventTabSwitch=false;
+	});
+
 	$(document).on("click",'.delStruc',function(event){
 		if($('.delStruc').size()>1){
 			name=$(this).parent().find('.nameInput').val();
 			var answer = confirm (name+" wirklich löschen?")
 			if(answer){
 				num=$(this).parent().find('.num').val();
-				$('.nameInput[name="fileName['+num+']"]').parent().remove();
-				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
+				index=$('.filename').index($(this).parent());
+				if(index==actTab){
+					keySwitch=true;
+					preventTabSwitch=false;
+					if(actTab==0){actTab=1;}else{actTab=actTab-1;}
+					$("#accordion").accordion( "option", "active", actTab);
+				}
+				$(this).parent().hide('slow', function(){
+					$(this).next(".struccontainer").remove();
+					$(this).remove();
+					if($('.delStruc').size()<=1){$('.delStruc').hide();}
+				})
 				currentStruc--;
+				$('#structnr').val(currentStruc);
 				impl = "editor-impl-"+num;
 				sign = "editor-sign-"+num;
 				delete(editors[impl]);
 				delete(editors[sign]);
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
-				$('#structnr').val(currentStruc);
-				if($('.delStruc').size()<=1){$('.delStruc').hide();}
-				$('#accordion').accordion( "option", "active", num-1);
 				$.ajax({
 					url : 'inc/ajax.php',
 					type : 'GET',
@@ -115,13 +138,14 @@ $(function() {
 	});
 
 	$('#addStruc').click(function(){
+			if(currentStruc<maxStruc){
 			currentStruc++;
 			strucNum=parseInt($('.num:last').val())+1;
 			name= strucPre+"datei"+strucNum
 			$('#accordion').append(
 				'<h3 class="filename">'+
 				'	<span style="float:right" class="delStruc" v>Löschen</span>'+
-				'	Struktur '+currentStruc+'; Name: <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
+				'	Struktur <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
 				'	<input type="hidden" value="'+strucNum+'" class="num">'+
 				'</h3>'+
 				'<div class="struccontainer" style="padding:10px;">'+
@@ -136,7 +160,7 @@ $(function() {
 				'		<input type="hidden" class="sign_hidden" value="" name="signInput['+strucNum+']" >'+
 				'	</div>'+
 				'</div>'
-			).accordion('destroy').accordion();
+			).accordion('destroy').accordion(accordionAttr);
 			impl = "editor-impl-"+strucNum;
 			sign = "editor-sign-"+strucNum;
 			editors[impl] = ace.edit(impl);
@@ -158,7 +182,8 @@ $(function() {
 					$('#dialog').dialog({title: "ERROR", width: 700});
 				}
 			});
-		if(currentStruc==maxStruc){
+		}
+		if(currentStruc>=maxStruc){
 			$("#addStruc").attr("disabled","disabled")
 		}
 	});
