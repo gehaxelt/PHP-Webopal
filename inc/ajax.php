@@ -183,18 +183,39 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$result=preg_replace("/\t/","&nbsp;",$result);
 	$results=explode("\n",$result);
 	$c=0;
+	$retError=Array();
 	foreach($results as $key=>$result){
 		if(preg_match("/ERROR \[((.+.)\.(.+.) )?at (\d+)\.(\d+)(-(\d+)\.(\d+))?\]/",$result,$error)){
-			$err=Array("file"=>$error[2],"type"=>$error[3],"fromLine"=>$error[4]-2,"fromChar"=>$error[5]-1,"toLine"=>$error[4]-2,"toChar"=>$error[5]);
+			if($error[2]!=""){
+			$err=Array("file"=>$error[2],"type"=>$error[3],"fromLine"=>max(0,$error[4]-3),"fromChar"=>$error[5]-1,"toLine"=>max(0,$error[4]-3),"toChar"=>$error[5]);
 			if(isset($error[6])){
-				$err["toLine"]=$error[7]-2;
+				$err["toLine"]=max(0,$error[7]-2);
 				$err["toChar"]=$error[8];
 			}
+			$retError[]=$err;
 			$results[$key]=preg_replace("/(ERROR \[.+.\])/","<a href='#' class='errorJump' value='".json_encode($err)."'>$1</a>",$result);	
+			}
 		}
 	}
-	return implode("<br>",$results);
+	return Array("log"=>implode("<br>",$results),"err"=>json_encode(justonetime($retError,Array("file","type","fromLine")),JSON_FORCE_OBJECT));
 }
+
+function justonetime($a,$b){
+$compare=array();$r=array();
+foreach($a as $array){
+$c="";
+foreach($b as $key){
+$c.=$array[$key];
+}
+if(!in_array($c,$compare)){
+$r[]=$array;
+$compare[]=$c;
+}
+}
+
+return $r;
+}
+
 // function for fetching issues from github, used for bug reporting feature
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;

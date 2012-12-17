@@ -190,3 +190,11 @@ p.issueDescription {
 margin-left:10px;
 font-style:italic;
 }
+
+.warning
+{
+    background: rgba(255, 50, 50, 0.5);
+    position: absolute;
+    width:100% !important;
+    left:0% !important;
+}

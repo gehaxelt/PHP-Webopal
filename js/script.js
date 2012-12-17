@@ -2,7 +2,8 @@ var editors = new Array();
 var sessionEnd = 0;
 var timeOutId = 0;
 var sessionTimeOut = 0;
-
+var markers = new Array();
+var markersEditor = new Array();
 /* Execute if DOM is ready */
 $(function() {
 	/* Array for all the ACE editors */
@@ -65,12 +66,19 @@ $(function() {
 	});
 
 	$(document).on("click",'.errorJump',function(event){
+		event.preventDefault();
 		try{
 			var err = $.parseJSON($(this).attr("value"));
    	}catch(e){
 			alert(e);
     	}
-		alert("There is a Error in "+err.type+": "+err.file+" From line"+err.fromLine+"column"+err.fromChar+" to line"+err.toLine+"column"+err.toChar);
+ 		c=$('#accordion h3').index($(".nameInput[value="+err.file+"]").parent());
+ 		editor="editor-"+err.type+"-"+$(".nameInput[value="+err.file+"]").parent().find('.num').val();
+ 		keySwitch=true;
+ 		$('#accordion').accordion( "option", "active", c);
+ 		alert(err.file);
+ 		editors[editor].focus();
+		editors[editor].gotoLine(parseInt(err.toLine)+1,parseInt(err.toChar)+1,false);
 	});
 
 	$(document).on("click",'.delStruc',function(event){
@@ -176,10 +184,29 @@ $(function() {
 				var hh = date.getHours();if (hh < 10) {hh = "0"+hh;}
 				var mm = date.getMinutes();if (mm < 10) {mm = "0"+mm;}
 				var ss = date.getSeconds();if (ss < 10) {ss = "0"+ss;}
-				$('#output').html("Letzte Ausf&uuml;Chrung: "+ hh+":"+mm+":"+ss + "<br>" + data);
+				$('#output').html("Letzte Ausf&uuml;hrung: "+ hh+":"+mm+":"+ss + "<br>" + data.log);
 				$("#execute").attr("value","Programm ausführen");
 				$("#execute").removeAttr("disabled");
 				sessionEnd = new Date().getTime()+sessionTimeOut;
+				errors = $.parseJSON(data.err);
+				for(i=0;i<markers.length;i++){
+					editor=markersEditor[i];
+					marker=markers[i];
+					editors[editor].getSession().removeMarker(marker);
+				}
+				markers = new Array();
+				markersEditor = new Array();			
+   		   for (var e in errors) {
+					if (errors.hasOwnProperty(e)) {
+						err = errors[e];
+						editor="editor-"+err.type+"-"+$(".nameInput[value="+err.file+"]").parent().find('.num').val();
+						var Range = require('ace/range').Range;
+						r = new Range(parseInt(err.fromLine),parseInt(err.fromChar),parseInt(err.toLine),parseInt(err.toChar));
+						m = editors[editor].getSession().addMarker(r, "warning", "text", true);
+						markers.push(m);
+						markersEditor.push(editor);
+					}
+				}
 			},
 			error : function(data) {
 				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
