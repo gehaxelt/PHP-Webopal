@@ -10,7 +10,7 @@ $(function() {
 	var maxStruc = $('#maxStruc').val();
 	if(currentStruc>=maxStruc){$("#addStruc").attr("disabled","disabled");}
 	var strucPre = $('#strucPre').val();
-	var actTab = $('#actTab').val();
+	var actTab = parseInt($('#actTab').val());
 	var keySwitch=false;
 	var preventTabSwitch=false;
 	var accordionAttr = {
@@ -19,7 +19,6 @@ $(function() {
 		event: "mouseup",
 		beforeActivate: function(event, ui){
 			if(preventTabSwitch){
-				alert("prevented");
 				preventTabSwitch=false;
 				event.preventDefault();
 			}
@@ -94,18 +93,17 @@ $(function() {
 					$("#accordion").accordion( "option", "active", actTab);
 				}
 				$(this).parent().hide('slow', function(){
-					$(this).remove();
 					$(this).next(".struccontainer").remove();
+					$(this).remove();
+					if($('.delStruc').size()<=1){$('.delStruc').hide();}
 				})
-
 				currentStruc--;
+				$('#structnr').val(currentStruc);
 				impl = "editor-impl-"+num;
 				sign = "editor-sign-"+num;
 				delete(editors[impl]);
 				delete(editors[sign]);
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
-				$('#structnr').val(currentStruc);
-				if($('.delStruc').size()<=1){$('.delStruc').hide();}
 				$.ajax({
 					url : 'inc/ajax.php',
 					type : 'GET',

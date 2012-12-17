@@ -208,11 +208,11 @@ if(!isset($_COOKIE['visited'])){
 				</div>
 				<div id="sendcontainer">
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
-					<input type="text" id="actTab" value="<?php echo $_SESSION['actTab'];?>">
+					<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 				</div>
 			</form>
 				<div id="outputcontainer">
-					<div id="output" name="output">Ausgabe</div>
+					<div id="output" name="output"><?php echo htmlentities($_SESSION['actTab']);?></div>
 				</div>
 		<div id="download">
 			<input type="button" name="download" class="dialog" value="Download als Tarball">
@@ -234,7 +234,7 @@ if(!isset($_COOKIE['visited'])){
 		<div id="forJavascript">
 			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
 			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
-			<input type="hidden" id="implEx" value="<?php echo $EXAMPLECODE_IMPL;?>">
+			<input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
 			<input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
 			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
 			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
