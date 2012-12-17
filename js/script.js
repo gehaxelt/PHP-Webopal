@@ -77,7 +77,7 @@ $(function() {
  		editor="editor-"+err.type+"-"+$(".nameInput[value="+err.file+"]").parent().find('.num').val();
  		keySwitch=true;
  		$('#accordion').accordion( "option", "active", c);
- 		alert(err.file);
+ 		//alert(err.file);
  		editors[editor].focus();
 		editors[editor].gotoLine(parseInt(err.toLine)+1,parseInt(err.toChar)+1,false);
 	});
