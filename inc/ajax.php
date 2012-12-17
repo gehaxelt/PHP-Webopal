@@ -21,10 +21,10 @@ if(isset($_GET["page"])){$page=$_GET["page"];}
 if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
-	if(isset($_GET['implInput'])) {$_SESSION['implInput']=$_GET['implInput'];}
-	if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
-	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
+	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN($_GET['implInput'],$_SESSION['fileName']);}
+	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN($_GET['signInput'],$_SESSION['fileName']);}
+	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -76,6 +76,13 @@ function download(){
 	}
 }
 
+function fixIMPLandSIGN($arr,$names) {
+	foreach($arr as $i => $a){
+		$arr[$i]=preg_replace('/((IMPLEMENTATION|SIGNATURE)\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$4",$a);
+	}
+	return $arr;
+}
+
 function runOasys($impls,$signs,$cmd,$names) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
@@ -96,23 +103,19 @@ function runOasys($impls,$signs,$cmd,$names) {
 	/* Create impl and sign files for every structure with a non empty impl */
 	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
-
+			$implStr="";$signStr="";
+			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
 			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
-
-			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
-			//$impls[$i]=preg_replace('/  +/u'," ",$impls[$i]);
-			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
-//			$impls[$i]=preg_replace('/  +/u'," ",$signs[$i]);
+			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
 			/* Create impl and sign files for the structure */
-			$signStr = "SIGNATURE ".$names[$i];
-			$implStr = "IMPLEMENTATION ".$names[$i];
+			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
+			if(preg_match('/IMPLEMENTATION/',$impls[$i])===0){$implStr = "IMPLEMENTATION ".$names[$i];}
 			
 			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
 			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));

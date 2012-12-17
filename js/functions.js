@@ -161,3 +161,10 @@ function checkReCaptcha(){
 		}
 	});
 }
+
+function checkSignAndImpl(num,name){
+editors["editor-impl-"+num].find(/IMPLEMENTATION\s*([A-Za-z0-9]*)/,{regExp: true});
+editors["editor-impl-"+num].replace('IMPLEMENTATION '+name);
+editors["editor-sign-"+num].find(/SIGNATURE\s*([A-Za-z0-9]*)/,{regExp: true});
+editors["editor-sign-"+num].replace('SIGNATURE '+name);
+}
