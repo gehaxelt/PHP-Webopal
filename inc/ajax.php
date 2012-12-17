@@ -197,7 +197,7 @@ if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(
 $echo.="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
-			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</p>
+			<div class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</div>
 			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
 }
