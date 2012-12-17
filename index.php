@@ -208,7 +208,7 @@ if(!isset($_COOKIE['visited'])){
 				</div>
 				<div id="sendcontainer">
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
-					<input type="hidden" id="actTab" value="<?php echo $_SESSION['actTab'];?>">
+					<input type="hidden" id="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 				</div>
 			</form>
 				<div id="outputcontainer">
