@@ -14,12 +14,13 @@ body, .ui-widget {
 	font-family: 'Rambla', Verdana, Arial, sans-serif;
 	font-size:1em;
 }
-
+$marginTop: 20px;
 $scale: 10%;
 #logo {
 	vertical-align: middle;
 	height: $scale;
 	width: $scale;
+	margin-top:-$marginTop;
 }
 
 body {
@@ -47,7 +48,7 @@ body {
 	border-radius: 5px;
 	border-top-right-radius: 10px;
 	border: 1px solid #000000;
-	padding:20px 10px;
+	padding:$marginTop 10px;
 }
 
 #wrapper #title {
@@ -156,9 +157,7 @@ input[type="file"], input[type="submit"] {
 }
 
 #addStruc{
-	position:relative;
-	top:-45px;
-	left:980px;
+float:right;
 }
 
 

@@ -6,14 +6,26 @@ var sessionTimeOut = 0;
 /* Execute if DOM is ready */
 $(function() {
 	/* Array for all the ACE editors */
-	var currentStruc = 1;
-	var maxStruc = 3;
-	var strucPre = "c91c";
-	var actTab = 0;
-	var implEx = 'DEF hello == "Hello World!"';
-	var signEx = 'FUN hello : denotation';
-	var cmdEx = 'hello';
+	var currentStruc = $('.num').length;
+	var maxStruc = $('#maxStruc').val();
+	if(currentStruc>=maxStruc){$("#addStruc").attr("disabled","disabled");}
+	var strucPre = $('#strucPre').val();
+	var actTab = $('#actTab').val();
 	var keySwitch=false;
+	var accordionAttr = {
+		collapsible: false,
+		heightStyle: "content",
+		event: "mouseup",
+		activate: function(event, ui){
+			actTab=$('.struccontainer').index(ui.newPanel);
+			$('#actTab').val(actTab);
+			if(!keySwitch){
+				s = ui.newPanel.find(".impl").attr("id");
+				editors[s].focus();
+			}
+			keySwitch=false;
+		}
+	};
 	var gWasPressed = false;
 	var clearKeyState = function() {
     gWasPressed = false;
@@ -23,40 +35,28 @@ $(function() {
 	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
 	
 	/* initialize Accordion */
-	$("#accordion").accordion({
-		collapsible:false,
-		heightStyle: "content",
-		event: "mouseup",
-		activate: function(event, ui){
-			if(!keySwitch){
-				s = ui.newPanel.find(".impl").attr("id");
-				editors[s].focus();
-			}
-			keySwitch=false;
-		}
-	});
-	$('#accordion').accordion( "option", "active", actTab);
+	$("#accordion").accordion(accordionAttr).accordion( "option", "active", actTab);
 
 	/* initialize ACE enviroments */
 	$(".struccontainer").each(function(index){
 		impl = $(this).find(".impl").attr("id");
 		sign = $(this).find(".sign").attr("id");
-		editors[impl] = ace.edit(impl);
-		editors[impl].setTheme("ace/theme/chrome");
-		editors[impl].getSession().setMode("ace/mode/opal");
-		editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
 		editors[sign] = ace.edit(sign);
 		editors[sign].setTheme("ace/theme/chrome");
 		editors[sign].getSession().setMode("ace/mode/opal");
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
+		editors[impl] = ace.edit(impl);
+		editors[impl].setTheme("ace/theme/chrome");
+		editors[impl].getSession().setMode("ace/mode/opal");
+		editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
 	});
 	
 
 	$("#restore_exampl").click(function(){
 		num=$('.num:first').val();
-		editors["editor-impl-"+num].setValue(implEx);
-		editors["editor-sign-"+num].setValue(signEx);
-		$('#runFunction').val(cmdEx);
+		editors["editor-impl-"+num].setValue($('#implEx').val());
+		editors["editor-sign-"+num].setValue($('#signEx').val());
+		$('#runFunction').val($('#cmdEx').val());
 	});
 
 	$(document).on("change",'.nameInput',function(event){
@@ -72,6 +72,8 @@ $(function() {
 				num=$(this).parent().find('.num').val();
 				$('.nameInput[name="fileName['+num+']"]').parent().remove();
 				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
+				keySwitch=true;
+				//$("#accordion").accordion("destroy").accordion(accordionAttr).accordion( "option", "active", actTab);
 				currentStruc--;
 				impl = "editor-impl-"+num;
 				sign = "editor-sign-"+num;
@@ -80,7 +82,6 @@ $(function() {
 				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
 				$('#structnr').val(currentStruc);
 				if($('.delStruc').size()<=1){$('.delStruc').hide();}
-				$('#accordion').accordion( "option", "active", num-1);
 				$.ajax({
 					url : 'inc/ajax.php',
 					type : 'GET',
@@ -97,13 +98,14 @@ $(function() {
 	});
 
 	$('#addStruc').click(function(){
+			if(currentStruc<maxStruc){
 			currentStruc++;
 			strucNum=parseInt($('.num:last').val())+1;
 			name= strucPre+"datei"+strucNum
 			$('#accordion').append(
 				'<h3 class="filename">'+
 				'	<span style="float:right" class="delStruc" v>Löschen</span>'+
-				'	Struktur '+currentStruc+'; Name: <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
+				'	Struktur <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
 				'	<input type="hidden" value="'+strucNum+'" class="num">'+
 				'</h3>'+
 				'<div class="struccontainer" style="padding:10px;">'+
@@ -118,7 +120,7 @@ $(function() {
 				'		<input type="hidden" class="sign_hidden" value="" name="signInput['+strucNum+']" >'+
 				'	</div>'+
 				'</div>'
-			).accordion('destroy').accordion();
+			).accordion('destroy').accordion(accordionAttr);
 			impl = "editor-impl-"+strucNum;
 			sign = "editor-sign-"+strucNum;
 			editors[impl] = ace.edit(impl);
@@ -140,7 +142,8 @@ $(function() {
 					$('#dialog').dialog({title: "ERROR", width: 700});
 				}
 			});
-		if(currentStruc==maxStruc){
+		}
+		if(currentStruc>=maxStruc){
 			$("#addStruc").attr("disabled","disabled")
 		}
 	});
