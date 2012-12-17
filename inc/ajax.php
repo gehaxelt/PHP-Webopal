@@ -272,7 +272,7 @@ function checkCaptcha(){
 		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
 		$token="";
 		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
-		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".$_POST["description"]));
+		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".htmlentities($_POST["description"])));
 		$_POST['success']=true;
 		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>
