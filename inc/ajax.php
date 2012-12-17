@@ -21,10 +21,10 @@ if(isset($_GET["page"])){$page=$_GET["page"];}
 if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
-	if(isset($_GET['implInput'])) {$_SESSION['implInput']=$_GET['implInput'];}
-	if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
-	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
+	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN($_GET['implInput'],$_SESSION['fileName']);}
+	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN($_GET['signInput'],$_SESSION['fileName']);}
+	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -76,6 +76,13 @@ function download(){
 	}
 }
 
+function fixIMPLandSIGN($arr,$names) {
+	foreach($arr as $i => $a){
+		$arr[$i]=preg_replace('/((IMPLEMENTATION|SIGNATURE)\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$4",$a);
+	}
+	return $arr;
+}
+
 function runOasys($impls,$signs,$cmd,$names) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
@@ -96,23 +103,19 @@ function runOasys($impls,$signs,$cmd,$names) {
 	/* Create impl and sign files for every structure with a non empty impl */
 	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
-
+			$implStr="";$signStr="";
+			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
 			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
-
-			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
-			//$impls[$i]=preg_replace('/  +/u'," ",$impls[$i]);
-			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
-//			$impls[$i]=preg_replace('/  +/u'," ",$signs[$i]);
+			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
 			/* Create impl and sign files for the structure */
-			$signStr = "SIGNATURE ".$names[$i];
-			$implStr = "IMPLEMENTATION ".$names[$i];
+			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
+			if(preg_match('/IMPLEMENTATION/',$impls[$i])===0){$implStr = "IMPLEMENTATION ".$names[$i];}
 			
 			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
 			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));
@@ -180,10 +183,44 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$result=preg_replace("/\n/","\n\t\t",$result);
 	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
-	$result=preg_replace("/\n/","<br>",$result);
 	$result=preg_replace("/\t/","&nbsp;",$result);
-	return $result;
+	$results=explode("\n",$result);
+	$c=0;
+	$retError=Array();
+	foreach($results as $key=>$result){
+		if(preg_match("/(ERROR|WARNING) \[((.+.)\.(.+.) )?at (\d+)\.(\d+)(-(\d+)\.(\d+))?\]/",$result,$error)){
+			if($error[3]!=""){
+			if($error[4]=="sign"){$error[5]=$error[5]-1;}
+			$err=Array("file"=>$error[3],"type"=>$error[4],"fromLine"=>max(0,$error[5]-3),"fromChar"=>$error[6]-1,"toLine"=>max(0,$error[5]-3),"toChar"=>$error[6]);
+			if(isset($error[7])){
+				$err["toLine"]=max(0,$error[8]-3);
+				$err["toChar"]=$error[9];
+			}
+			
+			$retError[]=$err;
+			$results[$key]=preg_replace("/((ERROR|WARNING) \[.+.\])/","<a href='#' class='errorJump' value='".json_encode($err)."'>$1</a>",$result);	
+			}
+		}
+	}
+	return Array("log"=>implode("<br>",$results),"err"=>json_encode(justonetime($retError,Array("file","type","fromLine")),JSON_FORCE_OBJECT));
 }
+
+function justonetime($a,$b){
+$compare=array();$r=array();
+foreach($a as $array){
+$c="";
+foreach($b as $key){
+$c.=$array[$key];
+}
+if(!in_array($c,$compare)){
+$r[]=$array;
+$compare[]=$c;
+}
+}
+
+return $r;
+}
+
 // function for fetching issues from github, used for bug reporting feature
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;

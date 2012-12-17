@@ -2,7 +2,8 @@ var editors = new Array();
 var sessionEnd = 0;
 var timeOutId = 0;
 var sessionTimeOut = 0;
-
+var markers = new Array();
+var markersEditor = new Array();
 /* Execute if DOM is ready */
 $(function() {
 	/* Array for all the ACE editors */
@@ -62,6 +63,23 @@ $(function() {
 	$(document).on("change",'.nameInput',function(event){
 		num=$(this).parent().find('.num').val();
 		name=$(this).val();
+		checkSignAndImpl(num,name);
+	});
+
+	$(document).on("click",'.errorJump',function(event){
+		event.preventDefault();
+		try{
+			var err = $.parseJSON($(this).attr("value"));
+   	}catch(e){
+			alert(e);
+    	}
+ 		c=$('#accordion h3').index($(".nameInput[value="+err.file+"]").parent());
+ 		editor="editor-"+err.type+"-"+$(".nameInput[value="+err.file+"]").parent().find('.num').val();
+ 		keySwitch=true;
+ 		$('#accordion').accordion( "option", "active", c);
+ 		alert(err.file);
+ 		editors[editor].focus();
+		editors[editor].gotoLine(parseInt(err.toLine)+1,parseInt(err.toChar)+1,false);
 	});
 
 	$(document).on("click",'.delStruc',function(event){
@@ -163,12 +181,33 @@ $(function() {
 			data: $('#mainsubmit').serialize()+"&oasys=true&page=update",
 			/* Populate output and activate button on success */
 			success: function(data) {
-				curdate = new Date();
-				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').html("Letzte Ausf\u00FChrung: "+ lastrun + "<br>" + data);
+				var date = new Date();
+				var hh = date.getHours();if (hh < 10) {hh = "0"+hh;}
+				var mm = date.getMinutes();if (mm < 10) {mm = "0"+mm;}
+				var ss = date.getSeconds();if (ss < 10) {ss = "0"+ss;}
+				$('#output').html("Letzte Ausf&uuml;hrung: "+ hh+":"+mm+":"+ss + "<br>" + data.log);
 				$("#execute").attr("value","Programm ausführen");
 				$("#execute").removeAttr("disabled");
 				sessionEnd = new Date().getTime()+sessionTimeOut;
+				errors = $.parseJSON(data.err);
+				for(i=0;i<markers.length;i++){
+					editor=markersEditor[i];
+					marker=markers[i];
+					editors[editor].getSession().removeMarker(marker);
+				}
+				markers = new Array();
+				markersEditor = new Array();			
+   		   for (var e in errors) {
+					if (errors.hasOwnProperty(e)) {
+						err = errors[e];
+						editor="editor-"+err.type+"-"+$(".nameInput[value="+err.file+"]").parent().find('.num').val();
+						var Range = require('ace/range').Range;
+						r = new Range(parseInt(err.fromLine),parseInt(err.fromChar),parseInt(err.toLine),parseInt(err.toChar));
+						m = editors[editor].getSession().addMarker(r, "warning", "text", true);
+						markers.push(m);
+						markersEditor.push(editor);
+					}
+				}
 			},
 			error : function(data) {
 				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
@@ -233,7 +272,7 @@ $(function() {
 			if ( wordAtLeft.length < 2 ){ return false; }
 
 			//List of words which should be always available for code completion
-			var possibleWords = new Array("IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE", "newline");
+			var possibleWords = new Array("IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE", "newline", "SIGNATURE", "IMPLEMENTATION");
 
 			/* Extend the possibleWords List with words longer than 4 letters in ace editors
 			 * If you have for example the word "sortYear" in one of the editors
