@@ -63,6 +63,7 @@ $(function() {
 	$(document).on("change",'.nameInput',function(event){
 		num=$(this).parent().find('.num').val();
 		name=$(this).val();
+		checkSignAndImpl(num,name);
 	});
 
 	$(document).on("click",'.errorJump',function(event){

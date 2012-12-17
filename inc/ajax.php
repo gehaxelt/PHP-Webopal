@@ -96,7 +96,8 @@ function runOasys($impls,$signs,$cmd,$names) {
 	/* Create impl and sign files for every structure with a non empty impl */
 	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
-
+			$implStr="";$signStr="";
+			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
 			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
@@ -105,14 +106,12 @@ function runOasys($impls,$signs,$cmd,$names) {
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
 			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
 
-			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
-			//$impls[$i]=preg_replace('/  +/u'," ",$impls[$i]);
-			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
-//			$impls[$i]=preg_replace('/  +/u'," ",$signs[$i]);
+			$impls[$i]=preg_replace('/(IMPLEMENTATION\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$3",$impls[$i],-1,$c);
+			$signs[$i]=preg_replace('/(SIGNATURE\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$3",$signs[$i],-1,$d);
 
 			/* Create impl and sign files for the structure */
-			$signStr = "SIGNATURE ".$names[$i];
-			$implStr = "IMPLEMENTATION ".$names[$i];
+			if($c==0){$implStr = "IMPLEMENTATION ".$names[$i];}
+			if($d==0){$signStr = "SIGNATURE ".$names[$i];}
 			
 			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
 			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));
