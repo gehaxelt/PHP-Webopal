@@ -272,7 +272,7 @@ $(function() {
 			if ( wordAtLeft.length < 2 ){ return false; }
 
 			//List of words which should be always available for code completion
-			var possibleWords = new Array("IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE", "newline");
+			var possibleWords = new Array("IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE", "newline", "SIGNATURE", "IMPLEMENTATION");
 
 			/* Extend the possibleWords List with words longer than 4 letters in ace editors
 			 * If you have for example the word "sortYear" in one of the editors
