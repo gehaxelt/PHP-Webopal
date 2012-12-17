@@ -15,7 +15,7 @@ if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
 if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
-if(isset($_GET['actTab'])) { $_GET['delete']=htmlentities($_GET['actTab']); }
+if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 

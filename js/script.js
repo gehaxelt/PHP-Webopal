@@ -12,10 +12,18 @@ $(function() {
 	var strucPre = $('#strucPre').val();
 	var actTab = $('#actTab').val();
 	var keySwitch=false;
+	var preventTabSwitch=false;
 	var accordionAttr = {
 		collapsible: false,
 		heightStyle: "content",
 		event: "mouseup",
+		beforeActivate: function(event, ui){
+			if(preventTabSwitch){
+				alert("prevented");
+				preventTabSwitch=false;
+				event.preventDefault();
+			}
+		},
 		activate: function(event, ui){
 			actTab=$('.struccontainer').index(ui.newPanel);
 			$('#actTab').val(actTab);
@@ -64,16 +72,32 @@ $(function() {
 		name=$(this).val();
 	});
 
+	$(document).on("mouseenter",'.delStruc',function(event){
+		preventTabSwitch=true;
+	});
+	
+	$(document).on("mouseleave",'.delStruc',function(event){
+		preventTabSwitch=false;
+	});
+
 	$(document).on("click",'.delStruc',function(event){
 		if($('.delStruc').size()>1){
 			name=$(this).parent().find('.nameInput').val();
 			var answer = confirm (name+" wirklich löschen?")
 			if(answer){
 				num=$(this).parent().find('.num').val();
-				$('.nameInput[name="fileName['+num+']"]').parent().remove();
-				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
-				keySwitch=true;
-				//$("#accordion").accordion("destroy").accordion(accordionAttr).accordion( "option", "active", actTab);
+				index=$('.filename').index($(this).parent());
+				if(index==actTab){
+					keySwitch=true;
+					preventTabSwitch=false;
+					if(actTab==0){actTab=1;}else{actTab=actTab-1;}
+					$("#accordion").accordion( "option", "active", actTab);
+				}
+				$(this).parent().hide('slow', function(){
+					$(this).remove();
+					$(this).next(".struccontainer").remove();
+				})
+
 				currentStruc--;
 				impl = "editor-impl-"+num;
 				sign = "editor-sign-"+num;
