@@ -57,8 +57,8 @@ body {
 
 #wrapper {
   background-color: #FA9200;
-  margin: 0px 2% 0px 2%;
-  width: auto;
+  margin: 0px auto 0px auto;
+  width: 1124px;
   -webkit-border-radius: 5px;
   -webkit-border-top-right-radius: 10px;
   -moz-border-radius: 5px;
