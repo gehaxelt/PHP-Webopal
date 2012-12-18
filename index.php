@@ -187,12 +187,12 @@ if(!isset($_COOKIE['visited'])){
 						<div class="implcontainer">
 							Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload">
 							<div class="impl" id="editor-impl-'.$i.'"></div>
-							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i]).'" name="implInput['.$i.']" >
+							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i],ENT_QUOTES,'UTF-8').'" name="implInput['.$i.']" >
 						</div>
 						<div class="signcontainer">
 							Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload">
 							<div class="sign" id="editor-sign-'.$i.'"></div>
-							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i]).'" name="signInput['.$i.']" >
+							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i],ENT_QUOTES,'UTF-8').'" name="signInput['.$i.']" >
 		
 						</div>
 					</div>';
