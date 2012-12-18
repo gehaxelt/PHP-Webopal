@@ -52,9 +52,10 @@ $(function() {
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 	});
 
-	$(".ui-resizable").each(function(index) {
-		$(this).resizable();
-	});	
+	maxWidth=$('.struccontainer').width()-40;
+	lastResize=0;
+	initResize();
+
 
 	$("#restore_exampl").click(function(){
 		num=$('.num:first').val();
@@ -128,18 +129,18 @@ $(function() {
 				'	<input type="hidden" value="'+strucNum+'" class="num">'+
 				'</h3>'+
 				'<div class="struccontainer" style="padding:10px;">'+
-				'	<div class="implcontainer">'+
-				'		Implementation: <input type="file" name="impl-'+strucNum+'"><input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="submit" value="Upload">'+
-				'		<div class="impl" id="editor-impl-'+strucNum+'"></div>'+
+				'	<div class="implcontainer resizeEditor">'+
+				'		<div class="resizeNot">Implementation: <input type="file" name="impl-'+strucNum+'"><input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="submit" value="Upload"></div>'+
+				'		<div class="impl resizeAlso" id="editor-impl-'+strucNum+'"></div>'+
 				'		<input type="hidden" class="impl_hidden" value="" name="implInput['+strucNum+']" >'+
 				'	</div>'+
-				'	<div class="signcontainer">'+
-				'		Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="file" name="sign-'+strucNum+'" ><input type="submit" value="Upload">'+
-				'		<div class="sign" id="editor-sign-'+strucNum+'"></div>'+
+				'	<div class="signcontainer resizeEditor">'+
+				'		<div class="resizeNot">Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="file" name="sign-'+strucNum+'" ><input type="submit" value="Upload"></div>'+
+				'		<div class="sign resizeAlso" id="editor-sign-'+strucNum+'"></div>'+
 				'		<input type="hidden" class="sign_hidden" value="" name="signInput['+strucNum+']" >'+
 				'	</div>'+
 				'</div>'
-			).accordion('destroy').accordion();
+			).accordion('destroy').accordion().accordion( "option", "active", actTab);
 			impl = "editor-impl-"+strucNum;
 			sign = "editor-sign-"+strucNum;
 			editors[impl] = ace.edit(impl);
@@ -149,13 +150,14 @@ $(function() {
 			editors[sign].setTheme("ace/theme/chrome");
 			editors[sign].getSession().setMode("ace/mode/opal");
 			$('#structnr').val(currentStruc);
+			
 			if($('.delStruc').size()>1){$('.delStruc').show();}
 			$.ajax({
 				url : 'inc/ajax.php',
 				type : 'GET',
 				dataType: "json",
 				data : "page=update&file="+strucNum+"&structnr="+currentStruc,
-				success : function() {	sessionEnd = new Date().getTime()+sessionTimeOut;},
+				success : function() {	sessionEnd = new Date().getTime()+sessionTimeOut;initResize();},
 				error : function(data) {
 					$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
 					$('#dialog').dialog({title: "ERROR", width: 700});
