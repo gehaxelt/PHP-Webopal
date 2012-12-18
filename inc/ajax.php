@@ -19,7 +19,17 @@ if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
-if($page=="download"){
+if($page=="trashmail"){
+	if(count($FORBIDDENMAIL)>0){
+		if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$_GET['email'],$matches)){
+			echo json_encode("Domain ".$matches[0]." nicht erlaubt");
+		}else{
+			echo json_encode(true);
+		}
+	}else{
+		echo json_encode(true);
+	}
+} else if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=  array_slice($_GET['fileName'] ,0,$MAXFILES,true);}
@@ -246,8 +256,7 @@ return $echo;
 function getIssueForm(){
 $error="";
 $echo='<form id="reportData">
-			<div><label for="title">Titel: </label><input type="text" id="text" size="40" name="title"></div>
-			<div><label for="email">Email (opt.):</label><input type="text" size="40" name="email"></div>
+			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
@@ -275,7 +284,7 @@ function checkCaptcha(){
 		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
 		$token="";
 		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
-		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Kontakt:".htmlentities($_POST['email'])."\nUseridee:\n".htmlentities($_POST["description"])));
+		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".htmlentities($_POST["description"])));
 		$_POST['success']=true;
 		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>
