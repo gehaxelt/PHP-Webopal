@@ -237,20 +237,30 @@ return $r;
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;
 include "../tools/githubapi/vendor/autoload.php";
-$echo="";
+$echo=Array();
 $client = new Github\Client();
-$issues = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+$iss1 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+$iss2 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'closed',"labels"=>"postponed,"));
+$issues = array_merge($iss1,$iss2);
 foreach($issues as $issue){
-$token="";
-if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";}
-$echo.="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
+$token="";$token2="";
+if($issue["pull_request"]["html_url"]!=null){
+	$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";
+}else if($issue["state"]=="closed"){
+	$token="&nbsp;&nbsp;<small><small>(Postponed)</small></small>";
+	$token2="<b>ACHTUNG:</b> Dieser Issue wird nicht weiter verfolgt, um zu erfahren warum:<br>";
+}
+$echo[$issue["number"]]="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
 			<div class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</div>
-			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
+			<p class='issueInfo'>$token2 Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
 }
-return $echo;
+
+krsort($echo,SORT_NUMERIC);
+
+return implode("",$echo);
 }
 
 function getIssueForm(){
