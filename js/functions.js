@@ -189,8 +189,41 @@ function checkReCaptcha(){
 }
 
 function checkSignAndImpl(num,name){
-editors["editor-impl-"+num].find(/IMPLEMENTATION\s*([A-Za-z0-9]*)/,{regExp: true});
-editors["editor-impl-"+num].replace('IMPLEMENTATION '+name);
-editors["editor-sign-"+num].find(/SIGNATURE\s*([A-Za-z0-9]*)/,{regExp: true});
-editors["editor-sign-"+num].replace('SIGNATURE '+name);
+	editors["editor-impl-"+num].find(/IMPLEMENTATION\s*([A-Za-z0-9]*)/,{regExp: true});
+	editors["editor-impl-"+num].replace('IMPLEMENTATION '+name);
+	editors["editor-sign-"+num].find(/SIGNATURE\s*([A-Za-z0-9]*)/,{regExp: true});
+	editors["editor-sign-"+num].replace('SIGNATURE '+name);
+}
+
+function resizeElements(event,ui){
+	if(new Date().getTime()-lastResize>50){
+		also = ui.element.children(".resizeAlso").attr("id");
+		nHa = ui.element.children(".resizeNot").height();
+		$('#'+also).css({
+			height:(ui.size.height-25-nHa)+"px",
+			marginTop:(nHa+7)+"px"
+		});
+		editors[also].resize();
+		ui.element.siblings('.resizeEditor').css({
+			height : ui.size.height+"px",
+			width : (maxWidth-ui.size.width)+"px"
+		});
+		also = ui.element.siblings('.resizeEditor').children(".resizeAlso").attr("id");
+		nH = ui.element.siblings('.resizeEditor').children(".resizeNot").height();
+		$('#'+also).css({
+			height:(ui.size.height-25-nH)+"px",
+			marginTop:(nH+7)+"px"
+		});
+		editors[also].resize();
+		lastResize=new Date().getTime();
+	}
+}
+
+function initResize(){
+	$(".resizeEditor").not('.resizeInitialized').addClass('resizeInitialized').on().resizable({
+				maxWidth: maxWidth*0.8,
+				minWidth: maxWidth*0.2,
+				resize: function( event, ui ) {resizeElements(event,ui);},
+				stop: function( event, ui ) {lastResize=0;resizeElements(event,ui);}			
+	});
 }
