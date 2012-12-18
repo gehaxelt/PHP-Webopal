@@ -183,7 +183,7 @@ if(!isset($_COOKIE['visited'])){
 					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
 					<input type="hidden" value="'.$i.'" class="num">
 					</h3>
-					<div class="struccontainer" style="padding:10px;">
+					<div class="struccontainer ui-resizable ui-widget-content" style="padding:10px;">
 						<div class="implcontainer">
 							Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload">
 							<div class="impl ui-widget-content ui-resizable" id="editor-impl-'.$i.'"></div>
