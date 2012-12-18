@@ -244,7 +244,8 @@ return $echo;
 function getIssueForm(){
 $error="";
 $echo='<form id="reportData">
-			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
+			<div><label for="title">Titel: </label><input type="text" id="text" size="40" name="title"></div>
+			<div><label for="email">Email (opt.):</label><input type="text" size="40" name="email"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
@@ -272,7 +273,7 @@ function checkCaptcha(){
 		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
 		$token="";
 		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
-		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".htmlentities($_POST["description"])));
+		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Kontakt:".htmlentities($_POST['email'])."\nUseridee:\n".htmlentities($_POST["description"])));
 		$_POST['success']=true;
 		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>
