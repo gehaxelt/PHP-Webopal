@@ -212,7 +212,7 @@ if(!isset($_COOKIE['visited'])){
 				</div>
 			</form>
 				<div id="outputcontainer">
-					<div id="output" name="output"><?php echo htmlentities($_SESSION['actTab']);?></div>
+					<div id="output" name="output">Ausgabe</div>
 				</div>
 		<div id="download">
 			<input type="button" name="download" class="dialog" value="Download als Tarball">

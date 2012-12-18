@@ -19,7 +19,17 @@ if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
-if($page=="download"){
+if($page=="trashmail"){
+	if(count($FORBIDDENMAIL)>0){
+		if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$_GET['email'],$matches)){
+			echo json_encode("Domain ".$matches[0]." nicht erlaubt");
+		}else{
+			echo json_encode(true);
+		}
+	}else{
+		echo json_encode(true);
+	}
+} else if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=  array_slice($_GET['fileName'] ,0,$MAXFILES,true);}
@@ -38,7 +48,7 @@ if($page=="download"){
 		if(isset($_SESSION['fileName'][$i])) {unset($_SESSION['fileName'][$i]);}
 	}
 	if(isset($_GET["oasys"])){
-		if(isset($_SESSION['implInput'])) {
+		if(isset($_SESSION	['implInput'])) {
 			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']).$_SESSION['actTab']);
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
@@ -251,15 +261,18 @@ $echo='<form id="reportData">
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
 			<div><input type="checkbox" name="agree"><label for="agree">Ich versichere, dass ich mir die Issueliste links angeguckt habe und keine Dopplung auftritt.</label></div><br>
+			<div><label for="email">E-Mail <small><small><a href="#" id="whyEmail">Warum?</a></small></small>:  </label><input type="text" size="40" name="email"></div><br>
+			<div class="whyEmail">Wir benötigen die E-Mailadresse nur für eventuelle Kontaktaufnahme zur Klärung von Fragen bezüglich des Issues.<br>Sie wird nicht veröffentlicht, sondern nur lokal und nicht öffentlich zugänglich gespeichert.<br>Sobald der Issue geschlossen ist, wird sie von uns gelöscht.<br>
+			</div>
 			<div id="reCaptcha"></div>
 			<div style="color: red;" id="captchaStatus">&nbsp;</div>
-			<input id="issueSubmit" type="button" value="Absenden">
+			<input name="issueSubmit" id="issueSubmit" type="button" value="Absenden">
 		 </form>';
 return $echo;
 }
 
 function checkCaptcha(){
-	global $_POST,$_GET,$ISSUEUSER,$ISSUEREPO,$GITHUBUSER,$GITHUBPW,$PUBLICKEY,$PRIVATEKEY;
+	global $_POST,$_GET,$ISSUEUSER,$ISSUEREPO,$GITHUBUSER,$GITHUBPW,$PUBLICKEY,$PRIVATEKEY,$TMPDIR;
 	require_once('../tools/recaptchalib.php');
 
 	$resp = recaptcha_check_answer ($PRIVATEKEY,
@@ -269,19 +282,25 @@ function checkCaptcha(){
 
 	if ($resp->is_valid) {
 		require_once "../tools/githubapi/vendor/autoload.php";
-		$echo="";
+		$data=Array();
 		$client = new Github\Client();
 		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
 		$token="";
 		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
 		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".htmlentities($_POST["description"])));
-		$_POST['success']=true;
-		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
+		$data['success']=true;
+		$data['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
 			<p class='issueDescription'>".MARKDOWN(htmlentities($github["body"]))."</p>
 		</div>";
-		return $_POST;
+		$f='';
+		if(file_exists('../'.$TMPDIR.'/reportedIssues.txt')){
+		$f=file_get_contents('../'.$TMPDIR.'/reportedIssues.txt');
+		}
+		$f.="#".$github["number"]." from ".$_POST['email'];
+		file_put_contents('../'.$TMPDIR.'/reportedIssues.txt',$f);		
+		return $data;
 	} else {
 		return "Captcha falsch:".$resp->error;
 	}

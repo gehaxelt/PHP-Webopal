@@ -87,6 +87,15 @@ function getIssueForm(){
 		success : function(data) {
 			$('#reportForm').children('.content').html(data);
 			showRecaptcha("reCaptcha");
+			$('.whyEmail').hide();
+			$('#whyEmail').hover(
+				function(){
+					$('.whyEmail').show('fast');
+				},
+				function(){
+					$('.whyEmail').hide('fast');
+				}
+			);
 			validateIssueForm();
 		},
 		error : function(data) {
@@ -99,6 +108,7 @@ function getIssueForm(){
 function validateIssueForm(){
 	$("#reportData").validate({
 	   debug: true,
+	   onkeyup: false,
 		rules: {
 			type: "required",
 			title: {
@@ -109,7 +119,18 @@ function validateIssueForm(){
 				required: true,
 				minlength: 20
 			},
-			agree: "required"
+			agree: "required",
+			email: {
+				required: true,
+				email: true,
+				remote: {
+					url: "inc/ajax.php",
+					type: "get",
+					data: {
+						page: 'trashmail'
+					}
+				}
+			}
 		},
 		messages: {
 			type: "Bitte Art des Issue auswählen",
@@ -121,7 +142,12 @@ function validateIssueForm(){
 				required: "Bitte eine möglichst genaue Beschreibung eingeben",
 				minlength: "Die Beschreibung sollte schon länger als 20 Zeichen sein!"
 			},
-			agree: "<br>Schau Dir doch die Issues auf der linken Seite an"
+			agree: "<br>Schau Dir doch die Issues auf der linken Seite an",
+			email: {
+				required: "Das E-Mailfeld wird benötigt",
+				email: "Bitte eine E-Mailadresse im Format foo@foo.de angeben",
+				remote: "Bitte keine Trashmailadresse!"	
+			}
 		}
 	});
 	$('#issueSubmit').click(function(){
