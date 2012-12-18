@@ -26,7 +26,7 @@ $PUBLICKEY = '';		//Public Key of reCaptcha (can be obtained here http://recaptc
 $PRIVATEKEY = '';		//Private Key of reCaptcha (can be obtained here http://recaptcha.net)
 // Starting here not required for Bugreport
 
-$FORBIDDENEMAIL = 
+$FORBIDDENEMAIL =  //For Blocking trashmail emails
 Array("0clickemail.com","noclickemail.com","10minutemail.com ","bofthew.com","jnxjn.com","klzlk.com","nepwk.com","nwldx.com","owlpic.com","pjjkp.com",
 "prtnx.com","rmqkr.net","rppkn.com","rtrtr.com","tyldd.com","uggsrock.com","12houremail.com","12minutemail.com","1pad.de","akapost.com",
 "anon-mail.de","anonbox.net","anonmails.de","anonymbox.com","antispam.de","antispam24.de","antispammail.de","b2cmail.de","breakthru.com",
