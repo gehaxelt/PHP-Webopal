@@ -46,14 +46,15 @@ $(function() {
 		editors[impl].setTheme("ace/theme/chrome");
 		editors[impl].getSession().setMode("ace/mode/opal");
 		editors[impl].getSession().setValue($(this).find(".impl_hidden").val());
-		//editors[impl].resizable();
-		//editors[sign].resizeable();
 		editors[sign] = ace.edit(sign);
 		editors[sign].setTheme("ace/theme/chrome");
 		editors[sign].getSession().setMode("ace/mode/opal");
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 	});
-	
+
+	$(".ui-resizable").each(function(index) {
+		$(this).resizable();
+	});	
 
 	$("#restore_exampl").click(function(){
 		num=$('.num:first').val();
