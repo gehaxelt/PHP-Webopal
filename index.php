@@ -185,7 +185,7 @@ if(!isset($_COOKIE['version'])){
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
 		<br>
-		<br>
+		<br>		<input type="button" id="pseudo">
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<div id="accordion">
 				<?php

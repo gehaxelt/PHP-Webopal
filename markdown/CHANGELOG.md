@@ -8,6 +8,7 @@ Changelog WebOpal
 - **NEW FEATURE**: Error Jumping: Fehler werden jetzt automatisch rötlich im Editor hinterlegt und man kann direkt zu ihnen springen.
 - **NEW FEATURE**: Die Editorbereiche sind jetzt beliebig vergrößerbar (untere Rechte Ecke)
 - **CHANGE**: Code Completion kann jetzt auch mehrdeutige Begriffe vervollständigen. Es wird ein Auswahldialog ausgezeigt.
+- **CHANGE**: Den Sprungmodus zwischen den Editoren aktiviert man mit **`Alt-J`**. Danach kann man mit den Pfeiltasten von Editor zu Editor springen.
 - Minor: Javascript wurde mit JS-Lint überprüft
 - Minor: FEATURES.md endlich ausgefüllt
 - Minor: Nach einem Versionsupdate wird der neuste Teil des Changelog angezeigt (Cookie)

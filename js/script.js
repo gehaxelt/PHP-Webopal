@@ -14,7 +14,7 @@ var maxWidth = 0;
 
 /* Execute if DOM is ready */
 $(function () {
-	var currentStruc, maxStruc, strucPre, actTab, keySwitch,  preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords;
+	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos;
 	currentStruc = $('.num').length;
 	maxStruc = $('#maxStruc').val();
 	strucPre = $('#strucPre').val();
@@ -24,6 +24,11 @@ $(function () {
 	showChangeLog = $('#showChangeLog').val();
 	maxWidth = $('.struccontainer').width() - 40;
 	possibleRun = [];
+	jWasPressed = false;
+	clearKeyState = function () {
+		if (jWasPressed) {editors[editorPos[jumpFrom]].focus(); }
+		jWasPressed = false;
+	};
 	accordionAttr = {
 		collapsible: false,
 		heightStyle: "content",
@@ -62,6 +67,7 @@ $(function () {
 	initResize();
 
 	$('#autocomplete').css("opacity", 0.01);
+	$('#pseudo').css("opacity", 0.01);
 
 	/* initialize Accordion */
 	$("#accordion").accordion(accordionAttr).accordion("option", "active", actTab);
@@ -81,12 +87,16 @@ $(function () {
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 	});
 
+	if (actTab == 0) {
+		editors[$(".impl").eq(0).attr("id")].focus();
+	}
+
 	$("#restore_exampl").click(function () {
 		var answer, active, num, cmds, name;
-		active = $( "#accordion" ).accordion( "option", "active" );
+		active = $("#accordion").accordion("option", "active");
 		name = $('.nameInput').eq(active).val();
 		answer = confirm(name + " wirklich mit Hello World überschreiben?");
-		if(answer){
+		if (answer) {
 			num = $('.num').eq(active).val();
 			editors["editor-impl-" + num].setValue($('#implEx').val());
 			editors["editor-sign-" + num].setValue($('#signEx').val());
@@ -390,7 +400,7 @@ $(function () {
 
 	/* Bind action for ctrl+space code completion */
 	$(document).keydown(function (e) {
-		var i, editor, possibleWord, foundWords, editorPos, cursorPos;
+		var i, editor, possibleWord, foundWords, cursorPos;
 		if ((e.ctrlKey || e.metaKey) && (e.charCode || e.keyCode) == 13) {
 			$('#execute').click();
 		} else if ((e.ctrlKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " ") {
@@ -413,12 +423,9 @@ $(function () {
 
 			$('#autocomplete').focus().autocomplete("search", wordAtLeft);
 
-		} else if (
-			((e.altKey || e.metaKey) && (e.ctrlKey) &&
-				(-1 != $.inArray(e.keyCode, [98, 100, 102, 104]))
-			)
-		) {
+		} else if ((e.altKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) == "J") {
 			e.preventDefault();
+
 			editorPos = [];
 			for (editor in editors) {
 				if (editors.hasOwnProperty(editor)) {
@@ -426,30 +433,38 @@ $(function () {
 				}
 			}
 
-			i = $.inArray($('.ace_focus').attr("id"), editorPos);
-
-			if (i != -1) {
-				switch (e.keyCode) {
-				case 104: //UP with NUM-8
-					if (i - 2 < 0) {i = editorPos.length - 2 + i % 2; } else { i -= 2; }
-					break;
-				case 100: //LEFT with NUM-4
-					if (i - 1 < 0) {i = editorPos.length - 1; } else {i -= 1; }
-					break;
-				case 98: //DOWN with NUM-2
-					if (i + 2 > editorPos.length - 1) { i = i % 2; } else { i += 2; }
-					break;
-				case 102: //RIGHT with NUM-6
-					if (i + 1 > editorPos.length - 1) { i = 0; } else { i += 1; }
-					break;
-				}
-
-				keySwitch = true;
-
-				$('#accordion').accordion("option", "active", (i - (i % 2)) / 2);
-				editors[editorPos[i]].focus();
+			jumpFrom = $.inArray($('.ace_focus').attr("id"), editorPos);
+			if (jumpFrom != -1) {
+				jWasPressed = true;
+				$('#pseudo').focus();
+				setTimeout(clearKeyState, 2000);
 			}
+		} else if (jWasPressed && (-1 != $.inArray(e.keyCode, [37, 38, 39, 40]))) {
+			i = jumpFrom;
+			switch (e.keyCode) {
+			case 37: //LEFT with ARROW-LEFT
+				if (i - 1 < 0) {i = editorPos.length - 1; } else {i -= 1; }
+				break;
+			case 38: //UP with ARROW-UP
+				if (i - 2 < 0) {i = editorPos.length - 2 + i % 2; } else { i -= 2; }
+				break;
+			case 39: //RIGHT with ARROW-RIGHT
+				if (i + 1 > editorPos.length - 1) { i = 0; } else { i += 1; }
+				break;
+			case 40: //DOWN with ARROW-DOWN
+				if (i + 2 > editorPos.length - 1) { i = i % 2; } else { i += 2; }
+				break;
+			}
+
+			keySwitch = true;
+
+			$('#accordion').accordion("option", "active", (i - (i % 2)) / 2);
+			editors[editorPos[i]].focus();
+
+			jWasPressed = false;
 		}
+/*
+		}*/
 	});
 
     $('#bugReport').click(function () {
