@@ -286,6 +286,7 @@ function getIssueForm(){
 $error="";
 $echo='<form id="reportData">
 			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
+			<div><label for="email">Email (opt.):</label><input type="text" size="40" name="email"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
