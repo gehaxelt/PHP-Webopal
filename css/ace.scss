@@ -23,3 +23,15 @@
 .ace_opaloperator {
 	@extend .ace_opaldigit;
 }
+
+.ace_cursor-layer{
+	display:none;
+}
+
+.ace_focus .ace_cursor-layer{
+	display:block;
+}
+
+.ace_print-margin{
+	display:none;
+}

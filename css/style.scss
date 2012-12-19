@@ -108,6 +108,9 @@ body {
 	font-family:monospace;
 	padding:10px;
 	border: 1px solid grey;
+	overflow:scroll;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
 }
 
 .signcontainer textarea {
@@ -214,4 +217,13 @@ div.issueDescription {
 
 #text {
 	margin-left:43px;
+}
+
+#autocomplete {
+	position: absolute;
+	left:0px;
+	right:0px;
+	width:1px;
+	height:1px;
+	z-index:1000;
 }

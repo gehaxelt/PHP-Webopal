@@ -4,7 +4,7 @@ ob_start(); //start output buffering
 include 'config.php';
 include 'inc/contributors.php';
 include 'tools/gc.php';
-$VERSION = "v0.4&alpha;"; // Current Version
+$VERSION = "v0.4"; // Current Version
 
 //Escape all variables
 
@@ -39,6 +39,7 @@ if(isset($_SESSION['sessionstart'])){
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
 if(!isset($_SESSION['actTab'])) {$_SESSION['actTab']=0; }
+if(!isset($_SESSION['debug'])) {$_SESSION['actTab']=false; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
 
 if(!isset($_SESSION['structnr'])) {
@@ -104,6 +105,17 @@ if(!isset($_COOKIE['visited'])){
 	$_SESSION['implInput'][0] = $EXAMPLECODE_IMPL;
 	$_SESSION['runFunction'] = $EXAMPLECODE_CMD;
 }
+$showChangeLog='';
+if(!isset($_COOKIE['version'])){
+	$showChangeLog='firstTime';
+	setcookie("version", 'v0.3', time() + (86400 * 365)); //86400sec is one day
+}else{
+	if($_COOKIE['version']!=$VERSION){
+	$showChangeLog='updateSince'.$_COOKIE['version'];
+	setcookie("version", $VERSION, time() + (86400 * 365)); //86400sec is one day
+	}
+}
+
 
 ?>
 
@@ -156,6 +168,7 @@ if(!isset($_COOKIE['visited'])){
 	</script>
 </head>
 <body>
+			<input type="text" id="autocomplete">
 	<div id="wrapper">
 		<div id="heading">
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
@@ -206,9 +219,10 @@ if(!isset($_COOKIE['visited'])){
 					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 				</div>
 				<div id="sendcontainer">
+					<input name="debug" id="debug" type="checkbox" value="1"> Debugmodus 
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
-					<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 				</div>
+				<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 			</form>
 				<div id="outputcontainer">
 					<div id="output" name="output">Ausgabe</div>
@@ -230,12 +244,14 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+
 		<div id="forJavascript">
 			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
 			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
 			<input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
 			<input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
 			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
+			<input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
 			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
 		</div>
 			<?php include "inc/piwik.php"; ?>
