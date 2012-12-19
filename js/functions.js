@@ -1,4 +1,5 @@
 /* FUNCTIONS.js */
+
 //timeout for session expiration
 function checkIfTimeOut() {
 	if (new Date().getTime() > sessionEnd) {
@@ -222,6 +223,13 @@ function initResize() {
 		resize: function (event, ui) {resizeElements(event, ui); },
 		stop: function (event, ui) {lastResize = 0; resizeElements(event, ui); }
 	});
+}
+
+function split(val) {
+	return val.split(/;\s*/);
+}
+function extractLast(term) {
+	return split(term).pop();
 }
 
 function objToString(obj) {

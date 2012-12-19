@@ -165,7 +165,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 		$k=explode("=>",$c);
 		if($c!=""){
 			if(count($k)==1){
-				$searchToken=preg_replace('/\(.+\)/','',$k[0]);
+				$searchToken=preg_replace('/\s*\(.+\)\s*/','',$k[0]);
 				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
 				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
 				else if(count($cmdInImpl)==1){

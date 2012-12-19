@@ -1,5 +1,4 @@
 /* Array for all the ACE editors */
-
 var editors = [];
 var sessionEnd = 0;
 var timeOutId = 0;
@@ -8,6 +7,11 @@ var markers = [];
 var markersEditor = [];
 var lastResize = 0;
 var maxWidth = 0;
+
+/*FUN*/
+
+/*FUN END */
+
 /* Execute if DOM is ready */
 $(function () {
 	var currentStruc, maxStruc, strucPre, actTab, keySwitch,  preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords;
@@ -19,6 +23,7 @@ $(function () {
 	preventTabSwitch = false;
 	showChangeLog = $('#showChangeLog').val();
 	maxWidth = $('.struccontainer').width() - 40;
+	possibleRun = [];
 	accordionAttr = {
 		collapsible: false,
 		heightStyle: "content",
@@ -44,7 +49,7 @@ $(function () {
 	sessionTimeOut =  parseInt($('#timeOut').val(), 10);
 	sessionEnd = new Date().getTime() + sessionTimeOut;
 	timeOutId = setInterval(checkIfTimeOut, (sessionTimeOut / 20));
-	
+
 	/* Print warning if cookies are disabled */
 	if (navigator.cookieEnabled != true) {
 		$('#warning').show();
@@ -55,8 +60,8 @@ $(function () {
 	}
 
 	initResize();
-	
-	$('#autocomplete').css("opacity",0.01);
+
+	$('#autocomplete').css("opacity", 0.01);
 
 	/* initialize Accordion */
 	$("#accordion").accordion(accordionAttr).accordion("option", "active", actTab);
@@ -300,78 +305,81 @@ $(function () {
 			$("#execute").click();
 		}
 	});
-	
-			possibleRun=[];
-	
-	/*$('#runFunction').autocomplete({
-		source: function(request, response) {
-         var t = $.grep(possibleRun, function(a){
-                  var patt = new RegExp(request.term);
-                  return (a.match(patt));
-              });
-          response(t);
+
+	$('#runFunction').autocomplete({
+		minLength : 1,
+		source: function (request, response) {
+			response($.ui.autocomplete.filter(possibleRun, extractLast(request.term)));
 		},
-				minLength : 2,
-	search: function (event, ui){
-	alert(objToString(ui));
-	$(".ace_editor").each(function (index) {
-		var i, id, inEditor;
-		id = $(this).attr("id");
-		inEditor = editors[id].getValue().match(/FUN\s+(\w+)\s*[:]?/g);
-		if (inEditor != null) {
-			for (i = 0; i < inEditor.length; i += 1) {
-				inEditor[i]=inEditor[i].replace(/FUN\s+(\w+)\s*[:]?/g,'$1');
-				if ($.inArray(inEditor[i],possibleRun) == -1) {possibleRun.push(inEditor[i]); }
+		search: function (event, ui) {
+			$(".ace_editor").each(function (index) {
+				var i, id, inEditor;
+				id = $(this).attr("id");
+				inEditor = editors[id].getValue().match(/FUN\s+(\w+)\s*[:]?/g);
+				if (inEditor != null) {
+					for (i = 0; i < inEditor.length; i += 1) {
+						inEditor[i] = inEditor[i].replace(/FUN\s+(\w+)\s*[:]?/g, '$1');
+						if ($.inArray(inEditor[i], possibleRun) == -1) {possibleRun.push(inEditor[i]); }
+					}
+				}
+			});
+			possibleRun = possibleRun.sort();
+		},
+		focus: function () {
+			return false;
+		},
+		select: function (event, ui) {
+			var terms = split(this.value);
+			terms.pop();
+			terms.push("");
+			this.value = terms.join("; ") + ui.item.value + " ";
+			return false;
+		}
+	});
+
+	$('#autocomplete').autocomplete({
+		source: function (request, response) {
+			var t = $.grep(possibleWords, function (a) {
+				var patt = new RegExp('^' + request.term);
+				return (a.match(patt));
+			});
+			response(t);
+		},
+		autoFocus: true,
+		search: function (event, ui) {
+			possibleWords = ["IMPORT", "denotation", "Denotation", "COMPLETELY", "ONLY", "NatConv", "RealConv", "CharConv", "WHERE", "newline", "SIGNATURE", "IMPLEMENTATION"];
+			$(".ace_editor").each(function (index) {
+				var i, id, inEditor;
+				id = $(this).attr("id");
+				inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{5,})/g);
+				if (inEditor != null) {
+					for (i = 0; i < inEditor.length; i += 1) {
+						if (inEditor[i] != wordAtLeft) {
+							if ($.inArray(inEditor[i], possibleWords) == -1) {possibleWords.push(inEditor[i]); }
+						}
+					}
+				}
+			});
+			possibleWords = possibleWords.sort();
+		},
+		select: function (event, ui) {
+			event.preventDefault();
+			editors[autoComplete].removeWordLeft();
+			editors[autoComplete].insert(ui.item.value + " ");
+			editors[autoComplete].focus();
+		},
+		response: function (event, ui) {
+			if (ui.content == "") {
+				event.preventDefault();
+				editors[autoComplete].focus();
+			} else if (ui.content.length == 1) {
+				event.preventDefault();
+				editors[autoComplete].removeWordLeft();
+				editors[autoComplete].insert(ui.content[0].value + " ");
+				editors[autoComplete].focus();
 			}
 		}
 	});
-	possibleRun = possibleRun.sort();
-}
-	});*/
-	
-			$('#autocomplete').autocomplete({
-				source: function(request, response) {
-               var t = $.grep(possibleWords, function(a){
-                        var patt = new RegExp('^'+ request.term);
-                        return (a.match(patt));
-                    });
-                response(t);
-				},
-				autoFocus: true,
-				search: function (event, ui){
-					possibleWords = ["IMPORT", "denotation", "Denotation", "COMPLETELY", "ONLY", "NatConv", "RealConv", "CharConv", "WHERE", "newline", "SIGNATURE", "IMPLEMENTATION"];
-					$(".ace_editor").each(function (index) {
-						var i, id, inEditor;
-						id = $(this).attr("id");
-						inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{5,})/g);
-						if (inEditor != null) {
-							for (i = 0; i < inEditor.length; i += 1) {
-								if(inEditor[i]!=wordAtLeft){
-									if ($.inArray(inEditor[i],possibleWords) == -1) {possibleWords.push(inEditor[i]); }
-								}
-							}
-						}
-					});
-					possibleWords = possibleWords.sort();
-				},
-				select: function (event, ui){
-					event.preventDefault();
-					editors[autoComplete].removeWordLeft();
-					editors[autoComplete].insert(ui.item.value+" ");
-					editors[autoComplete].focus();
-				},
-				response: function (event, ui){
-					if(ui.content==""){
-						event.preventDefault();
-						editors[autoComplete].focus();
-					} else if(ui.content.length==1) {
-						event.preventDefault();
-						editors[autoComplete].removeWordLeft();
-						editors[autoComplete].insert(ui.content[0].value+" ");
-						editors[autoComplete].focus();
-					}
-				}
-			})
 
 	/* Bind action for ctrl+space code completion */
 	$(document).keydown(function (e) {
@@ -380,7 +388,7 @@ $(function () {
 			$('#execute').click();
 		} else if ((e.ctrlKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " ") {
 			//Find focused ACE editor
-			 autoComplete = $('.ace_focus').attr("id");
+			autoComplete = $('.ace_focus').attr("id");
 			if (editors[autoComplete] == null) {
 				return false;
 			}
@@ -393,10 +401,10 @@ $(function () {
 			// If wordAtLeft too small, dont try to complete
 			if (wordAtLeft.length < 2) { return false; }
 
-			cursorPos=$('.ace_focus').find('.ace_cursor').offset();
+			cursorPos = $('.ace_focus').find('.ace_cursor').offset();
 			$('#autocomplete').offset(cursorPos);
-			
-			$('#autocomplete').focus().autocomplete( "search", wordAtLeft );
+
+			$('#autocomplete').focus().autocomplete("search", wordAtLeft);
 
 		} else if (
 			((e.altKey || e.metaKey) && (e.ctrlKey) &&
