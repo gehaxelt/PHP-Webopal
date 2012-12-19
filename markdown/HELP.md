@@ -13,10 +13,7 @@ Eine in mehreren Strukturen definierte Funktion kann wie folgt richtig fokussier
 Standardmäßig fokussiert Webopal die `*.sign` Dateien. Dadurch könnt ihr Hilfsfunktionen, welche in der `*.impl` deklariert wurden, nicht ausführen. Falls ihr das jedoch tun wollt, dann könnt ihr mit dem Debugmodus die `*.impl` Dateien fokussieren.
 
 ##4. Automatische Codevervollständigung
-Einfach in einem Editorfeld **`Strg+Leer`** drücken. Bestimmte lange Wörter wie `IMPLEMENTATION` oder `denotation` kennt WebOpal schon. Jedoch kann jedes in einem Editorfeld geschriebene Wort, länger als 4 Buchstaben, vervollständigt werden. Bitte beachtet jedoch, dass zur Zeit die Codevervollständigung eineindeutig sein muss:
-
-- `IMP` **`Strg+Leer`** führt zu nichts
-- `IMPL` **`Strg+Leer`** führt dagegen zu `IMPLEMENTATION`
+Einfach in einem Editorfeld **`Strg+Leer`** drücken. Bestimmte lange Wörter wie `IMPLEMENTATION` oder `denotation` kennt WebOpal schon. Jedoch kann jedes in einem Editorfeld geschriebene Wort, länger als 4 Buchstaben, vervollständigt werden. Die Vervollständigung beachtet Groß- & Kleinschreibung und wählt bei einem möglichen Ergebnis dieses aus. Bei mehreren möglichen Ergebnissen erscheint ein Auswahlfeld.
 
 Probiert es einfach aus und definiert eine Funktion wie `peterPepperIsCool`, schreibt noch einmal `peter` und drückt **`Strg+Leer`**.
 

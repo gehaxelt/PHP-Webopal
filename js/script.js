@@ -8,10 +8,9 @@ var markers = [];
 var markersEditor = [];
 var lastResize = 0;
 var maxWidth = 0;
-
 /* Execute if DOM is ready */
 $(function () {
-	var currentStruc, maxStruc, strucPre, actTab, keySwitch,  preventTabSwitch,  showChangeLog, accordionAttr, pre, data;
+	var currentStruc, maxStruc, strucPre, actTab, keySwitch,  preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords;
 	currentStruc = $('.num').length;
 	maxStruc = $('#maxStruc').val();
 	strucPre = $('#strucPre').val();
@@ -56,6 +55,8 @@ $(function () {
 	}
 
 	initResize();
+	
+	$('#autocomplete').css("opacity",0.01);
 
 	/* initialize Accordion */
 	$("#accordion").accordion(accordionAttr).accordion("option", "active", actTab);
@@ -101,7 +102,6 @@ $(function () {
 		editor = "editor-" + err.type + "-" + $(".nameInput[value=" + err.file + "]").parent().find('.num').val();
 		keySwitch = true;
 		$('#accordion').accordion("option", "active", c);
-		//alert(err.file);
 		editors[editor].focus();
 		editors[editor].gotoLine(parseInt(err.toLine, 10) + 1, parseInt(err.toChar, 10) + 1, false);
 	});
@@ -300,67 +300,103 @@ $(function () {
 			$("#execute").click();
 		}
 	});
+	
+			possibleRun=[];
+	
+	/*$('#runFunction').autocomplete({
+		source: function(request, response) {
+         var t = $.grep(possibleRun, function(a){
+                  var patt = new RegExp(request.term);
+                  return (a.match(patt));
+              });
+          response(t);
+		},
+				minLength : 2,
+	search: function (event, ui){
+	alert(objToString(ui));
+	$(".ace_editor").each(function (index) {
+		var i, id, inEditor;
+		id = $(this).attr("id");
+		inEditor = editors[id].getValue().match(/FUN\s+(\w+)\s*[:]?/g);
+		if (inEditor != null) {
+			for (i = 0; i < inEditor.length; i += 1) {
+				inEditor[i]=inEditor[i].replace(/FUN\s+(\w+)\s*[:]?/g,'$1');
+				if ($.inArray(inEditor[i],possibleRun) == -1) {possibleRun.push(inEditor[i]); }
+			}
+		}
+	});
+	possibleRun = possibleRun.sort();
+}
+	});*/
+	
+			$('#autocomplete').autocomplete({
+				source: function(request, response) {
+               var t = $.grep(possibleWords, function(a){
+                        var patt = new RegExp('^'+ request.term);
+                        return (a.match(patt));
+                    });
+                response(t);
+				},
+				autoFocus: true,
+				search: function (event, ui){
+					possibleWords = ["IMPORT", "denotation", "Denotation", "COMPLETELY", "ONLY", "NatConv", "RealConv", "CharConv", "WHERE", "newline", "SIGNATURE", "IMPLEMENTATION"];
+					$(".ace_editor").each(function (index) {
+						var i, id, inEditor;
+						id = $(this).attr("id");
+						inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{5,})/g);
+						if (inEditor != null) {
+							for (i = 0; i < inEditor.length; i += 1) {
+								if(inEditor[i]!=wordAtLeft){
+									if ($.inArray(inEditor[i],possibleWords) == -1) {possibleWords.push(inEditor[i]); }
+								}
+							}
+						}
+					});
+					possibleWords = possibleWords.sort();
+				},
+				select: function (event, ui){
+					event.preventDefault();
+					editors[autoComplete].removeWordLeft();
+					editors[autoComplete].insert(ui.item.value+" ");
+					editors[autoComplete].focus();
+				},
+				response: function (event, ui){
+					if(ui.content==""){
+						event.preventDefault();
+						editors[autoComplete].focus();
+					} else if(ui.content.length==1) {
+						event.preventDefault();
+						editors[autoComplete].removeWordLeft();
+						editors[autoComplete].insert(ui.content[0].value+" ");
+						editors[autoComplete].focus();
+					}
+				}
+			})
 
 	/* Bind action for ctrl+space code completion */
 	$(document).keydown(function (e) {
-		var i, s, editor, wordAtLeft, possibleWord, possibleWords, foundWords, editorPos;
+		var i, editor, possibleWord, foundWords, editorPos, cursorPos;
 		if ((e.ctrlKey || e.metaKey) && (e.charCode || e.keyCode) == 13) {
 			$('#execute').click();
 		} else if ((e.ctrlKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " ") {
 			//Find focused ACE editor
-			s = $('.ace_focus').attr("id");
-			if (editors[s] == null) {
+			 autoComplete = $('.ace_focus').attr("id");
+			if (editors[autoComplete] == null) {
 				return false;
 			}
 
 			//Get word left from cursor
-			editors[s].selection.selectWordLeft();
-			wordAtLeft = editors[s].session.getDocument().getTextRange(editors[s].selection.getRange());
-			editors[s].selection.selectWordRight();
+			editors[autoComplete].selection.selectWordLeft();
+			wordAtLeft = editors[autoComplete].session.getDocument().getTextRange(editors[autoComplete].selection.getRange());
+			editors[autoComplete].selection.selectWordRight();
 
 			// If wordAtLeft too small, dont try to complete
 			if (wordAtLeft.length < 2) { return false; }
 
-			//List of words which should be always available for code completion
-			possibleWords = ["IMPORT", "denotation", "Denotation", "COMPLETELY", "ONLY", "NatConv", "RealConv", "CharConv", "WHERE", "newline", "SIGNATURE", "IMPLEMENTATION"];
-
-			/* Extend the possibleWords List with words longer than 4 letters in ace editors
-			 * If you have for example the word "sortYear" in one of the editors
-			 * and type "sort"+ctrl+space in another editor, it should autocomplete
-			 */
-			$(".ace_editor").each(function (index) {
-				var i, id, inEditor;
-				id = $(this).attr("id");
-				inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{4,})/g);
-				if (inEditor != null) {
-					for (i = 0; i < inEditor.length; i += 1) {
-						if (possibleWords.indexOf(inEditor[i]) == -1) {possibleWords.push(inEditor[i]); }
-					}
-				}
-			});
-
-			foundWords = [];
-
-			/* Check if our wordLeft has ONE possible match in possibleWords */
-			for (i = 0; i < possibleWords.length; i += 1) {
-				possibleWord = possibleWords[i];
-				if (possibleWord !== undefined &&
-						possibleWord !== wordAtLeft &&
-						possibleWord.substring(0, wordAtLeft.length) === wordAtLeft &&
-						possibleWord !== 'length') {
-
-					// stop, if there is more than one possibility
-					if (foundWords.length === 1) { return false; }
-					if (possibleWord !== 'length') { foundWords[0] = possibleWord; }
-				}
-			}
-
-			// stop, if no word found
-			if (foundWords.length === 0) {return false; }
-
-			// insert found word
-			editors[s].removeWordLeft();
-			editors[s].insert(foundWords[0]);
+			cursorPos=$('.ace_focus').find('.ace_cursor').offset();
+			$('#autocomplete').offset(cursorPos);
+			
+			$('#autocomplete').focus().autocomplete( "search", wordAtLeft );
 
 		} else if (
 			((e.altKey || e.metaKey) && (e.ctrlKey) &&

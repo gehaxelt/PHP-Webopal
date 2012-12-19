@@ -243,3 +243,12 @@ div.issueDescription {
 #text {
   margin-left: 43px;
 }
+
+#autocomplete {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  width: 1px;
+  height: 1px;
+  z-index: 1000;
+}

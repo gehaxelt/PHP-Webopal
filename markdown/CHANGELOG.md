@@ -7,6 +7,7 @@ Changelog WebOpal
 - **NEW FEATURE**: Es kann jetzt auch `IMPLEMENTATION` und `SIGNATURE` direkt in den Eingabefeldern definiert werden. Falls dies nicht geschieht, wird das automatisch gemacht.
 - **NEW FEATURE**: Error Jumping: Fehler werden jetzt automatisch rötlich im Editor hinterlegt und man kann direkt zu ihnen springen.
 - **NEW FEATURE**: Die Editorbereiche sind jetzt beliebig vergrößerbar (untere Rechte Ecke)
+- **CHANGE**: Code Completion kann jetzt auch mehrdeutige Begriffe vervollständigen. Es wird ein Auswahldialog ausgezeigt.
 - Minor: Javascript wurde mit JS-Lint überprüft
 - Minor: FEATURES.md endlich ausgefüllt
 - Minor: Nach einem Versionsupdate wird der neuste Teil des Changelog angezeigt (Cookie)

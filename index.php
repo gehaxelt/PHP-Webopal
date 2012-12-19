@@ -168,6 +168,7 @@ if(!isset($_COOKIE['version'])){
 	</script>
 </head>
 <body>
+			<input type="text" id="autocomplete">
 	<div id="wrapper">
 		<div id="heading">
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
@@ -243,6 +244,7 @@ if(!isset($_COOKIE['version'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+
 		<div id="forJavascript">
 			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
 			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
