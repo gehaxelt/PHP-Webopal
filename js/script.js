@@ -195,6 +195,11 @@ $(function() {
 
 	/* Bind click action to execute button */
 	$("#execute").click(function(){
+		//check if execute is empty
+		if($("#runFunction").val()==""){
+			$("#output").html("Keine Funktion angegeben.");
+			return;
+		}
 		/* copy content of ACE to hidden inputs */
 		$(".struccontainer").each(function(index){
 			$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
