@@ -19,6 +19,7 @@ $(function () {
 	keySwitch = false;
 	preventTabSwitch = false;
 	showChangeLog = $('#showChangeLog').val();
+	maxWidth = $('.struccontainer').width() - 40;
 	accordionAttr = {
 		collapsible: false,
 		heightStyle: "content",
@@ -39,12 +40,22 @@ $(function () {
 			keySwitch = false;
 		}
 	};
-	maxWidth = $('.struccontainer').width() - 40;
 
 	if (currentStruc >= maxStruc) {$("#addStruc").attr("disabled", "disabled"); }
 	sessionTimeOut =  parseInt($('#timeOut').val(), 10);
 	sessionEnd = new Date().getTime() + sessionTimeOut;
 	timeOutId = setInterval(checkIfTimeOut, (sessionTimeOut / 20));
+	
+	/* Print warning if cookies are disabled */
+	if (navigator.cookieEnabled != true) {
+		$('#warning').show();
+	}
+
+	if ($('.delStruc').size() <= 1) {
+		$('.delStruc').hide();
+	}
+
+	initResize();
 
 	/* initialize Accordion */
 	$("#accordion").accordion(accordionAttr).accordion("option", "active", actTab);
@@ -63,9 +74,6 @@ $(function () {
 		editors[sign].getSession().setMode("ace/mode/opal");
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 	});
-
-	initResize();
-
 
 	$("#restore_exampl").click(function () {
 		var num = $('.num:first').val();
@@ -392,15 +400,6 @@ $(function () {
 			}
 		}
 	});
-
-	/* Print warning if cookies are disabled */
-	if (navigator.cookieEnabled != true) {
-		$('#warning').show();
-	}
-
-	if ($('.delStruc').size() <= 1) {
-		$('.delStruc').hide();
-	}
 
     $('#bugReport').click(function () {
 		$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
