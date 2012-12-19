@@ -16,6 +16,7 @@ if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
 if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
+if(isset($_GET['debug'])) { $_GET['debug']=htmlentities($_GET['debug']); }else{$_GET['debug']=false;}
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
@@ -37,6 +38,7 @@ if($page=="trashmail"){
 	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN(array_slice($_GET['signInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
 	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['actTab'])) {$_SESSION['actTab']=$_GET['actTab'];}
+	if(isset($_GET['debug'])) {$_SESSION['debug']=$_GET['debug'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -49,7 +51,7 @@ if($page=="trashmail"){
 	}
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
-			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']).$_SESSION['actTab']);
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['debug']));
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
@@ -61,7 +63,16 @@ if($page=="trashmail"){
 }else if($page=="issueForm"){
 	echo 	json_encode(getIssueForm());
 }else{
-	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
+	$text=getMD(strtoupper($page));
+	if(isset($_GET['since'])){
+		if($_GET['since']!=""){
+			if(preg_match('~'.$_GET['since'].'~',$text)){
+				$split=preg_split('~.*h2.*'.$_GET['since'].'~',$text,2);
+				$text=$split[0];
+			}
+		}
+	}
+	echo json_encode(Array("title"=>$page,"text"=>$text));
 }
 
 function getMD($s){
@@ -94,17 +105,16 @@ function fixIMPLandSIGN($arr,$names) {
 	}
 	return $arr;
 }
-
-function runOasys($impls,$signs,$cmd,$names) {
+function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
-	if($cmd==""){return "Keine Funktion(en) angegeben.";}
+	if($cmd==""){return Array("log"=>"Keine Funktion(en) angegeben.");}
 	
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
-		if(!is_dir($dirStr)){break;}else if($i==4){return "Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!";}
+		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
 	$old=$_SESSION['randNum'];
 	$_SESSION['randNum']=$ranFile;
@@ -119,11 +129,11 @@ function runOasys($impls,$signs,$cmd,$names) {
 			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
+			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt. Du Lausbub! Versuchst du unseren Server zu hacken?");}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
+			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Strukturnamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
 
 			/* Create impl and sign files for the structure */
 			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
@@ -140,21 +150,22 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$cmd=str_replace("&gt;",">",$cmd);
 	$cmds=explode(";",$cmd);
 	if(count($cmds)>$RUNMAX) {
-	//if(count($cmd)>$RUNMAX){
-		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
+		return Array("log"=>"Du kannst maximal ".$RUNMAX." Funktionen hintereinander ausführen."); //senseless error description
 	}
 	$runOrder="";
 	$lastFocus="";
 	$added=Array();
 	$focus="";
+	$extension=".sign";
+	if($debugOpal){$extension=".impl";}
 	foreach($cmds as $c){
 		$focussed=false;
 		$k=explode("=>",$c);
 		if($c!=""){
 			if(count($k)==1){
-				$searchToken=preg_replace('/\(.+\)/','',$k[0]);
+				$searchToken=preg_replace('/\s*\(.+\)\s*/','',$k[0]);
 				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
-				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
+				if(count($cmdInImpl)>1){return Array("log"=>"Die Funktion '$c' wurde mehrmals definiert.<br>Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.");}
 				else if(count($cmdInImpl)==1){
 					$focus=array_keys($cmdInImpl);
 					$focus=$focus[0];
@@ -168,7 +179,7 @@ function runOasys($impls,$signs,$cmd,$names) {
 				$focus=array_search($k[0],$names);
 				$focussed=true;
 			}else{
-				return "Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!";
+				return Array("log"=>"Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!");
 			}
 			
 			if($focus!=""||$focussed){
@@ -177,7 +188,8 @@ function runOasys($impls,$signs,$cmd,$names) {
 				$added[]=$names[$focus];
 				}
 				if($lastFocus!=$names[$focus]){
-				$runOrder.="f ".$names[$focus].".impl\n";
+
+				$runOrder.="f ".$names[$focus].$extension."\n";
 				$lastFocus=$names[$focus];
 				}
 			}
@@ -192,8 +204,10 @@ function runOasys($impls,$signs,$cmd,$names) {
 	
 	/* Return log */
 	$result=file_get_contents($dirStr."/runOpal.log");
+	$result=preg_replace("~(\n.*quit.*\n.*)~","",$result);
+	file_put_contents($dirStr."/runOpal.log", $ADVERTCOMMENT."\n\n".$result);
 	$result=preg_replace("/\n/","\n\t\t",$result);
-	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
+	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	$result=preg_replace("/\t/","&nbsp;",$result);
 	$results=explode("\n",$result);
