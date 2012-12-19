@@ -105,17 +105,16 @@ function fixIMPLandSIGN($arr,$names) {
 	}
 	return $arr;
 }
-
 function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
-	if($cmd==""){return "Keine Funktion(en) angegeben.";}
+	if($cmd==""){return Array("log"=>"Keine Funktion(en) angegeben.");}
 	
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
-		if(!is_dir($dirStr)){break;}else if($i==4){return "Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!";}
+		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
 	$old=$_SESSION['randNum'];
 	$_SESSION['randNum']=$ranFile;
@@ -130,11 +129,11 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
+			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt.");}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
+			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
 
 			/* Create impl and sign files for the structure */
 			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
@@ -151,8 +150,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	$cmd=str_replace("&gt;",">",$cmd);
 	$cmds=explode(";",$cmd);
 	if(count($cmds)>$RUNMAX) {
-	//if(count($cmd)>$RUNMAX){
-		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
+		return Array("log"=>"Du kannst maximal ".$RUNMAX." Funktionen hintereinander ausführen."); //senseless error description
 	}
 	$runOrder="";
 	$lastFocus="";
@@ -167,7 +165,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			if(count($k)==1){
 				$searchToken=preg_replace('/\s*\(.+\)\s*/','',$k[0]);
 				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
-				if(count($cmdInImpl)>1){return "Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.";}
+				if(count($cmdInImpl)>1){return Array("log"=>"Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.");}
 				else if(count($cmdInImpl)==1){
 					$focus=array_keys($cmdInImpl);
 					$focus=$focus[0];
@@ -181,7 +179,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 				$focus=array_search($k[0],$names);
 				$focussed=true;
 			}else{
-				return "Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!";
+				return Array("log"=>"Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!");
 			}
 			
 			if($focus!=""||$focussed){
