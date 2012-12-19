@@ -124,7 +124,6 @@ function validateIssueForm() {
 			},
 			agree: "required",
 			email: {
-				required: true,
 				email: true,
 				remote: {
 					url: "inc/ajax.php",
@@ -147,7 +146,6 @@ function validateIssueForm() {
 			},
 			agree: "<br>Schau Dir doch die Issues auf der linken Seite an",
 			email: {
-				required: "Das E-Mailfeld wird benötigt",
 				email: "Bitte eine E-Mailadresse im Format foo@foo.de angeben",
 				remote: "Bitte keine Trashmailadresse!"
 			}
@@ -168,14 +166,6 @@ function getIssueForm() {
 		success: function (data) {
 			$('#reportForm').children('.content').html(data);
 			showRecaptcha("reCaptcha");
-			$('.whyEmail').hide();
-			$('#whyEmail').hover(
-				function () {
-					$('.whyEmail').show('fast');
-				},
-				function () {
-					$('.whyEmail').hide('fast');
-				}
 			);
 			validateIssueForm();
 		},
