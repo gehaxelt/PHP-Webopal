@@ -16,6 +16,7 @@ if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
 if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
+if(isset($_GET['debug'])) { $_GET['debug']=htmlentities($_GET['debug']); }else{$_GET['debug']=false;}
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
@@ -37,6 +38,7 @@ if($page=="trashmail"){
 	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN(array_slice($_GET['signInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
 	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
 	if(isset($_GET['actTab'])) {$_SESSION['actTab']=$_GET['actTab'];}
+	if(isset($_GET['debug'])) {$_SESSION['debug']=$_GET['debug'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -49,7 +51,7 @@ if($page=="trashmail"){
 	}
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
-			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName']).$_SESSION['actTab']);
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['debug']));
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
@@ -61,7 +63,16 @@ if($page=="trashmail"){
 }else if($page=="issueForm"){
 	echo 	json_encode(getIssueForm());
 }else{
-	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
+	$text=getMD(strtoupper($page));
+	if(isset($_GET['since'])){
+		if($_GET['since']!=""){
+			if(preg_match('~'.$_GET['since'].'~',$text)){
+				$split=preg_split('~.*h2.*'.$_GET['since'].'~',$text,2);
+				$text=$split[0];
+			}
+		}
+	}
+	echo json_encode(Array("title"=>$page,"text"=>$text));
 }
 
 function getMD($s){
@@ -95,7 +106,7 @@ function fixIMPLandSIGN($arr,$names) {
 	return $arr;
 }
 
-function runOasys($impls,$signs,$cmd,$names) {
+function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
 	if($cmd==""){return "Keine Funktion(en) angegeben.";}
@@ -147,6 +158,8 @@ function runOasys($impls,$signs,$cmd,$names) {
 	$lastFocus="";
 	$added=Array();
 	$focus="";
+	$extension=".sign";
+	if($debugOpal){$extension=".impl";}
 	foreach($cmds as $c){
 		$focussed=false;
 		$k=explode("=>",$c);
@@ -177,7 +190,8 @@ function runOasys($impls,$signs,$cmd,$names) {
 				$added[]=$names[$focus];
 				}
 				if($lastFocus!=$names[$focus]){
-				$runOrder.="f ".$names[$focus].".impl\n";
+
+				$runOrder.="f ".$names[$focus].$extension."\n";
 				$lastFocus=$names[$focus];
 				}
 			}

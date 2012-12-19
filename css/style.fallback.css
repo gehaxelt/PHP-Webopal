@@ -21,6 +21,18 @@
   color: fuchsia;
 }
 
+.ace_cursor-layer {
+  display: none;
+}
+
+.ace_focus .ace_cursor-layer {
+  display: block;
+}
+
+.ace_print-margin {
+  display: none;
+}
+
 @authors Sebastian Neef, Moritz Lummerzheim, Lukas Eipert;
 @font-face {
   font-family: 'Rambla';
