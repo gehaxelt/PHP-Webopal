@@ -166,7 +166,6 @@ function getIssueForm() {
 		success: function (data) {
 			$('#reportForm').children('.content').html(data);
 			showRecaptcha("reCaptcha");
-			);
 			validateIssueForm();
 		},
 		error: function (data) {

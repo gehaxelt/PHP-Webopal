@@ -121,7 +121,6 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
 		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
-	$old=$_SESSION['randNum'];
 	$_SESSION['randNum']=$ranFile;
 	mkdir($dirStr);
 
@@ -139,6 +138,8 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
 			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Strukturnamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
+
+			if($names[$i]==""){$names[$i]="keinName".substr($_SESSION['randNum'],0,4).rand(1,100);}
 
 			/* Create impl and sign files for the structure */
 			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
