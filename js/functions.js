@@ -1,7 +1,7 @@
 /* FUNCTIONS.js */
 
 //timeout for session expiration
-function checkIfTimeOut() {
+var checkIfTimeOut = function () {
 	if (new Date().getTime() > sessionEnd) {
 		$('#dialog').dialog();
 		$('#dialog').dialog("destroy");
