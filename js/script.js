@@ -82,10 +82,17 @@ $(function () {
 	});
 
 	$("#restore_exampl").click(function () {
-		var num = $('.num:first').val();
-		editors["editor-impl-" + num].setValue($('#implEx').val());
-		editors["editor-sign-" + num].setValue($('#signEx').val());
-		$('#runFunction').val($('#cmdEx').val());
+		var answer, active, num, cmds, name;
+		active = $( "#accordion" ).accordion( "option", "active" );
+		name = $('.nameInput').eq(active).val();
+		answer = confirm(name + " wirklich mit Hello World überschreiben?");
+		if(answer){
+			num = $('.num').eq(active).val();
+			editors["editor-impl-" + num].setValue($('#implEx').val());
+			editors["editor-sign-" + num].setValue($('#signEx').val());
+			cmds = $('#runFunction').val();
+			$('#runFunction').val(cmds + ";" + $('#cmdEx').val());
+		}
 	});
 
 	$(document).on("change", '.nameInput', function (event) {

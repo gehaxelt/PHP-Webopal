@@ -129,11 +129,11 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt.");}
+			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt. Du Lausbub! Versuchst du unseren Server zu hacken?");}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Dateinamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
+			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Strukturnamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
 
 			/* Create impl and sign files for the structure */
 			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
@@ -165,7 +165,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			if(count($k)==1){
 				$searchToken=preg_replace('/\s*\(.+\)\s*/','',$k[0]);
 				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
-				if(count($cmdInImpl)>1){return Array("log"=>"Die Funktion '$c' wurde mehrmals definiert. Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.");}
+				if(count($cmdInImpl)>1){return Array("log"=>"Die Funktion '$c' wurde mehrmals definiert.<br>Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.");}
 				else if(count($cmdInImpl)==1){
 					$focus=array_keys($cmdInImpl);
 					$focus=$focus[0];
