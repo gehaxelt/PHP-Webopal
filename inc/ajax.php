@@ -204,8 +204,10 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	
 	/* Return log */
 	$result=file_get_contents($dirStr."/runOpal.log");
+	$result=preg_replace("~(\n.*quit.*\n.*)~","",$result);
+	file_put_contents($dirStr."/runOpal.log", $ADVERTCOMMENT."\n\n".$result);
 	$result=preg_replace("/\n/","\n\t\t",$result);
-	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
+	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	$result=preg_replace("/\t/","&nbsp;",$result);
 	$results=explode("\n",$result);
