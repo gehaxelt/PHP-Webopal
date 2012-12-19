@@ -22,10 +22,15 @@ if(isset($_GET["page"])){$page=$_GET["page"];}
 
 if($page=="trashmail"){
 	if(count($FORBIDDENMAIL)>0){
-		if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$_GET['email'],$matches)){
-			echo json_encode("Domain ".$matches[0]." nicht erlaubt");
-		}else{
-			echo json_encode(true);
+		$email = $_GET['email'];
+		if(preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $email)){
+			if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$email,$matches)){
+				echo json_encode("Domain ".$matches[0]." nicht erlaubt");
+			}else{
+				echo json_encode(true);
+			}
+		} else {
+			echo json_encode("Das ist keine Email");
 		}
 	}else{
 		echo json_encode(true);
