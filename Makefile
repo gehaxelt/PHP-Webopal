@@ -56,5 +56,5 @@ RUBY-installed:
 		@which gem > /dev/null || { echo "please install ruby (http://www.ruby-lang.org/)"; exit 1; }
 
 clean:
-	rm $(JSOUTPUT)
+	rm $(JSOUTPUT) ./js/jquery-ui.min.js ./js/jquery-1.8.3.min.js
 	rm $(CSSOUT)
