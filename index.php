@@ -173,7 +173,7 @@ if(!isset($_COOKIE['version'])){
     <div><input type="text" id="autocomplete"></div>
     <div id="wrapper">
       <div id="heading">
-        <a href="<?php echo $HOSTURL ?>"><img src="img/WebOpalLogo.png" id="logo" style="width: 71px; height: 71px;" /></a><h1 style="display:inline;">WebOpal <abbr title="Version <?php echo $VERSION; ?>">v<?php echo $VERSION; ?></abbr></h1>   
+        <a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <abbr title="Version <?php echo $VERSION; ?>">v<?php echo $VERSION; ?></abbr></h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
