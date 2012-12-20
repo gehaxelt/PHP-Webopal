@@ -196,57 +196,59 @@ if(!isset($_COOKIE['version'])){
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
-		Codebeispiele: <a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>><br>
-		<?php if($_SESSION['loggedIn']){ echo "Du bist gerade im Verzeichnis "."leer"." [Verzeichnis wechseln]";} ?>
+		<div class="codeRelated">Codebeispiele: <a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>></div><br>
+		<?php if($_SESSION['loggedIn']){ echo "Du bist gerade im Verzeichnis "."leer"." <a href='#' id='getFolders'>[Verzeichnis wechseln]</a><div id='folders' style='display:none;'></div>";} ?>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
 		<br>
 		<br><input type="button" id="pseudo">
-		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
-				<div id="accordion">
-				<?php
-				/* Print Signature & Implementation Areas */
-				foreach($_SESSION['fileName'] as $i => $fn){
-					echo '
-					<h3 class="filename">
-					<span style="float:right" class="delStruc">Löschen</span>
-					Struktur <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
-					<input type="hidden" value="'.$i.'" class="num">
-					</h3>
-					<div class="struccontainer" style="padding:10px;">
-						<div class="implcontainer resizeEditor">
-							<div class="resizeNot">Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload"></div>
-							<div class="impl resizeAlso" id="editor-impl-'.$i.'"></div>
-							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i],ENT_QUOTES,'UTF-8').'" name="implInput['.$i.']" >
-						</div>
-						<div class="signcontainer resizeEditor">
-							<div class="resizeNot">Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload"></div>
-							<div class="sign resizeAlso" id="editor-sign-'.$i.'"></div>
-							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i],ENT_QUOTES,'UTF-8').'" name="signInput['.$i.']" >
-						</div>
-					</div>';
-				}
-				?>
-				</div>
-				<input type="text" id="structnr" name="structnr" value="<?php echo htmlentities($_SESSION['structnr']);?>">
-				<br>
-				<div id="funccontainer">
-					Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
-					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
-				</div>
-				<div id="sendcontainer">
-					<input name="debug" id="debug" type="checkbox" value="1"> Debugmodus 
-					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
-				</div>
-				<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
-			</form>
-				<div id="outputcontainer">
-					<div id="output" name="output">Ausgabe</div>
-				</div>
-		<div id="download">
-			<input type="button" name="download" class="dialog" value="Download als Tarball">
+		<div class="codeRelated">
+			<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
+					<div id="accordion">
+					<?php
+					/* Print Signature & Implementation Areas */
+					foreach($_SESSION['fileName'] as $i => $fn){
+						echo '
+						<h3 class="filename">
+						<span style="float:right" class="delStruc">Löschen</span>
+						Struktur <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+						<input type="hidden" value="'.$i.'" class="num">
+						</h3>
+						<div class="struccontainer" style="padding:10px;">
+							<div class="implcontainer resizeEditor">
+								<div class="resizeNot">Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload"></div>
+								<div class="impl resizeAlso" id="editor-impl-'.$i.'"></div>
+								<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i],ENT_QUOTES,'UTF-8').'" name="implInput['.$i.']" >
+							</div>
+							<div class="signcontainer resizeEditor">
+								<div class="resizeNot">Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload"></div>
+								<div class="sign resizeAlso" id="editor-sign-'.$i.'"></div>
+								<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i],ENT_QUOTES,'UTF-8').'" name="signInput['.$i.']" >
+							</div>
+						</div>';
+					}
+					?>
+					</div>
+					<input type="text" id="structnr" name="structnr" value="<?php echo htmlentities($_SESSION['structnr']);?>">
+					<br>
+					<div id="funccontainer">
+						Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
+						<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
+					</div>
+					<div id="sendcontainer">
+						<input name="debug" id="debug" type="checkbox" value="1"> Debugmodus 
+						<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
+					</div>
+					<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
+				</form>
+					<div id="outputcontainer">
+						<div id="output" name="output">Ausgabe</div>
+					</div>
+			<div id="download">
+				<input type="button" name="download" class="dialog" value="Download als Tarball">
+			</div>
 		</div>
 		<br>
 		Bibliotheca Opalica Suche:

@@ -14,7 +14,7 @@ var maxWidth = 0;
 
 /* Execute if DOM is ready */
 $(function () {
-	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos;
+	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos, foldersShown;
 	currentStruc = $('.num').length;
 	maxStruc = $('#maxStruc').val();
 	strucPre = $('#strucPre').val();
@@ -25,6 +25,7 @@ $(function () {
 	maxWidth = $('.struccontainer').width() - 40;
 	possibleRun = [];
 	jWasPressed = false;
+	foldersShown = false;
 	clearKeyState = function () {
 		if (jWasPressed) {editors[editorPos[jumpFrom]].focus(); }
 		jWasPressed = false;
@@ -315,7 +316,34 @@ $(function () {
 			}
 		});
 	});
-	
+
+	$("#getFolders").click(function () {
+		var name, w;
+		if(foldersShown){
+			$('#folders').toggle('slow');
+			$('.codeRelated').toggle('slow');
+			foldersShown=false;	
+		}else{
+			$.ajax({
+				url: 'inc/ajax.php',
+				type: 'GET',
+				dataType: "json",
+				data: "page=getFolders",
+				success: function (data) {
+					$('#folders').html(data);
+					$('#folders').toggle('slow');
+					$('.codeRelated').toggle('slow');
+					foldersShown=true;
+					sessionEnd = new Date().getTime() + sessionTimeOut;
+				},
+				error: function (data) {
+					$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+					$('#dialog').dialog({title: "ERROR", width: 700});
+				}
+			});
+		}
+	});
+
 	$("#login").click(function () {
 		var name, w;
 		name = $(this).attr("name");

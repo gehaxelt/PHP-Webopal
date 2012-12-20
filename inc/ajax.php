@@ -71,6 +71,12 @@ if($page=="trashmail"){
 	echo 	json_encode(getLoginForm());
 }else if($page=="loginCheck"){
 	echo 	json_encode(loginCheck($_GET['user'],$_GET['pw']));
+}else if($page=="getFolders"){
+	if($_SESSION['loggedIn']){
+	echo 	json_encode(getFolders($_SESSION['loggedInPath']));
+	}else{
+	echo "Not logged in. Please reload the page.";
+	}
 }else{
 	$text=getMD(strtoupper($page));
 	if(isset($_GET['since'])){
@@ -359,6 +365,22 @@ function checkCaptcha(){
 	} else {
 		return "Captcha falsch:".$resp->error;
 	}
+}
+
+function getFolders($path){
+global $TMPDIR;
+$echo='';
+foreach (new DirectoryIterator('../'.$TMPDIR.'/userfiles/'.$path) as $fn) {
+    if (!$fn->isDot()) {
+     $echo.='<a href="#" class=".changeDir" name="';
+     $echo.=$fn->getFilename();
+     $echo.='">';
+     $echo.=$fn->getFilename();
+     $echo.='</a><br>';     
+    }
+ }
+ 
+return $echo;
 }
 
 ?>
