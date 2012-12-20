@@ -266,7 +266,7 @@ function loginCheck($user,$pw){
 			$_SESSION['loggedInAs']=$user;
 			$_SESSION['loggedInPath']=$users[$user]["path"];
 			$users[$user]["lastTime"]=time();
-			file_put_contents($TMPDIR.'/users',serialize($users));
+			file_put_contents("../".$TMPDIR.'/users',serialize($users));
 			return Array("success"=>true,"msg"=>"");
 		}else{
 			return Array("success"=>false,"msg"=>"User/Passwort stimmen nicht überein");

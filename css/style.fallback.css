@@ -260,3 +260,7 @@ div.issueDescription {
   width: 1px;
   height: 1px;
 }
+
+.floatR {
+  float: right;
+}

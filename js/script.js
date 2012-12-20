@@ -316,7 +316,6 @@ $(function () {
 		});
 	});
 	
-	/* Bind click functions for download, changelog, etc  */
 	$("#login").click(function () {
 		var name, w;
 		name = $(this).attr("name");
@@ -350,13 +349,13 @@ $(function () {
 							data: "page=loginCheck&user=" + $('#user').val() + "&pw=" + SHA1(SHA1($('#pw').val()) + $('#secret').val()),
 							success: function (data) {
 								if(data.success){
-									$('#dialog').append("Success");
+									window.location.href = "index.php";
 								}else{
 									$('#dialog').append(data.msg);
 								}
 							},
 							error: function (data) {
-								alert("Something went horribly wrong!");
+								alert(data.responseText);
 							}
 						});
 					}
@@ -368,6 +367,10 @@ $(function () {
 				$('#dialog').dialog({title: "ERROR", width: 700});
 			}
 		});
+	});
+
+	$(document).on("click", '#logout', function () {
+		window.location.href = "inc/logout.php";
 	});
 
 	$('#runFunction').keypress(function (e) {
