@@ -108,7 +108,7 @@ if(!isset($_COOKIE['visited'])){
 $showChangeLog='';
 if(!isset($_COOKIE['version'])){
 	$showChangeLog='firstTime';
-	setcookie("version", 'v0.3', time() + (86400 * 365)); //86400sec is one day
+	setcookie("version", $VERSION, time() + (86400 * 365)); //86400sec is one day
 }else{
 	if($_COOKIE['version']!=$VERSION){
 	$showChangeLog='updateSince'.$_COOKIE['version'];
