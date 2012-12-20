@@ -1,7 +1,6 @@
 <?php
 session_start();
 ob_start(); //start output buffering
-$VERSION = "0.4"; // Current Version
 include_once 'config.php';
 include_once 'inc/contributors.php';
 include_once 'tools/gc.php';
