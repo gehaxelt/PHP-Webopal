@@ -1,5 +1,6 @@
 <?php
 $HOSTURL=''; //Set the host url here, e.g. http://opal.test.me/
+$VERSION='0.4';
 $IMPRESSUM=''; //Set the url to your impressum, if necessary.
 $MINFILES=2; //Minimum / standard number of structures
 $MAXFILES=3; //Number of the Maximum Structures allowed
