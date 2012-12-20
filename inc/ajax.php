@@ -372,7 +372,7 @@ global $TMPDIR;
 $echo='';
 foreach (new DirectoryIterator('../'.$TMPDIR.'/userfiles/'.$path) as $fn) {
     if (!$fn->isDot()) {
-     $echo.='<a href="#" class=".changeDir" name="';
+     $echo.='<a href="#" class="changeDir" name="';
      $echo.=$fn->getFilename();
      $echo.='">';
      $echo.=$fn->getFilename();

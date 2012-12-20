@@ -113,6 +113,23 @@ $(function () {
 		checkSignAndImpl(num, name);
 	});
 
+	$(document).on("click", '.changeDir', function (event) {
+		name = $(this).attr("name");
+		$.ajax({
+			url: 'inc/ajax.php',
+			type: 'GET',
+			dataType: "json",
+			data: "page=changeDir&dir=" + name,
+			success: function () {
+				sessionEnd = new Date().getTime() + sessionTimeOut;
+			},
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+			}
+		});
+	});
+
 	$(document).on("click", '.errorJump', function (event) {
 		var c, err, editor;
 		event.preventDefault();

@@ -186,8 +186,10 @@ if(!isset($_COOKIE['version'])){
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 			<?php if($_SESSION['loggedIn']){
+				$show="style='display:none;'";
 				echo '<a href="#" class="floatR" id="logout">[Logout]</a>';
 			} else {
+				$show="";
 				echo '<a href="#" class="floatR" id="login">[Login]</a>';
 			}?>
 		</div>
@@ -196,15 +198,28 @@ if(!isset($_COOKIE['version'])){
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
-		<div class="codeRelated">Codebeispiele: <a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>></div><br>
-		<?php if($_SESSION['loggedIn']){ echo "Du bist gerade im Verzeichnis "."leer"." <a href='#' id='getFolders'>[Verzeichnis wechseln]</a><div id='folders' style='display:none;'></div>";} ?>
+		<div class="codeRelated" <?php echo $show;?>>Codebeispiele: <a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>></div><br>
+		<?php if($_SESSION['loggedIn']){
+			$dirs="";$dircount=0;
+			foreach (new DirectoryIterator($TMPDIR.'/userfiles/'.$_SESSION['loggedInPath']) as $fn) {
+				 if (!$fn->isDot()) {
+				  $dirs.='<a href="#" class="changeDir" name="';
+				  $dirs.=$fn->getFilename();
+				  $dirs.='">';
+				  $dirs.=$fn->getFilename();
+				  $dirs.='</a><br>';
+				  $dircount++;
+				 }
+			 }
+		echo "Du bist gerade in keinem Verzeichnis. Wähle eins:<!--<a href='#' id='getFolders'>[Verzeichnis wechseln]</a>-->
+		<div id='folders'>$dirs</div>";} ?>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
-		<br>
-		<br><input type="button" id="pseudo">
-		<div class="codeRelated">
+		<div class="codeRelated" <?php echo $show;?>>
+			<br>
+			<br><input type="button" id="pseudo">
 			<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 					<div id="accordion">
 					<?php
@@ -249,12 +264,13 @@ if(!isset($_COOKIE['version'])){
 			<div id="download">
 				<input type="button" name="download" class="dialog" value="Download als Tarball">
 			</div>
-		</div>
 		<br>
 		Bibliotheca Opalica Suche:
     		<div id="customsearch">
 			<div class="gcse-search"></div>
-      		</div>		
+      		</div>
+		</div>
+		<br>
 		<div id="github">
 			<a href="https://github.com/gehaxelt/PHP-Webopal" id='githublink'>Fork us on GitHub:</a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&amp;repo=PHP-Webopal&amp;type=fork&amp;count=true" frameborder="0" scrolling="NO" width="95" height="20"></iframe>
