@@ -119,25 +119,27 @@ if(!isset($_COOKIE['version'])){
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="de">
   <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
   <title>WebOpal <?php echo $VERSION; ?></title>
   <script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="favicon.ico">
 	<?if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
 		echo '<link rel="stylesheet" type="text/css" href="css/style.fallback.css">';
 	}
 	if(file_exists('js/jquery-ui.min.js')){
-		echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script><script type="text/javascript" src="js/jquery-ui.min.js"></script>';
+		echo '<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui.min.js"></script>';
 	}else{
-		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
+		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
 	}
 	?>
-		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-	<script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="js/ace.js" charset="utf-8"></script>
 	<? if(file_exists('js/script.min.js')){
 		echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
 	}else{
@@ -167,11 +169,11 @@ if(!isset($_COOKIE['version'])){
 	</script>
   </head>
   <body>
-<!-- move into main form? -->
-<div><input type="text" id="autocomplete"></div>
-	<div id="wrapper">
-		<div id="heading">
-			<a href="<?php echo $HOSTURL ?>"><img src="img/WebOpalLogo.png" id="logo" style="width: 71px; height: 71px;" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
+    <!-- move to main form? -->
+    <div><input type="text" id="autocomplete"></div>
+    <div id="wrapper">
+      <div id="heading">
+        <a href="<?php echo $HOSTURL ?>"><img src="img/WebOpalLogo.png" id="logo" style="width: 71px; height: 71px;" /></a><h1 style="display:inline;">WebOpal <abbr title="Version <?php echo $VERSION; ?>">v<?php echo $VERSION; ?></abbr></h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
@@ -179,7 +181,8 @@ if(!isset($_COOKIE['version'])){
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
-		<a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
+		<p>Wenn Du gerade keine Idee hast, beginne doch mit einer <a href="#" id="restore_exampl">Hello World!</a>-Struktur.</p>
+		<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
