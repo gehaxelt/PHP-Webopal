@@ -297,7 +297,7 @@ $(function () {
 		if (name == "download") {
 			/* Execute OPAL Code */
 			$('#execute').click();
-			w = 300;
+			w = 650;
 		}
 		$.ajax({
 			url: 'inc/ajax.php',

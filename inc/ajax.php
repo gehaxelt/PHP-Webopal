@@ -92,13 +92,14 @@ function download(){
 	global $HOSTURL, $RUNMAX,$TMPDIR;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
-	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time());
+	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time()+60*60*24); // 60 * 60 * 24 = 24h
 
 	//if there is something to archive, archive it and send the download link
 	//else tell the user that there is nothing to archive
 	if(is_dir("../".$TMPDIR."/files/".$_SESSION['randNum'])){
 		shell_exec("cd ../".$TMPDIR."/files/".$_SESSION['randNum']."; tar cfz ../../../".$TMPDIR."/downloads/".$ranName.".tgz * --exclude='OCS' --exclude='time.stamp';");
-		return "Download m&ouml;glich:<br><a href='".$HOSTURL."/".$TMPDIR."/downloads/".$ranName.".tgz' target='_blank'>Archiv herunterladen</a>";
+		$downloadurl = $HOSTURL."/".$TMPDIR."/downloads/".$ranName.".tgz";
+		return "Download m&ouml;glich:<br><a href='".$downloadurl."' target='_blank'>Archiv herunterladen</a><br><br>Downloadlink f&uuml;r Freunde: <code>".$downloadurl."</code> (<strong>24h g&uuml;ltig</strong>)";
 	}else{
 		return "Kein Download m&ouml;glich, bitte erst einmal Dateien mit Inhalt f&uuml;llen und eine Funktion ausf&uuml;hren!";
 	}
