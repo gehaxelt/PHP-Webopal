@@ -165,12 +165,13 @@ if(!isset($_COOKIE['version'])){
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
 	  })();
 	</script>
-</head>
-<body>
-			<input type="text" id="autocomplete">
+  </head>
+  <body>
+<!-- move into main form? -->
+<div><input type="text" id="autocomplete"></div>
 	<div id="wrapper">
 		<div id="heading">
-			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
+			<a href="<?php echo $HOSTURL ?>"><img src="img/WebOpalLogo.png" id="logo" style="width: 71px; height: 71px;" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
