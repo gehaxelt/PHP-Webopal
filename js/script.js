@@ -315,6 +315,60 @@ $(function () {
 			}
 		});
 	});
+	
+	/* Bind click functions for download, changelog, etc  */
+	$("#login").click(function () {
+		var name, w;
+		name = $(this).attr("name");
+		w = 700;
+		$.ajax({
+			url: 'inc/ajax.php',
+			type: 'GET',
+			dataType: "json",
+			data: "page=login",
+			success: function (data) {
+				$('#dialog').html(data);
+				$('#dialog').dialog({title: "Login", width: w});
+				$("#loginData").validate({
+					debug: true,
+					onkeyup: false,
+					rules: {
+						user: "required",
+						pw: "required"
+					},
+					messages: {
+						user: "Notwendig",
+						pw: "Notwendig",
+					}
+				});
+				$('#loginSubmit').click(function () {
+					if ($('#loginData').valid()) {
+						$.ajax({
+							url: 'inc/ajax.php',
+							type: 'GET',
+							dataType: "json",
+							data: "page=loginCheck&user=" + $('#user').val() + "&pw=" + SHA1(SHA1($('#pw').val()) + $('#secret').val()),
+							success: function (data) {
+								if(data.success){
+									$('#dialog').append("Success");
+								}else{
+									$('#dialog').append(data.msg);
+								}
+							},
+							error: function (data) {
+								alert("Something went horribly wrong!");
+							}
+						});
+					}
+				});
+				sessionEnd = new Date().getTime() + sessionTimeOut;
+			},
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+			}
+		});
+	});
 
 	$('#runFunction').keypress(function (e) {
 		if (e.which == 13) {

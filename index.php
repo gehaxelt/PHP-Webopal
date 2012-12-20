@@ -21,8 +21,15 @@ if(!is_dir($TMPDIR)){
 	if(!is_dir($TMPDIR.'/uploads')){
 		mkdir($TMPDIR.'/uploads/');
 	}
-
+	if(!is_dir($TMPDIR.'/userfiles')){
+		mkdir($TMPDIR.'/userfiles/');
+	}
+	if(!is_file($TMPDIR.'/users')){
+		file_put_contents($TMPDIR.'/users',serialize(Array()));
+	}
 }
+
+		file_put_contents($TMPDIR.'/users',serialize(Array("test"=>Array("email"=>"test@de.de","pw"=>sha1("1234"),"lasttime"=>time(),"path"=>"test"))));
 
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
@@ -137,8 +144,9 @@ if(!isset($_COOKIE['version'])){
 		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script><script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
 	}
 	?>
-		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 	<script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/sha.min.js" type="text/javascript" charset="utf-8"></script>
 	<? if(file_exists('js/script.min.js')){
 		echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
 	}else{
@@ -174,6 +182,7 @@ if(!isset($_COOKIE['version'])){
 			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
+			&middot; <a href="#" id="login">[Login]</a>
 		</div>
 		<hr style="margin:0px -10px;"><br>
 		<noscript>
@@ -185,7 +194,7 @@ if(!isset($_COOKIE['version'])){
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
 		<br>
-		<br>		<input type="button" id="pseudo">
+		<br><input type="button" id="pseudo">
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
 				<div id="accordion">
 				<?php
@@ -253,6 +262,7 @@ if(!isset($_COOKIE['version'])){
 			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
 			<input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
 			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
+			<input type="hidden" id="secret" value="<?php echo $_SESSION['randNum'];?>">
 		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>
