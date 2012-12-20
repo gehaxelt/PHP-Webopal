@@ -169,7 +169,7 @@ if(!isset($_COOKIE['version'])){
 	</script>
   </head>
   <body>
-    <!-- move to main form? -->
+    <?php /* move to main form? */ ?>
     <div><input type="text" id="autocomplete"></div>
     <div id="wrapper">
       <div id="heading">
@@ -242,21 +242,22 @@ if(!isset($_COOKIE['version'])){
 			<a href="https://github.com/gehaxelt/PHP-Webopal" id='githublink'>Fork us on GitHub:</a>
 			<iframe src="http://ghbtns.com/github-btn.html?user=gehaxelt&amp;repo=PHP-Webopal&amp;type=fork&amp;count=true" frameborder="0" scrolling="NO" width="95" height="20"></iframe>
 		</div>
-		<div id="contributors">
-			WebOpal (c) 2012 by <?php echo echo_contributors(); ?>, <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a>
-		</div>
-		</div>
-		<div id="dialog"></div>
-
-		<div id="forJavascript">
-			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
-			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
-			<input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
-			<input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
-			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
-			<input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
-			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
-		</div>
+      <div id="contributors">
+	WebOpal (c) 2012 by <?php echo echo_contributors(); ?>, <a href="<?php echo htmlentities($IMPRESSUM); ?>">Impressum</a>
+      </div>
+    </div>
+    <?php /* what's that for? */ ?>	
+    <div id="dialog"></div>
+    <?php /* move to main form? */ ?>
+    <div id="forJavascript">
+      <input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+      <input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
+      <input type="hidden" id="implEx" value="<?php echo $EXAMPLECODE_IMPL;?>">
+      <input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
+      <input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
+      <input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
+      <input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
+    </div>
     <?php include "inc/piwik.php"; ?>
   </body>
 </html>
