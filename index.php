@@ -4,7 +4,7 @@ ob_start(); //start output buffering
 include 'config.php';
 include 'inc/contributors.php';
 include 'tools/gc.php';
-
+$VERSION = "v0.4"; // Current Version
 
 //Escape all variables
 
@@ -38,7 +38,8 @@ if(isset($_SESSION['sessionstart'])){
 }
 /* Check if $_SESSION is set, if not initialize them */
 if(!isset($_SESSION['runFunction'])) {$_SESSION['runFunction']=""; }
-if(!isset($_SESSION['focus'])) {$_SESSION['focus']=0; }
+if(!isset($_SESSION['actTab'])) {$_SESSION['actTab']=0; }
+if(!isset($_SESSION['debug'])) {$_SESSION['actTab']=false; }
 if(!isset($_SESSION['randNum'])) {$_SESSION['randNum']=md5(time().str_shuffle(time()));}
 
 if(!isset($_SESSION['structnr'])) {
@@ -76,7 +77,7 @@ function init($i){
 		move_uploaded_file($_FILES["impl-".$i]["tmp_name"], $base."/"."impl-".$i.$ranFile);
 		if(file_exists($base."/"."impl-".$i.$ranFile)){
 			$impl=file_get_contents($base."/"."impl-".$i.$ranFile);
-			$_SESSION['implInput'][$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impl);
+			$_SESSION['implInput'][$i]=$impl;
 			preg_match('/IMPLEMENTATION\s*([A-Za-z0-9]*)\s*/',$impl,$matches);
 			$_SESSION['fileName'][$i]=$matches[1];
 			unlink($base."/"."impl-".$i.$ranFile);
@@ -91,7 +92,7 @@ function init($i){
 	if(isset($_FILES["sign-".$i]["tmp_name"])) {
 		move_uploaded_file($_FILES["sign-".$i]["tmp_name"], $base."/"."sign-".$i.$ranFile);
 		if(file_exists($base."/"."sign-".$i.$ranFile)){
-			$_SESSION['signInput'][$i]=preg_replace('/SIGNATURE.+.\n/',"",file_get_contents($base."/"."sign-".$i.$ranFile));
+			$_SESSION['signInput'][$i]=file_get_contents($base."/"."sign-".$i.$ranFile);
 			unlink($base."/"."sign-".$i.$ranFile);
 		}
 	}
@@ -104,6 +105,17 @@ if(!isset($_COOKIE['visited'])){
 	$_SESSION['implInput'][0] = $EXAMPLECODE_IMPL;
 	$_SESSION['runFunction'] = $EXAMPLECODE_CMD;
 }
+$showChangeLog='';
+if(!isset($_COOKIE['version'])){
+	$showChangeLog='firstTime';
+	setcookie("version", 'v0.3', time() + (86400 * 365)); //86400sec is one day
+}else{
+	if($_COOKIE['version']!=$VERSION){
+	$showChangeLog='updateSince'.$_COOKIE['version'];
+	setcookie("version", $VERSION, time() + (86400 * 365)); //86400sec is one day
+	}
+}
+
 
 ?>
 
@@ -111,9 +123,9 @@ if(!isset($_COOKIE['visited'])){
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-	<title>WebOpal <?php echo $VERSION ?></title>
+	<title>WebOpal <?php echo $VERSION; ?></title>
 	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-
+	<link rel="shortcut icon" href="favicon.ico" />
 	<?if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
@@ -156,9 +168,10 @@ if(!isset($_COOKIE['visited'])){
 	</script>
 </head>
 <body>
+			<input type="text" id="autocomplete">
 	<div id="wrapper">
 		<div id="heading">
-			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo htmlentities($VERSION); ?>  </h1>   
+			<a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <?php echo $VERSION; ?>  </h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
 			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
 		</div>
@@ -166,14 +179,14 @@ if(!isset($_COOKIE['visited'])){
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
-		<a href="#" id="restore_exampl">Hello World!</a>
+		<a href="#" id="restore_exampl">Hello World!</a><input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
 		</div>
-		<br><br>
+		<br>
+		<br>		<input type="button" id="pseudo">
 		<form enctype="multipart/form-data" action="index.php" method="POST" id="mainsubmit">
-				<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>>
 				<div id="accordion">
 				<?php
 				/* Print Signature & Implementation Areas */
@@ -181,20 +194,19 @@ if(!isset($_COOKIE['visited'])){
 					echo '
 					<h3 class="filename">
 					<span style="float:right" class="delStruc">Löschen</span>
-					Struktur '.($i+1).'; Name: <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+					Struktur <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
 					<input type="hidden" value="'.$i.'" class="num">
 					</h3>
 					<div class="struccontainer" style="padding:10px;">
-						<div class="implcontainer">
-							Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload">
-							<div class="impl" id="editor-impl-'.$i.'"></div>
-							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i]).'" name="implInput['.$i.']" >
+						<div class="implcontainer resizeEditor">
+							<div class="resizeNot">Implementation: <input type="file" name="impl-'.$i.'"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload"></div>
+							<div class="impl resizeAlso" id="editor-impl-'.$i.'"></div>
+							<input type="hidden" class="impl_hidden" value="'.htmlentities($_SESSION['implInput'][$i],ENT_QUOTES,'UTF-8').'" name="implInput['.$i.']" >
 						</div>
-						<div class="signcontainer">
-							Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload">
-							<div class="sign" id="editor-sign-'.$i.'"></div>
-							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i]).'" name="signInput['.$i.']" >
-		
+						<div class="signcontainer resizeEditor">
+							<div class="resizeNot">Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-'.$i.'"><input type="submit" value="Upload"></div>
+							<div class="sign resizeAlso" id="editor-sign-'.$i.'"></div>
+							<input type="hidden" class="sign_hidden" value="'.htmlentities($_SESSION['signInput'][$i],ENT_QUOTES,'UTF-8').'" name="signInput['.$i.']" >
 						</div>
 					</div>';
 				}
@@ -207,21 +219,13 @@ if(!isset($_COOKIE['visited'])){
 					<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 				</div>
 				<div id="sendcontainer">
-					<br>Fokus : <select name="focus" id="focus">
-					<?php
-					/* Print Signature & Implementation Areas */
-					foreach($_SESSION['fileName'] as $i => $fn){
-						if($i==$_SESSION['focus']){$selected="selected";}else{$selected="";}
-						echo '
-						<option value="'.$i.'">'.htmlentities($_SESSION['fileName'][$i]).'</option>';
-					}
-					?>
-					</select>
+					<input name="debug" id="debug" type="checkbox" value="1"> Debugmodus 
 					<input type="button" name="execute" id="execute" value="Programm ausf&uuml;hren" >
 				</div>
+				<input type="hidden" id="actTab" name="actTab" value="<?php echo htmlentities($_SESSION['actTab']);?>">
 			</form>
 				<div id="outputcontainer">
-					<textarea id="output" name="output" cols="110" rows="10">Ausgabe</textarea>
+					<div id="output" name="output">Ausgabe</div>
 				</div>
 		<div id="download">
 			<input type="button" name="download" class="dialog" value="Download als Tarball">
@@ -240,8 +244,15 @@ if(!isset($_COOKIE['visited'])){
 		</div>
 		</div>
 		<div id="dialog"></div>
+
 		<div id="forJavascript">
 			<input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
+			<input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
+			<input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
+			<input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
+			<input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
+			<input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
+			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
 		</div>
 			<?php include "inc/piwik.php"; ?>
 	</body>

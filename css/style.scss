@@ -1,6 +1,8 @@
 @import "ace";
 @import "extern";
 
+@authors Sebastian Neef, Moritz Lummerzheim, Lukas Eipert;
+
 @font-face {
   font-family: 'Rambla';
   font-style: normal;
@@ -12,12 +14,13 @@ body, .ui-widget {
 	font-family: 'Rambla', Verdana, Arial, sans-serif;
 	font-size:1em;
 }
-
+$marginTop: 20px;
 $scale: 10%;
 #logo {
 	vertical-align: middle;
 	height: $scale;
 	width: $scale;
+	margin-top:-$marginTop;
 }
 
 body {
@@ -45,7 +48,7 @@ body {
 	border-radius: 5px;
 	border-top-right-radius: 10px;
 	border: 1px solid #000000;
-	padding:20px 10px;
+	padding:$marginTop 10px;
 }
 
 #wrapper #title {
@@ -54,11 +57,13 @@ body {
 }
 
 .implcontainer {
-	float:left;
+	left:0px;
+	top:0px;
 	position:relative;
-	width:550px;
+	width:520px;
 	height:250px;
 	margin-top:10px;
+	display:inline-block;
 }
 
 #EditAreaArroundInfos_impl_eingabe, #EditAreaArroundInfos_sign_eingabe {
@@ -66,11 +71,13 @@ body {
 }
 
 .signcontainer {
-	float:right;
+	left:0px;
+	top:75x;
 	position:relative;
-	width:550px;
+	width:520px;
 	height:250px;
 	margin-top:10px;
+	display:inline-block;
 }
 
 #funccontainer {
@@ -94,9 +101,16 @@ body {
 	height:250px;
 }
 
-#outputcontainer textarea {
-	width:1120px;
-	height: 240px;
+#outputcontainer div {
+	width:1100px;
+	height: 220px;
+	background-color: white;
+	font-family:monospace;
+	padding:10px;
+	border: 1px solid grey;
+	overflow:scroll;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
 }
 
 .signcontainer textarea {
@@ -111,6 +125,7 @@ body {
 
 .struccontainer{
 	padding:0;
+	position:relative;
 }
 
 #github {
@@ -134,6 +149,8 @@ body {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	width:100%;
+	height:80%;
 	margin-top: 30px;
 }
 
@@ -150,9 +167,7 @@ input[type="file"], input[type="submit"] {
 }
 
 #addStruc{
-	position:relative;
-	top:-45px;
-	left:980px;
+float:right;
 }
 
 
@@ -169,18 +184,51 @@ input[type="file"], input[type="submit"] {
 margin-left:15px;
 }
 #issueList div.content,#reportForm div.content{
-margin:25px;
+	margin:25px;
 }
 
 #issueList div.content img{
-width:100%;
+	width:100%;
 }
 
 #reportData label.error{
-float:right;
+	float:right;
 }
 
-p.issueDescription {
-margin-left:10px;
-font-style:italic;
+div.issueDescription {
+	margin-left:10px;
+	font-style:italic;
+}
+
+.warning
+{
+    background: rgba(255, 50, 50, 0.5);
+    position: absolute;
+    width:100% !important;
+    left:0% !important;
+}
+
+.whyEmail{
+	background-color:#FFFF55;
+	border: 5px solid #FF9900;
+	margin-bottom:15px;
+	font-size:0.85em;
+}
+
+#text {
+	margin-left:43px;
+}
+
+#autocomplete {
+	position: absolute;
+	left:0px;
+	right:0px;
+	width:1px;
+	height:1px;
+	z-index:1000;
+}
+
+#pseudo {
+	width:1px;
+	height:1px;
 }

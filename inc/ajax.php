@@ -10,23 +10,40 @@ $_SESSION['sessionstart'] = time();
 //if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
 //if(isset($_GET['fileName'])) { $_GET['fileName']=htmlentities($_GET['fileName']); }
 if(isset($_GET['runFunction'])) { $_GET['runFunction']=htmlentities($_GET['runFunction']); }
-if(isset($_GET['focus'])) { $_GET['focus']=htmlentities($_GET['focus']); }
 if(isset($_GET['structnr'])) { $_GET['structnr']=htmlentities($_GET['structnr']); }
 if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
 if(isset($_GET['delete'])) { $_GET['delete']=htmlentities($_GET['delete']); }
 if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
+if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
+if(isset($_GET['debug'])) { $_GET['debug']=htmlentities($_GET['debug']); }else{$_GET['debug']=false;}
 
 if(isset($_GET["page"])){$page=$_GET["page"];}
 
-if($page=="download"){
+if($page=="trashmail"){
+	if(count($FORBIDDENMAIL)>0){
+		$email = $_GET['email'];
+		if(preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $email)){
+			if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$email,$matches)){
+				echo json_encode("Domain ".$matches[0]." nicht erlaubt");
+			}else{
+				echo json_encode(true);
+			}
+		} else {
+			echo json_encode("Das ist keine Email");
+		}
+	}else{
+		echo json_encode(true);
+	}
+} else if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
 }else if($page=="update"){
-	if(isset($_GET['implInput'])) {$_SESSION['implInput']=$_GET['implInput'];}
-	if(isset($_GET['signInput'])) {$_SESSION['signInput']=$_GET['signInput'];}
+	if(isset($_GET['fileName'])) {$_SESSION['fileName']=  array_slice($_GET['fileName'] ,0,$MAXFILES,true);}
+	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN(array_slice($_GET['implInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
+	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN(array_slice($_GET['signInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
 	if(isset($_GET['runFunction'])) {$_SESSION['runFunction']=$_GET['runFunction'];}
-	if(isset($_GET['fileName'])) {$_SESSION['fileName']=$_GET['fileName'];}
-	if(isset($_GET['focus'])) {$_SESSION['focus']=$_GET['focus'];}
+	if(isset($_GET['actTab'])) {$_SESSION['actTab']=$_GET['actTab'];}
+	if(isset($_GET['debug'])) {$_SESSION['debug']=$_GET['debug'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
@@ -39,7 +56,7 @@ if($page=="download"){
 	}
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
-			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['focus']));
+			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['debug']));
 		} else {
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
@@ -51,7 +68,16 @@ if($page=="download"){
 }else if($page=="issueForm"){
 	echo 	json_encode(getIssueForm());
 }else{
-	echo json_encode(Array("title"=>$page,"text"=>getMD(strtoupper($page))));
+	$text=getMD(strtoupper($page));
+	if(isset($_GET['since'])){
+		if($_GET['since']!=""){
+			if(preg_match('~'.$_GET['since'].'~',$text)){
+				$split=preg_split('~.*h2.*'.$_GET['since'].'~',$text,2);
+				$text=$split[0];
+			}
+		}
+	}
+	echo json_encode(Array("title"=>$page,"text"=>$text));
 }
 
 function getMD($s){
@@ -78,19 +104,23 @@ function download(){
 	}
 }
 
-function runOasys($impls,$signs,$cmd,$names,$focus) {
+function fixIMPLandSIGN($arr,$names) {
+	foreach($arr as $i => $a){
+		$arr[$i]=preg_replace('/((IMPLEMENTATION|SIGNATURE)\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$4",$a);
+	}
+	return $arr;
+}
+function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
-	if($cmd==""){return "Keine Funktion angegeben.";}
-	if($impls[$focus]==""){return "Fokussierte Implementation ist leer.";}
+	if($cmd==""){return Array("log"=>"Keine Funktion(en) angegeben.");}
 	
 	/* Generate a random number for the directory and create the directory */
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
-		if(!is_dir($dirStr)){break;}else if($i==4){return "Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!";}
+		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
-	$old=$_SESSION['randNum'];
 	$_SESSION['randNum']=$ranFile;
 	mkdir($dirStr);
 
@@ -99,21 +129,21 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	/* Create impl and sign files for every structure with a non empty impl */
 	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
-
+			$implStr="";$signStr="";
+			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return "Es wurden unerlaubte Strukturen entdeckt.";}
+			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt. Du Lausbub! Versuchst du unseren Server zu hacken?");}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
-			if(preg_match($pattern, $names[$i])){return "Bitte in den Dateinamen nur Zeichen aus folgenden Gruppen [A-Z], [a-z] oder [0-9] verwenden";}
+			if(preg_match($pattern, $names[$i])){return Array("log"=>"Bitte in den Strukturnamen nur Zeichen aus den Gruppen [A-Z], [a-z] oder [0-9] verwenden");}
 
-			$impls[$i]=preg_replace('/IMPLEMENTATION(.+.)\n/',"",$impls[$i]);
-			$signs[$i]=preg_replace('/SIGNATURE(.+.)\n/',"",$signs[$i]);
+			if($names[$i]==""){$names[$i]="keinName".substr($_SESSION['randNum'],0,4).rand(1,100);}
 
 			/* Create impl and sign files for the structure */
-			$signStr = "SIGNATURE ".$names[$i];
-			$implStr = "IMPLEMENTATION ".$names[$i];
+			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
+			if(preg_match('/IMPLEMENTATION/',$impls[$i])===0){$implStr = "IMPLEMENTATION ".$names[$i];}
 			
 			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
 			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));
@@ -124,47 +154,140 @@ function runOasys($impls,$signs,$cmd,$names,$focus) {
 	$cmd=str_replace("&quot;","\"",$cmd);
 	$cmd=str_replace("&lt;","<",$cmd);
 	$cmd=str_replace("&gt;",">",$cmd);
-	$cmd=str_replace(";","\ne ",$cmd);
-	if(substr_count($cmd,";")>$RUNMAX) {
-	//if(count($cmd)>$RUNMAX){
-		return "Die Hinterausf&uuml;hrung ist auf ".$RUNMAX." begrenzt."; //senseless error description
+	$cmds=explode(";",$cmd);
+	if(count($cmds)>$RUNMAX) {
+		return Array("log"=>"Du kannst maximal ".$RUNMAX." Funktionen hintereinander ausführen."); //senseless error description
 	}
-		
+	$runOrder="";
+	$lastFocus="";
+	$added=Array();
+	$focus="";
+	$extension=".sign";
+	if($debugOpal){$extension=".impl";}
+	foreach($cmds as $c){
+		$focussed=false;
+		$k=explode("=>",$c);
+		if($c!=""){
+			if(count($k)==1){
+				$searchToken=preg_replace('/\s*\(.+\)\s*/','',$k[0]);
+				$cmdInImpl = preg_grep('/.*DEF\s+'.$searchToken.'\s*[\(=\.].*/u', $impls);
+				if(count($cmdInImpl)>1){return Array("log"=>"Die Funktion '$c' wurde mehrmals definiert.<br>Bitte mit Hilfe von '[structureName]=>$c' in der Aufrufzeile einen Focus erzielen.");}
+				else if(count($cmdInImpl)==1){
+					$focus=array_keys($cmdInImpl);
+					$focus=$focus[0];
+					$focussed=true;
+				}else{
+					$focus='';
+				}
+			}else if(count($k)==2){
+				$k[0]=preg_replace("/(.impl)|(.sign)|(\]|\[)/","",$k[0]);
+				$c=$k[1];
+				$focus=array_search($k[0],$names);
+				$focussed=true;
+			}else{
+				return Array("log"=>"Deine Aufrufzeile ist nicht wohl formatiert. Bitte die Funktionen durch Semikolons separieren!");
+			}
+			
+			if($focus!=""||$focussed){
+				if(!in_array($names[$focus],$added)){
+				$runOrder.="a ".$names[$focus]."\n";
+				$added[]=$names[$focus];
+				}
+				if($lastFocus!=$names[$focus]){
+
+				$runOrder.="f ".$names[$focus].$extension."\n";
+				$lastFocus=$names[$focus];
+				}
+			}
+			$runOrder.="e ".$c."\n";
+		}
+	}
+
+	
 	/* Run focussed Structure */
-	file_put_contents($dirStr."/".$names[$focus].".exec","a ".$names[$focus]."\nf ".$names[$focus].".impl\ne ".$cmd);
-	shell_exec("cd ".$dirStr."; timeout ".$TIMEOUT." oasys < ".$names[$focus].".exec > ".$names[$focus].".log;echo '".$TIMEOUTTXT."' >> ".$names[$focus].".log");
+	file_put_contents($dirStr."/runOpal.exec",$runOrder);
+	shell_exec("cd ".	$dirStr."; timeout ".$TIMEOUT." oasys < runOpal.exec > runOpal.log;echo '".$TIMEOUTTXT."' >> runOpal.log");
 	
 	/* Return log */
-	$result=file_get_contents($dirStr."/".$names[$focus].".log");
-	$result=preg_replace("/\n/","\n  ",$result);
-	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)|(.+.quit.*\n.*)~","",$result);
+	$result=file_get_contents($dirStr."/runOpal.log");
+	$result=preg_replace("~(\n.*quit.*\n.*)~","",$result);
+	file_put_contents($dirStr."/runOpal.log", $ADVERTCOMMENT."\n\n".$result);
+	$result=preg_replace("/\n/","\n\t\t",$result);
+	$result=preg_replace("~(>a.+\n..)||(starting.+\n..)|(loading.+\n..)|(checking.+\n..)|(compiling.+\n..)~","",$result);
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
-	return $result;
+	$result=preg_replace("/\t/","&nbsp;",$result);
+	$results=explode("\n",$result);
+	$c=0;
+	$retError=Array();
+	foreach($results as $key=>$result){
+		if(preg_match("/(ERROR|WARNING) \[((.+.)\.(.+.) )?at (\d+)\.(\d+)(-(\d+)\.(\d+))?\]/",$result,$error)){
+			if($error[3]!=""){
+			if($error[4]=="sign"){$error[5]=$error[5]-1;}
+			$err=Array("file"=>$error[3],"type"=>$error[4],"fromLine"=>max(0,$error[5]-3),"fromChar"=>$error[6]-1,"toLine"=>max(0,$error[5]-3),"toChar"=>$error[6]);
+			if(isset($error[7])){
+				$err["toLine"]=max(0,$error[8]-3);
+				$err["toChar"]=$error[9];
+			}
+			
+			$retError[]=$err;
+			$results[$key]=preg_replace("/((ERROR|WARNING) \[.+.\])/","<a href='#' class='errorJump' value='".json_encode($err)."'>$1</a>",$result);	
+			}
+		}
+	}
+	return Array("log"=>implode("<br>",$results),"err"=>json_encode(justonetime($retError,Array("file","type","fromLine")),JSON_FORCE_OBJECT));
 }
+
+function justonetime($a,$b){
+$compare=array();$r=array();
+foreach($a as $array){
+$c="";
+foreach($b as $key){
+$c.=$array[$key];
+}
+if(!in_array($c,$compare)){
+$r[]=$array;
+$compare[]=$c;
+}
+}
+
+return $r;
+}
+
 // function for fetching issues from github, used for bug reporting feature
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;
 include "../tools/githubapi/vendor/autoload.php";
-$echo="";
+$echo=Array();
 $client = new Github\Client();
-$issues = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+$iss1 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+$iss2 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'closed',"labels"=>"postponed,"));
+$issues = array_merge($iss1,$iss2);
 foreach($issues as $issue){
-$token="";
-if($issue["pull_request"]["html_url"]!=null){$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";}
-$echo.="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
+$token="";$token2="";
+if($issue["pull_request"]["html_url"]!=null){
+	$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";
+}else if($issue["state"]=="closed"){
+	$token="&nbsp;&nbsp;<small><small>(Postponed)</small></small>";
+	$token2="<b>ACHTUNG:</b> Dieser Issue wird nicht weiter verfolgt, um zu erfahren warum:<br>";
+}
+$echo[$issue["number"]]="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
-			<p class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</p>
-			<p class='issueInfo'>Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
+			<div class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</div>
+			<p class='issueInfo'>$token2 Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
 }
-return $echo;
+
+krsort($echo,SORT_NUMERIC);
+
+return implode("",$echo);
 }
 
 function getIssueForm(){
 $error="";
 $echo='<form id="reportData">
 			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
+			<div><label for="email">Email (opt.):</label><input type="text" size="40" name="email"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
@@ -192,7 +315,7 @@ function checkCaptcha(){
 		$client->authenticate($GITHUBUSER,$GITHUBPW,Github\Client::AUTH_HTTP_PASSWORD);
 		$token="";
 		if($_POST["type"]=="idea"){$token="[FEATURE] ";}else{$token="[BUG] ";}
-		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".$_POST["description"]));
+		$github=$client->api('issue')->create($ISSUEUSER, $ISSUEREPO, array('title' => $token.$_POST["title"], 'body' => "Useridee:\n".htmlentities($_POST["description"])));
 		$_POST['success']=true;
 		$_POST['succ']="<h3>".htmlentities("#".$github["number"].": ".$github["title"])."</h3>
 		<div class='issue'>

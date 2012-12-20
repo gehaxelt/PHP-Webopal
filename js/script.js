@@ -1,44 +1,80 @@
-var editors = new Array();
+/* Array for all the ACE editors */
+var editors = [];
 var sessionEnd = 0;
 var timeOutId = 0;
 var sessionTimeOut = 0;
+var markers = [];
+var markersEditor = [];
+var lastResize = 0;
+var maxWidth = 0;
+
+/*FUN*/
+
+/*FUN END */
 
 /* Execute if DOM is ready */
-$(function() {
-	/* Array for all the ACE editors */
-	var currentStruc = 1;
-	var maxStruc = 3;
-	var strucPre = "c91c";
-	var actTab = 0;
-	var implEx = 'DEF hello == "Hello World!"';
-	var signEx = 'FUN hello : denotation';
-	var cmdEx = 'hello';
-	var keySwitch=false;
-	var gWasPressed = false;
-	var clearKeyState = function() {
-    gWasPressed = false;
-}
-	sessionTimeOut =  parseInt($('#timeOut').val());
-	sessionEnd = new Date().getTime()+sessionTimeOut;
-	timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
-	
-	/* initialize Accordion */
-	$("#accordion").accordion({
-		collapsible:false,
+$(function () {
+	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos;
+	currentStruc = $('.num').length;
+	maxStruc = $('#maxStruc').val();
+	strucPre = $('#strucPre').val();
+	actTab = parseInt($('#actTab').val(), 10);
+	keySwitch = false;
+	preventTabSwitch = false;
+	showChangeLog = $('#showChangeLog').val();
+	maxWidth = $('.struccontainer').width() - 40;
+	possibleRun = [];
+	jWasPressed = false;
+	clearKeyState = function () {
+		if (jWasPressed) {editors[editorPos[jumpFrom]].focus(); }
+		jWasPressed = false;
+	};
+	accordionAttr = {
+		collapsible: false,
 		heightStyle: "content",
 		event: "mouseup",
-		activate: function(event, ui){
-			if(!keySwitch){
-				s = ui.newPanel.find(".impl").attr("id");
+		beforeActivate: function (event, ui) {
+			if (preventTabSwitch) {
+				preventTabSwitch = false;
+				event.preventDefault();
+			}
+		},
+		activate: function (event, ui) {
+			actTab = $('.struccontainer').index(ui.newPanel);
+			$('#actTab').val(actTab);
+			if (!keySwitch) {
+				var s = ui.newPanel.find(".impl").attr("id");
 				editors[s].focus();
 			}
-			keySwitch=false;
+			keySwitch = false;
 		}
-	});
-	$('#accordion').accordion( "option", "active", actTab);
+	};
+
+	if (currentStruc >= maxStruc) {$("#addStruc").attr("disabled", "disabled"); }
+	sessionTimeOut =  parseInt($('#timeOut').val(), 10);
+	sessionEnd = new Date().getTime() + sessionTimeOut;
+	timeOutId = setInterval(checkIfTimeOut, (sessionTimeOut / 20));
+
+	/* Print warning if cookies are disabled */
+	if (navigator.cookieEnabled != true) {
+		$('#warning').show();
+	}
+
+	if ($('.delStruc').size() <= 1) {
+		$('.delStruc').hide();
+	}
+
+	initResize();
+
+	$('#autocomplete').css("opacity", 0.01);
+	$('#pseudo').css("opacity", 0.01);
+
+	/* initialize Accordion */
+	$("#accordion").accordion(accordionAttr).accordion("option", "active", actTab);
 
 	/* initialize ACE enviroments */
-	$(".struccontainer").each(function(index){
+	$(".struccontainer").each(function (index) {
+		var impl, sign;
 		impl = $(this).find(".impl").attr("id");
 		sign = $(this).find(".sign").attr("id");
 		editors[impl] = ace.edit(impl);
@@ -50,50 +86,90 @@ $(function() {
 		editors[sign].getSession().setMode("ace/mode/opal");
 		editors[sign].getSession().setValue($(this).find(".sign_hidden").val());
 	});
-	
 
-	$("#restore_exampl").click(function(){
-		num=$('.num:first').val();
-		editors["editor-impl-"+num].setValue(implEx);
-		editors["editor-sign-"+num].setValue(signEx);
-		$('#runFunction').val(cmdEx);
-		//$('.focus:first').attr("checked","checked");
+	if (actTab == 0) {
+		editors[$(".impl").eq(0).attr("id")].focus();
+	}
+
+	$("#restore_exampl").click(function () {
+		var answer, active, num, cmds, name;
+		active = $("#accordion").accordion("option", "active");
+		name = $('.nameInput').eq(active).val();
+		answer = confirm(name + " wirklich mit Hello World überschreiben?");
+		if (answer) {
+			num = $('.num').eq(active).val();
+			editors["editor-impl-" + num].setValue($('#implEx').val());
+			editors["editor-sign-" + num].setValue($('#signEx').val());
+			cmds = $('#runFunction').val();
+			$('#runFunction').val(cmds + ";" + $('#cmdEx').val());
+		}
 	});
 
-	$(document).on("change",'.nameInput',function(event){
-		num=$(this).parent().find('.num').val();
-		name=$(this).val();
-		$('#focus option:eq('+num+')').html(name);
+	$(document).on("change", '.nameInput', function (event) {
+		var num, name;
+		num = $(this).parent().find('.num').val();
+		name = $(this).val();
+		checkSignAndImpl(num, name);
 	});
 
-	$(document).on("click",'.delStruc',function(event){
-		if($('.delStruc').size()>1){
-			name=$(this).parent().find('.nameInput').val();
-			var answer = confirm (name+" wirklich löschen?")
-			if(answer){
-				num=$(this).parent().find('.num').val();
-				$('.nameInput[name="fileName['+num+']"]').parent().remove();
-				$('.impl[id="editor-impl-'+num+'"]').parent().parent().remove();
-			//	$('.filename:eq('+num+')').remove();
-			//	$('.struccontainer:eq('+num+')').remove();
-				$('#focus option[value="'+num+'"]').remove();
-				currentStruc--;
-				impl = "editor-impl-"+num;
-				sign = "editor-sign-"+num;
-				delete(editors[impl]);
-				delete(editors[sign]);
-				if(currentStruc<maxStruc){$("#addStruc").removeAttr("disabled");}
+	$(document).on("click", '.errorJump', function (event) {
+		var c, err, editor;
+		event.preventDefault();
+		try {
+			err = $.parseJSON($(this).attr("value"));
+		} catch (e) {
+			return false;
+		}
+		c = $('#accordion h3').index($(".nameInput[value=" + err.file + "]").parent());
+		editor = "editor-" + err.type + "-" + $(".nameInput[value=" + err.file + "]").parent().find('.num').val();
+		keySwitch = true;
+		$('#accordion').accordion("option", "active", c);
+		editors[editor].focus();
+		editors[editor].gotoLine(parseInt(err.toLine, 10) + 1, parseInt(err.toChar, 10) + 1, false);
+	});
+
+	$(document).on("mouseenter", '.delStruc', function (event) {
+		preventTabSwitch = true;
+	});
+
+	$(document).on("mouseleave", '.delStruc', function (event) {
+		preventTabSwitch = false;
+	});
+
+	$(document).on("click", '.delStruc', function (event) {
+		if ($('.delStruc').size() > 1) {
+			var answer, name, num, index, impl, sign;
+			name = $(this).parent().find('.nameInput').val();
+			answer = confirm(name + " wirklich löschen?");
+			if (answer) {
+				num = $(this).parent().find('.num').val();
+				index = $('.filename').index($(this).parent());
+				if (index == actTab) {
+					keySwitch = true;
+					preventTabSwitch = false;
+					if (actTab == 0) {actTab = 1; } else {actTab = actTab - 1; }
+					$("#accordion").accordion("option", "active", actTab);
+				}
+				$(this).parent().hide('slow', function () {
+					$(this).next(".struccontainer").remove();
+					$(this).remove();
+					if ($('.delStruc').size() <= 1) {$('.delStruc').hide(); }
+				});
+				currentStruc -= 1;
 				$('#structnr').val(currentStruc);
-				if($('.delStruc').size()<=1){$('.delStruc').hide();}
-				$('#accordion').accordion( "option", "active", num-1);
+				impl = "editor-impl-" + num;
+				sign = "editor-sign-" + num;
+				delete (editors[impl]);
+				delete (editors[sign]);
+				if (currentStruc < maxStruc) {$("#addStruc").removeAttr("disabled"); }
 				$.ajax({
-					url : 'inc/ajax.php',
-					type : 'GET',
+					url: 'inc/ajax.php',
+					type: 'GET',
 					dataType: "json",
-					data : "page=update&structnr="+currentStruc+"&delete="+num,
-					success : function() {sessionEnd = new Date().getTime()+sessionTimeOut;},
-					error : function(data) {
-						$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+					data: "page=update&structnr=" + currentStruc + "&delete=" + num,
+					success: function () {sessionEnd = new Date().getTime() + sessionTimeOut; },
+					error: function (data) {
+						$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
 						$('#dialog').dialog({title: "ERROR", width: 700});
 					}
 				});
@@ -101,267 +177,344 @@ $(function() {
 		}
 	});
 
-	$('#addStruc').click(function(){
-			currentStruc++;
-			strucNum=parseInt($('.num:last').val())+1;
-			name= strucPre+"datei"+strucNum
+	$('#addStruc').click(function () {
+		if (currentStruc < maxStruc) {
+			var strucNum, name, impl, sign;
+			currentStruc += 1;
+			strucNum = parseInt($('.num:last').val(), 10) + 1;
+			name = strucPre + "datei" + strucNum;
 			$('#accordion').append(
-				'<h3 class="filename">'+
-				'	<span style="float:right" class="delStruc" v>Löschen</span>'+
-				'	Struktur '+currentStruc+'; Name: <input id="name'+strucNum+'" class="nameInput" name="fileName['+strucNum+']" value="'+name+'">'+
-				'	<input type="hidden" value="'+strucNum+'" class="num">'+
-				'</h3>'+
-				'<div class="struccontainer" style="padding:10px;">'+
-				'	<div class="implcontainer">'+
-				'		Implementation: <input type="file" name="impl-'+strucNum+'"><input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="submit" value="Upload">'+
-				'		<div class="impl" id="editor-impl-'+strucNum+'"></div>'+
-				'		<input type="hidden" class="impl_hidden" value="" name="implInput['+strucNum+']" >'+
-				'	</div>'+
-				'	<div class="signcontainer">'+
-				'		Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000" ><input type="file" name="sign-'+strucNum+'" ><input type="submit" value="Upload">'+
-				'		<div class="sign" id="editor-sign-'+strucNum+'"></div>'+
-				'		<input type="hidden" class="sign_hidden" value="" name="signInput['+strucNum+']" >'+
-				'	</div>'+
-				'</div>'
-			).accordion('destroy').accordion();
-			impl = "editor-impl-"+strucNum;
-			sign = "editor-sign-"+strucNum;
+				'<h3 class="filename">' +
+					'	<span style="float:right" class="delStruc" v>Löschen</span>' +
+					'	Struktur <input id="name' + strucNum + '" class="nameInput" name="fileName[' + strucNum + ']" value="' + name + '">' +
+					'	<input type="hidden" value="' + strucNum + '" class="num">' +
+					'</h3>' +
+					'<div class="struccontainer" style="padding:10px;">' +
+					'	<div class="implcontainer resizeEditor">' +
+					'		<div class="resizeNot">Implementation: <input type="file" name="impl-' + strucNum + '"><input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="submit" value="Upload"></div>' +
+					'		<div class="impl resizeAlso" id="editor-impl-' + strucNum + '"></div>' +
+					'		<input type="hidden" class="impl_hidden" value="" name="implInput[' + strucNum + ']">' +
+					'	</div>' +
+					'	<div class="signcontainer resizeEditor">' +
+					'		<div class="resizeNot">Signatur: <input type="hidden" name="MAX_FILE_SIZE" value="100000"><input type="file" name="sign-' + strucNum + '"><input type="submit" value="Upload"></div>' +
+					'		<div class="sign resizeAlso" id="editor-sign-' + strucNum + '"></div>' +
+					'		<input type="hidden" class="sign_hidden" value="" name="signInput[' + strucNum + ']">' +
+					'	</div>' +
+					'</div>'
+			).accordion('destroy').accordion(accordionAttr).accordion("option", "active", actTab);
+			impl = "editor-impl-" + strucNum;
+			sign = "editor-sign-" + strucNum;
 			editors[impl] = ace.edit(impl);
 			editors[impl].setTheme("ace/theme/chrome");
 			editors[impl].getSession().setMode("ace/mode/opal");
 			editors[sign] = ace.edit(sign);
 			editors[sign].setTheme("ace/theme/chrome");
 			editors[sign].getSession().setMode("ace/mode/opal");
-			$('#focus').append('<option value="'+strucNum+'">'+name+'</option>');
 			$('#structnr').val(currentStruc);
-			if($('.delStruc').size()>1){$('.delStruc').show();}
+
+			if ($('.delStruc').size() > 1) {$('.delStruc').show(); }
 			$.ajax({
-				url : 'inc/ajax.php',
-				type : 'GET',
+				url: 'inc/ajax.php',
+				type: 'GET',
 				dataType: "json",
-				data : "page=update&file="+strucNum+"&structnr="+currentStruc,
-				success : function() {	sessionEnd = new Date().getTime()+sessionTimeOut;},
-				error : function(data) {
-					$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+				data: "page=update&file=" + strucNum + "&structnr=" + currentStruc,
+				success: function () {	sessionEnd = new Date().getTime() + sessionTimeOut; initResize(); },
+				error: function (data) {
+					$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
 					$('#dialog').dialog({title: "ERROR", width: 700});
 				}
 			});
-		if(currentStruc==maxStruc){
-			$("#addStruc").attr("disabled","disabled")
+		}
+		if (currentStruc >= maxStruc) {
+			$("#addStruc").attr("disabled", "disabled");
 		}
 	});
 
 	/* Bind click action to execute button */
-	$("#execute").click(function(){
+	$("#execute").click(function () {
 		/* copy content of ACE to hidden inputs */
-		$(".struccontainer").each(function(index){
-			$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue())
-			$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue())
+		$(".struccontainer").each(function (index) {
+			$(this).find(".impl_hidden").val(editors[$(this).find(".impl").attr("id")].getSession().getValue());
+			$(this).find(".sign_hidden").val(editors[$(this).find(".sign").attr("id")].getSession().getValue());
 		});
 		/* Deactivate Button */
-		$("#execute").attr("disabled","disabled")
-		$("#execute").attr("value","Lade...")
+		$("#execute").attr("disabled", "disabled");
+		$("#execute").attr("value", "Lade...");
 		/* GET Request */
 		$.ajax({
-			url : 'inc/ajax.php',
-			type : 'GET',
+			url: 'inc/ajax.php',
+			type: 'GET',
 			dataType: "json",
-			data: $('#mainsubmit').serialize()+"&oasys=true&page=update",
+			data: $('#mainsubmit').serialize() + "&oasys=true&page=update",
 			/* Populate output and activate button on success */
-			success: function(data) {
-				curdate = new Date();
-				lastrun = curdate.getHours() + ":" + curdate.getMinutes() + ":" + curdate.getSeconds();
-				$('#output').text("Letzte Ausf\u00FChrung: "+ lastrun + "\n" + data);
-				$("#execute").attr("value","Programm ausführen");
+			success: function (data) {
+				var date, hh, mm, ss, errors, i, editor, marker, e, err, Range, r, m;
+				date = new Date();
+				hh = date.getHours();
+				if (hh < 10) {hh = "0" + hh; }
+				mm = date.getMinutes();
+				if (mm < 10) {mm = "0" + mm; }
+				ss = date.getSeconds();
+				if (ss < 10) {ss = "0" + ss; }
+				$('#output').html("Letzte Ausf&uuml;hrung: " + hh + ":" + mm + ":" + ss + "<br>" + data.log);
+				$("#execute").attr("value", "Programm ausführen");
 				$("#execute").removeAttr("disabled");
-				sessionEnd = new Date().getTime()+sessionTimeOut;
+				sessionEnd = new Date().getTime() + sessionTimeOut;
+				errors = $.parseJSON(data.err);
+				for (i = 0; i < markers.length; i += 1) {
+					editor = markersEditor[i];
+					marker = markers[i];
+					editors[editor].getSession().removeMarker(marker);
+				}
+				markers = [];
+				markersEditor = [];
+				for (e in errors) {
+					if (errors.hasOwnProperty(e)) {
+						err = errors[e];
+						editor = "editor-" + err.type + "-" + $(".nameInput[value=" + err.file + "]").parent().find('.num').val();
+						Range = require('ace/range').Range;
+						r = new Range(parseInt(err.fromLine, 10), parseInt(err.fromChar, 10), parseInt(err.toLine, 10), parseInt(err.toChar, 10));
+						m = editors[editor].getSession().addMarker(r, "warning", "text", true);
+						markers.push(m);
+						markersEditor.push(editor);
+					}
+				}
 			},
-			error : function(data) {
-				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
 				$('#dialog').dialog({title: "ERROR", width: 700});
-				$("#execute").attr("value","Programm ausf\u00FChren")
-				$("#execute").removeAttr("disabled")
+				$("#execute").attr("value", "Programm ausf\u00FChren");
+				$("#execute").removeAttr("disabled");
 			}
-		 });
+		});
 	});
 
 	/* Bind click functions for download, changelog, etc  */
-	$(".dialog").click(function(){
-		name=$(this).attr("name");
-		w=700;
-		if(name=="download"){
+	$(".dialog").click(function () {
+		var name, w;
+		name = $(this).attr("name");
+		w = 700;
+		if (name == "download") {
 			/* Execute OPAL Code */
 			$('#execute').click();
-			w=300;
+			w = 300;
 		}
 		$.ajax({
-			url : 'inc/ajax.php',
-			type : 'GET',
+			url: 'inc/ajax.php',
+			type: 'GET',
 			dataType: "json",
-			data : "page="+name,
-			success : function(data) {
+			data: "page=" + name,
+			success: function (data) {
 				$('#dialog').html(data.text);
 				$('#dialog').dialog({title: data.title, width: w});
-				sessionEnd = new Date().getTime()+sessionTimeOut;
+				sessionEnd = new Date().getTime() + sessionTimeOut;
 			},
-			error : function(data) {
-				$('#dialog').html("HTTP-Status: "+data.status+" ("+data.statusText+")\n"+data.responseText);
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
 				$('#dialog').dialog({title: "ERROR", width: 700});
 			}
 		});
 	});
 
-	$('#runFunction').keypress(function(e){
+	$('#runFunction').keypress(function (e) {
 		if (e.which == 13) {
 			e.preventDefault();
 			$("#execute").click();
 		}
 	});
 
-	/* Bind action for ctrl+space code completion */
-	$(document).keydown(function(e){
-		if( (e.ctrlKey||e.metaKey) && (e.charCode || e.keyCode) == 13 ) {
-			$('#execute').click();
-		}
-		if( (e.ctrlKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " "){
-		
-			//Find focused ACE editor
-			s=$('.ace_focus').attr("id");
-			try { editors[s]; }
-			catch (e) {return false;}
-
-			//Get word left from cursor
-			editors[s].selection.selectWordLeft();
-			var wordAtLeft = editors[s].session.getDocument().getTextRange(editors[s].selection.getRange())
-			editors[s].selection.selectWordRight();
-
-			// If wordAtLeft too small, dont try to complete
-			if ( wordAtLeft.length < 2 ){ return false; }
-
-			//List of words which should be always available for code completion
-			var possibleWords = new Array("IMPORT","denotation","Denotation","COMPLETELY","ONLY","NatConv","RealConv","CharConv","WHERE", "newline");
-
-			/* Extend the possibleWords List with words longer than 4 letters in ace editors
-			 * If you have for example the word "sortYear" in one of the editors
-			 * and type "sort"+ctrl+space in another editor, it should autocomplete
-			 */
-			$(".ace_editor").each(function(index){
-				id=$(this).attr("id");
-				var inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{4,})/g);
-				if(inEditor!=null){
-					for(i=0;i<inEditor.length;i++){
-						if(possibleWords.indexOf(inEditor[i])==-1){possibleWords.push(inEditor[i]);}
+	$('#runFunction').autocomplete({
+		minLength : 1,
+		source: function (request, response) {
+			response($.ui.autocomplete.filter(possibleRun, extractLast(request.term)));
+		},
+		search: function (event, ui) {
+			$(".ace_editor").each(function (index) {
+				var i, id, inEditor;
+				id = $(this).attr("id");
+				inEditor = editors[id].getValue().match(/FUN\s+(\w+)\s*[:]?/g);
+				if (inEditor != null) {
+					for (i = 0; i < inEditor.length; i += 1) {
+						inEditor[i] = inEditor[i].replace(/FUN\s+(\w+)\s*[:]?/g, '$1');
+						if ($.inArray(inEditor[i], possibleRun) == -1) {possibleRun.push(inEditor[i]); }
 					}
 				}
 			});
-
-			var foundWords = new Array();
-
-			/* Check if our wordLeft has ONE possible match in possibleWords */
-			for(i=0;i<possibleWords.length;i++){
-				var possibleWord = possibleWords[i];
-				if (	possibleWord !== undefined &&
-						possibleWord !== wordAtLeft &&
-						possibleWord.substring(0, wordAtLeft.length) === wordAtLeft &&
-						possibleWord !== 'length') {
-							// stop, if there is more than one possibility
-							if ( foundWords.length === 1 ){ return false; }
-							if ( possibleWord !== 'length'  ){ foundWords[ 0 ] = possibleWord; }
-				}
-			}
-		
-			// stop, if no word found
-			if ( foundWords.length === 0 ) return false;
-
-			// insert found word
-			editors[s].removeWordLeft();
-			editors[s].insert( foundWords[ 0 ] );
-
+			possibleRun = possibleRun.sort();
+		},
+		focus: function () {
 			return false;
-		
-		/* For the future, if Alt-G is pressed activate "jumpModus */
-		//}else if( (e.altKey||e.metaKey) && String.fromCharCode(e.charCode || e.keyCode)=="G"){
-		//	e.preventDefault();
-		//	gWasPressed = true;
-		//	setTimeout(clearKeyState, 3000);
-		/* Jump with Alt-Numpad[2,4,6,8] */
-		
-		}else if(
-				//(gWasPressed && someAction)|| 
-				((e.altKey||e.metaKey) && (e.ctrlKey) && (-1!=$.inArray((e.charCode || e.keyCode), [98,100,102,104])))
-		){
-			e.preventDefault();
-			var editorPos = new Array();
-			for(editor in editors){
-				editorPos.push(editor);
-			}
-			
-			var pos=$.inArray($('.ace_focus').attr("id"),editorPos);
-			
-			if(pos!=-1){
-				switch (e.charCode || e.keyCode) {
-					case 104:
-						if(pos-2<0){pos=editorPos.length-2+pos%2;}else{pos=pos-2;}
-						break;
-					case 100:
-						if(pos-1<0){pos=editorPos.length-1;}else{pos=pos-1;}
-						break;
-					case 98:
-						if(pos+2>editorPos.length-1){pos=pos%2;}else{pos=pos+2;}
-						break;
-					case 102:
-						if(pos+1>editorPos.length-1){pos=0;}else{pos=pos+1;}
-						break;
+		},
+		select: function (event, ui) {
+			var terms = split(this.value);
+			terms.pop();
+			terms.push("");
+			this.value = terms.join("; ") + ui.item.value + " ";
+			return false;
+		}
+	});
+
+	$('#autocomplete').autocomplete({
+		source: function (request, response) {
+			var t = $.grep(possibleWords, function (a) {
+				var patt = new RegExp('^' + request.term);
+				return (a.match(patt));
+			});
+			response(t);
+		},
+		autoFocus: true,
+		search: function (event, ui) {
+			possibleWords = ["IMPORT", "denotation", "Denotation", "COMPLETELY", "ONLY", "NatConv", "RealConv", "CharConv", "WHERE", "newline", "SIGNATURE", "IMPLEMENTATION"];
+			$(".ace_editor").each(function (index) {
+				var i, id, inEditor;
+				id = $(this).attr("id");
+				inEditor = editors[id].getValue().match(/((?=\.)?\$?_?[A-Za-z_]{5,})/g);
+				if (inEditor != null) {
+					for (i = 0; i < inEditor.length; i += 1) {
+						if (inEditor[i] != wordAtLeft) {
+							if ($.inArray(inEditor[i], possibleWords) == -1) {possibleWords.push(inEditor[i]); }
+						}
+					}
 				}
-			
-				keySwitch=true;
-			
-				$('#accordion').accordion( "option", "active", (pos-(pos%2))/2);
-				editors[editorPos[pos]].focus();
+			});
+			possibleWords = possibleWords.sort();
+		},
+		select: function (event, ui) {
+			event.preventDefault();
+			editors[autoComplete].removeWordLeft();
+			editors[autoComplete].insert(ui.item.value + " ");
+			editors[autoComplete].focus();
+		},
+		response: function (event, ui) {
+			if (ui.content == "") {
+				event.preventDefault();
+				editors[autoComplete].focus();
+			} else if (ui.content.length == 1) {
+				event.preventDefault();
+				editors[autoComplete].removeWordLeft();
+				editors[autoComplete].insert(ui.content[0].value + " ");
+				editors[autoComplete].focus();
 			}
 		}
 	});
 
-	/* Print warning if cookies are disabled */
-	if (navigator.cookieEnabled != true) {
-	  $('#warning').show()
-	}
+	/* Bind action for ctrl+space code completion */
+	$(document).keydown(function (e) {
+		var i, editor, possibleWord, foundWords, cursorPos;
+		if ((e.ctrlKey || e.metaKey) && (e.charCode || e.keyCode) == 13) {
+			$('#execute').click();
+		} else if ((e.ctrlKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) === " ") {
+			//Find focused ACE editor
+			autoComplete = $('.ace_focus').attr("id");
+			if (editors[autoComplete] == null) {
+				return false;
+			}
 
-	if($('.delStruc').size()<=1){
-		$('.delStruc').hide();
-	}
-	
-    $('#bugReport').click(function(){
-     	$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
-     	$('#dialog').dialog().dialog("destroy");
-    	$('#dialog').dialog({
-    			title : "Bugreport / Idee einreichen",
-    			width : "80%",
-    			height : $(window).height()*0.8,
-    			modal:true,
-    			open: function(){
-    				$('.ui-dialog').css("position","fixed");
-    				clearInterval(timeOutId);
-    			},
-    			close: function(){
-    				$('.ui-dialog').css("position","absolute");
-    				if(!checkIfTimeOut()){
-	    				timeOutId = setInterval("checkIfTimeOut()",(sessionTimeOut/20));
-    				}
-    			}
-    	});
-    	getIssueForm();
-    	getIssueList();
+			//Get word left from cursor
+			editors[autoComplete].selection.selectWordLeft();
+			wordAtLeft = editors[autoComplete].session.getDocument().getTextRange(editors[autoComplete].selection.getRange());
+			editors[autoComplete].selection.selectWordRight();
+
+			// If wordAtLeft too small, dont try to complete
+			if (wordAtLeft.length < 2) { return false; }
+
+			cursorPos = $('.ace_focus').find('.ace_cursor').offset();
+			$('#autocomplete').offset(cursorPos);
+
+			$('#autocomplete').focus().autocomplete("search", wordAtLeft);
+
+		} else if ((e.altKey || e.metaKey) && String.fromCharCode(e.charCode || e.keyCode) == "J") {
+			e.preventDefault();
+
+			editorPos = [];
+			for (editor in editors) {
+				if (editors.hasOwnProperty(editor)) {
+					editorPos.push(editor);
+				}
+			}
+
+			jumpFrom = $.inArray($('.ace_focus').attr("id"), editorPos);
+			if (jumpFrom != -1) {
+				jWasPressed = true;
+				$('#pseudo').focus();
+				setTimeout(clearKeyState, 2000);
+			}
+		} else if (jWasPressed && (-1 != $.inArray(e.keyCode, [37, 38, 39, 40]))) {
+			i = jumpFrom;
+			switch (e.keyCode) {
+			case 37: //LEFT with ARROW-LEFT
+				if (i - 1 < 0) {i = editorPos.length - 1; } else {i -= 1; }
+				break;
+			case 38: //UP with ARROW-UP
+				if (i - 2 < 0) {i = editorPos.length - 2 + i % 2; } else { i -= 2; }
+				break;
+			case 39: //RIGHT with ARROW-RIGHT
+				if (i + 1 > editorPos.length - 1) { i = 0; } else { i += 1; }
+				break;
+			case 40: //DOWN with ARROW-DOWN
+				if (i + 2 > editorPos.length - 1) { i = i % 2; } else { i += 2; }
+				break;
+			}
+
+			keySwitch = true;
+
+			$('#accordion').accordion("option", "active", (i - (i % 2)) / 2);
+			editors[editorPos[i]].focus();
+
+			jWasPressed = false;
+		}
+/*
+		}*/
+	});
+
+    $('#bugReport').click(function () {
+		$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
+		$('#dialog').dialog().dialog("destroy");
+		$('#dialog').dialog({
+			title: "Bugreport / Idee einreichen",
+			width: "80%",
+			height: $(window).height() * 0.8,
+			modal: true,
+			open: function () {
+				$('.ui-dialog').css("position", "fixed");
+				clearInterval(timeOutId);
+			},
+			close: function () {
+				$('.ui-dialog').css("position", "absolute");
+				if (!checkIfTimeOut()) {
+					timeOutId = setInterval(checkIfTimeOut, (sessionTimeOut / 20));
+				}
+			}
+		});
+		getIssueForm();
+		getIssueList();
     });
-   
-});
 
-function objToString (obj) {
-    var str = '';
-    for (var p in obj) {
-        if (obj.hasOwnProperty(p)) {
-            str += p + '::' + obj[p] + '\n';
-        }
-    }
-    return str;
-}
+	if (showChangeLog != "") {
+		if (showChangeLog == "firstTime") {
+			data = "page=features";
+			pre = "<h3>Herzlich Willkommen bei WebOpal!</h3>Hier hast du eine kleine Übersicht der Features:";
+		} else if (showChangeLog.substring(0, 11) == "updateSince") {
+			data = "page=changelog&since=" + showChangeLog.substring(11);
+			pre = "<h3>Seit dem du das letzte mal da warst, hat sich einiges geändert!</h3>";
+		}
+		if (data != null) {
+			$.ajax({
+				url: 'inc/ajax.php',
+				type: 'GET',
+				dataType: "json",
+				data: data,
+				success: function (data) {
+					$('#dialog').html(pre + data.text);
+					$('#dialog').dialog({title: "Herzlich Willkommen", width: 700});
+					sessionEnd = new Date().getTime() + sessionTimeOut;
+				},
+				error: function (data) {
+					$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+					$('#dialog').dialog({title: "ERROR", width: 700});
+				}
+			});
+		}
+	}
+
+});
