@@ -1,10 +1,10 @@
 <?php
 session_start();
 ob_start(); //start output buffering
-include 'config.php';
-include 'inc/contributors.php';
-include 'tools/gc.php';
-$VERSION = "v0.4"; // Current Version
+$VERSION = "0.4"; // Current Version
+include_once 'config.php';
+include_once 'inc/contributors.php';
+include_once 'tools/gc.php';
 
 //Escape all variables
 
@@ -118,14 +118,13 @@ if(!isset($_COOKIE['version'])){
 
 
 ?>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-	<title>WebOpal <?php echo $VERSION; ?></title>
-	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-	<link rel="shortcut icon" href="favicon.ico" />
+  <head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>WebOpal <?php echo $VERSION; ?></title>
+  <script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+  <link rel="shortcut icon" href="favicon.ico" />
 	<?if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
@@ -254,9 +253,8 @@ if(!isset($_COOKIE['version'])){
 			<input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
 			<input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
 		</div>
-			<?php include "inc/piwik.php"; ?>
-	</body>
-
+    <?php include "inc/piwik.php"; ?>
+  </body>
 </html>
 
 <?php
