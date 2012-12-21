@@ -31,7 +31,8 @@ if(!is_dir($TMPDIR)){
 	}
 }
 
-//file_put_contents($TMPDIR.'/users',serialize(Array("test"=>Array("email"=>"test@de.de","pw"=>sha1("1234"),"lasttime"=>time(),"path"=>"test"))));
+// As as the multiuser is not working completely, Create a Testuser test with password 1234
+file_put_contents($TMPDIR.'/users',serialize(Array("test"=>Array("email"=>"test@de.de","pw"=>sha1("1234"),"lasttime"=>time(),"path"=>"test"))));
 
 //Sessionexpiration
 if(isset($_SESSION['sessionstart'])){
