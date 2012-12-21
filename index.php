@@ -298,6 +298,7 @@ if(!isset($_COOKIE['version'])){
       <input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
       <input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
       <input type="hidden" id="strucPre" value="<?php echo substr($_SESSION['randNum'],0,4);?>">
+      <input type="hidden" id="secret" value="<?php echo $_SESSION['randNum'];?>">
     </div>
     <?php include "inc/piwik.php"; ?>
   </body>
