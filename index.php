@@ -5,6 +5,8 @@ include_once 'config.php';
 include_once 'inc/contributors.php';
 include_once 'tools/gc.php';
 
+$VERSION="0.5α";
+
 //Escape all variables
 
 //check if the standard dirs has been created

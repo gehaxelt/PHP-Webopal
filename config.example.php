@@ -1,6 +1,5 @@
 <?php
 $HOSTURL=''; //Set the host url here, e.g. http://opal.test.me/
-$VERSION='0.4';
 $IMPRESSUM=''; //Set the url to your impressum, if necessary.
 $MINFILES=2; //Minimum / standard number of structures
 $MAXFILES=3; //Number of the Maximum Structures allowed
@@ -10,7 +9,7 @@ $SESSIONTIMEOUT=600; //time in seconds until the session expire
 $EXAMPLECODE_IMPL = 'DEF hello == "Hello World!"';
 $EXAMPLECODE_SIGN = 'FUN hello : denotation';
 $EXAMPLECODE_CMD = 'hello';
-$ADVERTCOMMENT = '-- created with WebOpal '.$VERSION.' (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL; //comment, which appears in files
+$ADVERTCOMMENT = '-- created with WebOpal (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL; //comment, which appears in files
 $TMPDIR = 'tmp'; //temp-directory
 $RUNMAX = 10;
 $DEBUGMODE = false; // Enable debug mode? Will show var_dump of $_SESSION in debug.php
