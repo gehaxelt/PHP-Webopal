@@ -14,7 +14,7 @@ var maxWidth = 0;
 
 /* Execute if DOM is ready */
 $(function () {
-	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos;
+	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos, foldersShown;
 	currentStruc = $('.num').length;
 	maxStruc = $('#maxStruc').val();
 	strucPre = $('#strucPre').val();
@@ -25,6 +25,7 @@ $(function () {
 	maxWidth = $('.struccontainer').width() - 40;
 	possibleRun = [];
 	jWasPressed = false;
+	foldersShown = false;
 	clearKeyState = function () {
 		if (jWasPressed) {editors[editorPos[jumpFrom]].focus(); }
 		jWasPressed = false;
@@ -110,6 +111,23 @@ $(function () {
 		num = $(this).parent().find('.num').val();
 		name = $(this).val();
 		checkSignAndImpl(num, name);
+	});
+
+	$(document).on("click", '.changeDir', function (event) {
+		name = $(this).attr("name");
+		$.ajax({
+			url: 'inc/ajax.php',
+			type: 'GET',
+			dataType: "json",
+			data: "page=changeDir&dir=" + name,
+			success: function () {
+				sessionEnd = new Date().getTime() + sessionTimeOut;
+			},
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+			}
+		});
 	});
 
 	$(document).on("click", '.errorJump', function (event) {
@@ -314,6 +332,90 @@ $(function () {
 				$('#dialog').dialog({title: "ERROR", width: 700});
 			}
 		});
+	});
+
+	$("#getFolders").click(function () {
+		var name, w;
+		if(foldersShown){
+			$('#folders').toggle('slow');
+			$('.codeRelated').toggle('slow');
+			foldersShown=false;	
+		}else{
+			$.ajax({
+				url: 'inc/ajax.php',
+				type: 'GET',
+				dataType: "json",
+				data: "page=getFolders",
+				success: function (data) {
+					$('#folders').html(data);
+					$('#folders').toggle('slow');
+					$('.codeRelated').toggle('slow');
+					foldersShown=true;
+					sessionEnd = new Date().getTime() + sessionTimeOut;
+				},
+				error: function (data) {
+					$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+					$('#dialog').dialog({title: "ERROR", width: 700});
+				}
+			});
+		}
+	});
+
+	$("#login").click(function () {
+		var name, w;
+		name = $(this).attr("name");
+		w = 700;
+		$.ajax({
+			url: 'inc/ajax.php',
+			type: 'GET',
+			dataType: "json",
+			data: "page=login",
+			success: function (data) {
+				$('#dialog').html(data);
+				$('#dialog').dialog({title: "Login", width: w});
+				$("#loginData").validate({
+					debug: true,
+					onkeyup: false,
+					rules: {
+						user: "required",
+						pw: "required"
+					},
+					messages: {
+						user: "Notwendig",
+						pw: "Notwendig",
+					}
+				});
+				$('#loginSubmit').click(function () {
+					if ($('#loginData').valid()) {
+						$.ajax({
+							url: 'inc/ajax.php',
+							type: 'GET',
+							dataType: "json",
+							data: "page=loginCheck&user=" + $('#user').val() + "&pw=" + SHA1(SHA1($('#pw').val()) + $('#secret').val()),
+							success: function (data) {
+								if(data.success){
+									window.location.href = "index.php";
+								}else{
+									$('#dialog').append(data.msg);
+								}
+							},
+							error: function (data) {
+								alert(data.responseText);
+							}
+						});
+					}
+				});
+				sessionEnd = new Date().getTime() + sessionTimeOut;
+			},
+			error: function (data) {
+				$('#dialog').html("HTTP-Status: " + data.status + " (" + data.statusText + ")\n" + data.responseText);
+				$('#dialog').dialog({title: "ERROR", width: 700});
+			}
+		});
+	});
+
+	$(document).on("click", '#logout', function () {
+		window.location.href = "inc/logout.php";
 	});
 
 	$('#runFunction').keypress(function (e) {

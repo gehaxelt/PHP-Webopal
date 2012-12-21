@@ -67,6 +67,16 @@ if($page=="trashmail"){
 	echo 	json_encode(getIssues());
 }else if($page=="issueForm"){
 	echo 	json_encode(getIssueForm());
+}else if($page=="login"){
+	echo 	json_encode(getLoginForm());
+}else if($page=="loginCheck"){
+	echo 	json_encode(loginCheck($_GET['user'],$_GET['pw']));
+}else if($page=="getFolders"){
+	if($_SESSION['loggedIn']){
+	echo 	json_encode(getFolders($_SESSION['loggedInPath']));
+	}else{
+	echo "Not logged in. Please reload the page.";
+	}
 }else{
 	$text=getMD(strtoupper($page));
 	if(isset($_GET['since'])){
@@ -122,7 +132,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
 		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
-	$_SESSION['randNum']=$ranFile;
+	//$_SESSION['randNum']=$ranFile; Is this really necessary?
 	mkdir($dirStr);
 
 	file_put_contents($dirStr."/time.stamp", time());
@@ -254,6 +264,25 @@ $compare[]=$c;
 return $r;
 }
 
+function loginCheck($user,$pw){
+	global $TMPDIR,$_SESSION;
+	$users=unserialize(file_get_contents("../".$TMPDIR.'/users'));
+	if(isset($users[$user])){
+		if($pw==sha1($users[$user]["pw"].$_SESSION['randNum'])){
+			$_SESSION['loggedIn']=true;
+			$_SESSION['loggedInAs']=$user;
+			$_SESSION['loggedInPath']=$users[$user]["path"];
+			$users[$user]["lastTime"]=time();
+			file_put_contents("../".$TMPDIR.'/users',serialize($users));
+			return Array("success"=>true,"msg"=>"");
+		}else{
+			return Array("success"=>false,"msg"=>"User/Passwort stimmen nicht überein");
+	}
+	}else{
+		return Array("success"=>false,"msg"=>"User/Passwort stimmen nicht überein");
+	}
+}
+
 // function for fetching issues from github, used for bug reporting feature
 function getIssues(){
 global $ISSUEUSER,$ISSUEREPO;
@@ -295,7 +324,17 @@ $echo='<form id="reportData">
 			<div><input type="checkbox" name="agree"><label for="agree">Ich versichere, dass ich mir die Issueliste links angeguckt habe und keine Dopplung auftritt.</label></div><br>
 			<div id="reCaptcha"></div>
 			<div style="color: red;" id="captchaStatus">&nbsp;</div>
-			<input id="issueSubmit" type="button" value="Absenden">
+			<input id="issueSubmit" name="issueSubmit" type="button" value="Absenden">
+		 </form>';
+return $echo;
+}
+
+function getLoginForm(){
+$error="";
+$echo='<form id="loginData">
+			<div><label for="user">User: </label><input type="text" size="40" name="user" id="user"></div>
+			<div><label for="pw">Password: </label><input type="password" size="40" name="pw" id="pw"></div>
+			<input id="loginSubmit" name="loginSubmit" type="button" value="Absenden">
 		 </form>';
 return $echo;
 }
@@ -327,6 +366,22 @@ function checkCaptcha(){
 	} else {
 		return "Captcha falsch:".$resp->error;
 	}
+}
+
+function getFolders($path){
+global $TMPDIR;
+$echo='';
+foreach (new DirectoryIterator('../'.$TMPDIR.'/userfiles/'.$path) as $fn) {
+    if (!$fn->isDot()) {
+     $echo.='<a href="#" class="changeDir" name="';
+     $echo.=$fn->getFilename();
+     $echo.='">';
+     $echo.=$fn->getFilename();
+     $echo.='</a><br>';     
+    }
+ }
+ 
+return $echo;
 }
 
 ?>
