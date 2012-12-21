@@ -253,7 +253,7 @@ if(!isset($_COOKIE['version'])){
     <div id="forJavascript">
       <input type="hidden" id="timeOut" value="<?php echo $SESSIONTIMEOUT*1000;?>">
       <input type="hidden" id="maxStruc" value="<?php echo $MAXFILES;?>">
-      <input type="hidden" id="implEx" value="<?php echo $EXAMPLECODE_IMPL;?>">
+      <input type="hidden" id="implEx" value='<?php echo $EXAMPLECODE_IMPL;?>'>
       <input type="hidden" id="signEx" value="<?php echo $EXAMPLECODE_SIGN;?>">
       <input type="hidden" id="cmdEx" value="<?php echo $EXAMPLECODE_CMD;?>">
       <input type="hidden" id="showChangeLog" value="<?php echo $showChangeLog;?>">
