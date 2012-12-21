@@ -223,6 +223,9 @@ if(!isset($_COOKIE['version'])){
 				  $dircount++;
 				 }
 			 }
+			 if($dircount<$MAXFOLDERS){
+			 $dirs .= '<a href="#" id="addDir">[Verzeichnis hinzuf&uuml;gen]</a><br>';
+			 }
 		echo "Du bist gerade in keinem Verzeichnis. Wähle eins:<!--<a href='#' id='getFolders'>[Verzeichnis wechseln]</a>-->
 		<div id='folders'>$dirs</div>";} ?>
 		<div id="warning" style="display:none;"><br><br>
