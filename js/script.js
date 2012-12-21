@@ -382,7 +382,7 @@ $(function () {
 					},
 					messages: {
 						user: "Notwendig",
-						pw: "Notwendig",
+						pw: "Notwendig"
 					}
 				});
 				$('#loginSubmit').click(function () {
