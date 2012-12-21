@@ -5,8 +5,16 @@ ob_start(); //start output buffering
 include_once 'config.php';
 include_once 'inc/contributors.php';
 include_once 'tools/gc.php';
+include_once 'tools/mobiledetect.php';
 
 $VERSION="0.5&alpha;";
+
+//show mobile site
+$detect = new Mobile_Detect();
+if($detect->isMobile()){
+	include 'mobile/mobilepage.php';
+	exit();
+}
 
 //Escape all variables
 
