@@ -5,6 +5,7 @@ $contributors[] = "Sebastian Neef";
 $contributors[] = "Tim M&uuml;ller";
 $contributors[] = "Lukas Eipert";
 $contributors[] = "Moritz Lummerzheim";
+$contributors[] = "Opalion (aka Kaufi)";
 
 function echo_contributors(){
 	global $contributors;
