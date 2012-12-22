@@ -248,6 +248,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	return Array("log"=>implode("<br>",$results),"err"=>json_encode(justonetime($retError,Array("file","type","fromLine")),JSON_FORCE_OBJECT));
 }
 
+//TODO: Comments!
 function justonetime($a,$b){
 $compare=array();$r=array();
 foreach($a as $array){
