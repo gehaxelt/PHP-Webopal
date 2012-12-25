@@ -240,7 +240,7 @@ if(!isset($_COOKIE['version'])){
 						echo '
 						<h3 class="filename">
 						<span style="float:right" class="delStruc">Löschen</span>
-						Struktur <input id="name'.$i.'" class="nameInput" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+						Struktur <input id="name'.$i.'" class="nameInput" placeholder="Strukturname" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
 						<input type="hidden" value="'.$i.'" class="num">
 						</h3>
 						<div class="struccontainer" style="padding:10px;">
@@ -262,7 +262,7 @@ if(!isset($_COOKIE['version'])){
 					<br>
 					<div id="funccontainer">
 						Funktionsaufrufe (auch mehrere z.B. "hello;f(x,y)")<br>
-						<input name="runFunction" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
+						<input name="runFunction" placeholder="Funktionsaufruf" id="runFunction" type="text" size="43" value="<?php echo htmlentities($_SESSION['runFunction']);?>">
 					</div>
 					<div id="sendcontainer">
 						<input name="debug" id="debug" type="checkbox" value="1"> Debugmodus 
