@@ -317,8 +317,8 @@ return implode("",$echo);
 function getIssueForm(){
 $error="";
 $echo='<form id="reportData">
-			<div><label for="title">Titel: </label><input type="text" size="40" name="title"></div>
-			<div><label for="email">Email (opt.):</label><input type="text" size="40" name="email"></div>
+			<div><label for="title">Titel: </label><input placeholder="Titel" type="text" size="40" name="title"></div>
+			<div><label for="email">Email (opt.):</label><input placeholder="Email (optional)" type="text" size="40" name="email"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
 			<div><label for="description">Beschreibung:</label><br>
 			<div><textarea style="width:100%;" rows="10" name="description"></textarea></div><br>
@@ -333,8 +333,8 @@ return $echo;
 function getLoginForm(){
 $error="";
 $echo='<form id="loginData">
-			<div><label for="user">User: </label><input type="text" size="40" name="user" id="user"></div>
-			<div><label for="pw">Password: </label><input type="password" size="40" name="pw" id="pw"></div>
+			<div><label for="user">User: </label><input placeholder="Username" type="text" size="40" name="user" id="user"></div>
+			<div><label for="pw">Password: </label><input placeholder="Passwort" type="password" size="40" name="pw" id="pw"></div>
 			<input id="loginSubmit" name="loginSubmit" type="button" value="Absenden">
 		 </form>';
 return $echo;
