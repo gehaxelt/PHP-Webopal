@@ -204,7 +204,7 @@ $(function () {
 			$('#accordion').append(
 				'<h3 class="filename">' +
 					'	<span style="float:right" class="delStruc" v>Löschen</span>' +
-					'	Struktur <input id="name' + strucNum + '" class="nameInput" name="fileName[' + strucNum + ']" value="' + name + '">' +
+					'	Struktur <input placeholder="Strukturname" id="name' + strucNum + '" class="nameInput" name="fileName[' + strucNum + ']" value="' + name + '">' +
 					'	<input type="hidden" value="' + strucNum + '" class="num">' +
 					'</h3>' +
 					'<div class="struccontainer" style="padding:10px;">' +
