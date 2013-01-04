@@ -1,3 +1,4 @@
+<!--Piwik tracking code. -->
 <!-- Piwik -->
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.gehaxelt.in/piwik/" : "http://www.gehaxelt.in/piwik/");
