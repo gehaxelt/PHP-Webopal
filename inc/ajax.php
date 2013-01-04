@@ -1,14 +1,19 @@
 <?php
 session_start();
+/**
+Update the sessionstart time.
+**/
+$_SESSION['sessionstart']=time();
+
+/**
+Include necessary files
+**/
 include "../config.php";
 require('markdown.php');
-$page="";
-//Sessionexpiration
-$_SESSION['sessionstart'] = time();
-//Escaping all variables
-//if(isset($_GET['implInput'])) { $_GET['implInput']=htmlentities($_GET['implInput']); }
-//if(isset($_GET['signInput'])) { $_GET['signInput']=htmlentities($_GET['signInput']); }
-//if(isset($_GET['fileName'])) { $_GET['fileName']=htmlentities($_GET['fileName']); }
+
+/**
+Escape all needed variables to protect us from being XSSed.
+**/
 if(isset($_GET['runFunction'])) { $_GET['runFunction']=htmlentities($_GET['runFunction']); }
 if(isset($_GET['structnr'])) { $_GET['structnr']=htmlentities($_GET['structnr']); }
 if(isset($_GET['file'])) { $_GET['file']=htmlentities($_GET['file']); }
@@ -17,14 +22,21 @@ if(isset($_GET['page'])) { $_GET['page']=htmlentities($_GET['page']); }
 if(isset($_GET['oasys'])) { $_GET['oasys']=htmlentities($_GET['oasys']); }
 if(isset($_GET['actTab'])) { $_GET['actTab']=htmlentities($_GET['actTab']); }
 if(isset($_GET['debug'])) { $_GET['debug']=htmlentities($_GET['debug']); }else{$_GET['debug']=false;}
-
-if(isset($_GET["page"])){$page=$_GET["page"];}
-
+if(isset($_GET["page"])){$page=$_GET["page"];} else {$page="";}
+if(isset($_GET["email"])){$_GET["email"]=htmlentities($_GET["email"]); }
+/**
+Check the email.
+This code checks, where an email is blacklisted or not.
+The blacklist can be found in the configuration file.
+**/
 if($page=="trashmail"){
+	//FORBIDDENMAIL array empty?
 	if(count($FORBIDDENMAIL)>0){
 		$email = $_GET['email'];
+		//does email match an email address?
 		if(preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $email)){
-			if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$email,$matches)){
+			//is the maildomain blacklisted?
+			if(preg_match("~(".implode(')|(',$FORBIDDENMAIL).")~",$email,$matches)){	
 				echo json_encode("Domain ".$matches[0]." nicht erlaubt");
 			}else{
 				echo json_encode(true);
@@ -35,9 +47,16 @@ if($page=="trashmail"){
 	}else{
 		echo json_encode(true);
 	}
+/**
+Creats the download archive.
+**/
 } else if($page=="download"){
 	echo json_encode(Array("title"=>$page,"text"=>download()));
+/**
+Update the session variable with users input (editors, execution,..)
+**/
 }else if($page=="update"){
+	//update the session variable
 	if(isset($_GET['fileName'])) {$_SESSION['fileName']=  array_slice($_GET['fileName'] ,0,$MAXFILES,true);}
 	if(isset($_GET['implInput'])) {$_SESSION['implInput']=fixIMPLandSIGN(array_slice($_GET['implInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
 	if(isset($_GET['signInput'])) {$_SESSION['signInput']=fixIMPLandSIGN(array_slice($_GET['signInput'],0,$MAXFILES,true),$_SESSION['fileName']);}
@@ -46,14 +65,17 @@ if($page=="trashmail"){
 	if(isset($_GET['debug'])) {$_SESSION['debug']=$_GET['debug'];}
 	if(isset($_GET['structnr'])) {
 		$_SESSION['structnr']=$_GET['structnr'];
+		//create a random file name
 		if(isset($_GET['file'])) {$_SESSION['fileName'][$_GET['file']]=substr($_SESSION['randNum'],0,4)."datei".$_GET['file'];}
 	}
+	//delete a structure from the session array
 	if(isset($_GET["delete"])){
 		$i=$_GET["delete"];
 		if(isset($_SESSION['implInput'][$i])) {unset($_SESSION['implInput'][$i]);}
 		if(isset($_SESSION['signInput'][$i])) {unset($_SESSION['signInput'][$i]);}
 		if(isset($_SESSION['fileName'][$i])) {unset($_SESSION['fileName'][$i]);}
 	}
+	//run the program
 	if(isset($_GET["oasys"])){
 		if(isset($_SESSION['implInput'])) {
 			echo json_encode(runOasys($_SESSION['implInput'],$_SESSION['signInput'],$_SESSION['runFunction'],$_SESSION['fileName'],$_SESSION['debug']));
@@ -61,22 +83,43 @@ if($page=="trashmail"){
 			echo json_encode("Deine Session ist abgelaufen. Bitte einmal mit F5 neuladen.");
 		}
 	}
+/**
+Checks the captcha input
+**/
 }else if($page=="checkCaptcha"){
 	echo 	json_encode(checkCaptcha());
+/**
+Lists all issues in the bugreport
+**/
 }else if($page=="issueList"){
 	echo 	json_encode(getIssues());
+/**
+Creates the issue form
+**/
 }else if($page=="issueForm"){
 	echo 	json_encode(getIssueForm());
+/**
+Creates the login page
+**/
 }else if($page=="login"){
 	echo 	json_encode(getLoginForm());
+/**
+Checks the login data
+**/
 }else if($page=="loginCheck"){
 	echo 	json_encode(loginCheck($_GET['user'],$_GET['pw']));
+/**
+Retireves all users folders.
+**/
 }else if($page=="getFolders"){
 	if($_SESSION['loggedIn']){
 	echo 	json_encode(getFolders($_SESSION['loggedInPath']));
 	}else{
 	echo "Not logged in. Please reload the page.";
 	}
+/**
+Else show the contens of the markdown files.
+**/
 }else{
 	$text=getMD(strtoupper($page));
 	if(isset($_GET['since'])){
@@ -90,6 +133,9 @@ if($page=="trashmail"){
 	echo json_encode(Array("title"=>$page,"text"=>$text));
 }
 
+/**
+Returns the rendered content of a given markdown file in ../markdown/
+**/
 function getMD($s){
 if(file_exists("../markdown/".$s.".md")){
 		return MARKDOWN(file_get_contents("../markdown/".$s.".md"));
@@ -98,12 +144,15 @@ if(file_exists("../markdown/".$s.".md")){
 	}
 }
 
+/**
+Creates the tar archive of the code and returns the content of the jquery-ui-window.
+**/
 function download(){
 	global $HOSTURL, $RUNMAX,$TMPDIR;
 	//generate a random name for the download archive
 	$ranName=str_shuffle($_SESSION['randNum']);
+	//stimestamp for the garbage collector
 	file_put_contents("../".$TMPDIR."/downloads/".$ranName.".stamp", time()+60*60*24); // 60 * 60 * 24 = 24h
-
 	//if there is something to archive, archive it and send the download link
 	//else tell the user that there is nothing to archive
 	if(is_dir("../".$TMPDIR."/files/".$_SESSION['randNum'])){
@@ -115,28 +164,38 @@ function download(){
 	}
 }
 
+/**
+Fixes the implemantation/signature.
+pleasecomment
+**/
 function fixIMPLandSIGN($arr,$names) {
 	foreach($arr as $i => $a){
 		$arr[$i]=preg_replace('/((IMPLEMENTATION|SIGNATURE)\s*)([A-Za-z0-9]*)(.*\n)/',"$1".$names[$i]."$4",$a);
 	}
 	return $arr;
 }
+
+/**
+Runs the code and returns its output.
+**/
 function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	global $TIMEOUT,$TIMEOUTTXT,$ADVERTCOMMENT,$TMPDIR,$RUNMAX;
 
+	//No command passed?
 	if($cmd==""){return Array("log"=>"Keine Funktion(en) angegeben.");}
 	
 	/* Generate a random number for the directory and create the directory */
+	//Create random temporary directorys, where the code will be executed.
 	for($i=0;$i<5;$i++){
 		$ranFile = md5($i.time().str_shuffle(time()));
 		$dirStr = "../".$TMPDIR."/files/".$ranFile;
 		if(!is_dir($dirStr)){break;}else if($i==4){return Array("log"=>"Wir konnten leider keinen Ordner für dich anlegen. Probier es nochmal!");}
 	}
-	//$_SESSION['randNum']=$ranFile; Is this really necessary?
 	mkdir($dirStr);
 
+	//creation date for garbage collector
 	file_put_contents($dirStr."/time.stamp", time());
-
+	
 	/* Create impl and sign files for every structure with a non empty impl */
 	foreach($impls as $i => $impl){
 		if($impls[$i]!=""){
@@ -155,20 +214,25 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			/* Create impl and sign files for the structure */
 			if(preg_match('/SIGNATURE/',$signs[$i])===0){$signStr = "SIGNATURE ".$names[$i];}
 			if(preg_match('/IMPLEMENTATION/',$impls[$i])===0){$implStr = "IMPLEMENTATION ".$names[$i];}
-			
+	
+			//write contents to file		
 			file_put_contents($dirStr."/".$names[$i].".sign",$ADVERTCOMMENT."\n".$signStr."\n".str_replace("\r\n","\n",$signs[$i]));
 			file_put_contents($dirStr."/".$names[$i].".impl",$ADVERTCOMMENT."\n".$implStr."\n".str_replace("\r\n","\n",$impls[$i]));
 		}
 	}
 	
+	//Undo some htmlentities
 	//Split commands at ;
 	$cmd=str_replace("&quot;","\"",$cmd);
 	$cmd=str_replace("&lt;","<",$cmd);
 	$cmd=str_replace("&gt;",">",$cmd);
 	$cmds=explode(";",$cmd);
+	//to big composition
 	if(count($cmds)>$RUNMAX) {
 		return Array("log"=>"Du kannst maximal ".$RUNMAX." Funktionen hintereinander ausführen."); //senseless error description
 	}
+
+	//pleasecomment
 	$runOrder="";
 	$lastFocus="";
 	$added=Array();
@@ -228,6 +292,8 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	$result=preg_replace("/\n.*(>[ef])/","\n$1",$result);
 	$result=preg_replace("/\t/","&nbsp;",$result);
 	$results=explode("\n",$result);
+	
+	//pleasecomment
 	$c=0;
 	$retError=Array();
 	foreach($results as $key=>$result){
@@ -248,28 +314,36 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 	return Array("log"=>implode("<br>",$results),"err"=>json_encode(justonetime($retError,Array("file","type","fromLine")),JSON_FORCE_OBJECT));
 }
 
-//TODO: Comments!
+//pleasecomment
+//eindeutigere Variablen?
 function justonetime($a,$b){
-$compare=array();$r=array();
-foreach($a as $array){
-$c="";
-foreach($b as $key){
-$c.=$array[$key];
-}
-if(!in_array($c,$compare)){
-$r[]=$array;
-$compare[]=$c;
-}
-}
-
+	$compare=array();$r=array();
+	foreach($a as $array){
+		$c="";
+		foreach($b as $key){
+			$c.=$array[$key];
+		}
+		if(!in_array($c,$compare)){
+			$r[]=$array;
+			$compare[]=$c;
+		}
+	}
 return $r;
 }
 
+/**
+Checks the username and password for a user
+**/
 function loginCheck($user,$pw){
 	global $TMPDIR,$_SESSION;
+	//get userlist
 	$users=unserialize(file_get_contents("../".$TMPDIR.'/users'));
+	
+	//user in list
 	if(isset($users[$user])){
+		//check password
 		if($pw==sha1($users[$user]["pw"].$_SESSION['randNum'])){
+			//set sessions variables
 			$_SESSION['loggedIn']=true;
 			$_SESSION['loggedInAs']=$user;
 			$_SESSION['loggedInPath']=$users[$user]["path"];
@@ -285,38 +359,40 @@ function loginCheck($user,$pw){
 }
 
 // function for fetching issues from github, used for bug reporting feature
+//pleasecomment
 function getIssues(){
-global $ISSUEUSER,$ISSUEREPO;
-include "../tools/githubapi/vendor/autoload.php";
-$echo=Array();
-$client = new Github\Client();
-$iss1 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
-$iss2 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'closed',"labels"=>"postponed,"));
-$issues = array_merge($iss1,$iss2);
-foreach($issues as $issue){
-$token="";$token2="";
-if($issue["pull_request"]["html_url"]!=null){
-	$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";
-}else if($issue["state"]=="closed"){
-	$token="&nbsp;&nbsp;<small><small>(Postponed)</small></small>";
-	$token2="<b>ACHTUNG:</b> Dieser Issue wird nicht weiter verfolgt, um zu erfahren warum:<br>";
-}
-$echo[$issue["number"]]="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
+	global $ISSUEUSER,$ISSUEREPO;
+	include "../tools/githubapi/vendor/autoload.php";
+	$echo=Array();
+	$client = new Github\Client();
+	$iss1 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'open'));
+	$iss2 = $client->api('issue')->all($ISSUEUSER,$ISSUEREPO,array('state'=>'closed',"labels"=>"postponed,"));
+	$issues = array_merge($iss1,$iss2);
+	foreach($issues as $issue){
+		$token="";
+		$token2="";
+		if($issue["pull_request"]["html_url"]!=null){
+			$token="&nbsp;&nbsp;<small><small>(Pull Request)</small></small>";
+		}else if($issue["state"]=="closed"){
+			$token="&nbsp;&nbsp;<small><small>(Postponed)</small></small>";
+			$token2="<b>ACHTUNG:</b> Dieser Issue wird nicht weiter verfolgt, um zu erfahren warum:<br>";
+		}
+		$echo[$issue["number"]]="<h3>"."#".Intval($issue["number"]).": ".htmlentities($issue["title"], ENT_QUOTES, 'UTF-8').$token."</h3>
 		<div class='issue'>
 			<p>Beschreibung Problem:</p>
 			<div class='issueDescription'>".MARKDOWN(htmlentities($issue["body"], ENT_QUOTES, 'UTF-8'))."</div>
 			<p class='issueInfo'>$token2 Lies die komplette Diskussion zu dem Issue <a href='".htmlentities($issue["html_url"])."' target='_blank'>hier auf Github</a></p>
 		</div>";
+	}
+	krsort($echo,SORT_NUMERIC);
+	return implode("",$echo);
 }
 
-krsort($echo,SORT_NUMERIC);
-
-return implode("",$echo);
-}
-
+/**
+Returns the issueform for bugreports
+**/
 function getIssueForm(){
-$error="";
-$echo='<form id="reportData">
+	$echo='<form id="reportData">
 			<div><label for="title">Titel: </label><input placeholder="Titel" type="text" size="40" name="title"></div>
 			<div><label for="email">Email (opt.):</label><input placeholder="Email (optional)" type="text" size="40" name="email"></div>
 			<div><label for="type">Art: </label><input type="radio" name="type" value="bug"> Bug <input type="radio" name="type" value="idea"> Idee</div>
@@ -327,28 +403,35 @@ $echo='<form id="reportData">
 			<div style="color: red;" id="captchaStatus">&nbsp;</div>
 			<input id="issueSubmit" name="issueSubmit" type="button" value="Absenden">
 		 </form>';
-return $echo;
+	return $echo;
 }
 
+/**
+Returns the loginform 
+**/
 function getLoginForm(){
-$error="";
-$echo='<form id="loginData">
+	$echo='<form id="loginData">
 			<div><label for="user">User: </label><input placeholder="Username" type="text" size="40" name="user" id="user"></div>
 			<div><label for="pw">Password: </label><input placeholder="Passwort" type="password" size="40" name="pw" id="pw"></div>
 			<input id="loginSubmit" name="loginSubmit" type="button" value="Absenden">
 		 </form>';
-return $echo;
+	return $echo;
 }
 
+/**
+Checks the captcha input
+**/
 function checkCaptcha(){
 	global $_POST,$_GET,$ISSUEUSER,$ISSUEREPO,$GITHUBUSER,$GITHUBPW,$PUBLICKEY,$PRIVATEKEY;
 	require_once('../tools/recaptchalib.php');
 
+	//check captcha answer
 	$resp = recaptcha_check_answer ($PRIVATEKEY,
 		                             $_SERVER["REMOTE_ADDR"],
 		                             $_POST["recaptcha_challenge_field"],
 		                             $_POST["recaptcha_response_field"]);
 
+	//if valid, process with the creation of github bugreport
 	if ($resp->is_valid) {
 		require_once "../tools/githubapi/vendor/autoload.php";
 		$echo="";
@@ -369,20 +452,22 @@ function checkCaptcha(){
 	}
 }
 
+/**
+Returns the folders of a given path
+**/
 function getFolders($path){
-global $TMPDIR;
-$echo='';
-foreach (new DirectoryIterator('../'.$TMPDIR.'/userfiles/'.$path) as $fn) {
-    if (!$fn->isDot()) {
-     $echo.='<a href="#" class="changeDir" name="';
-     $echo.=$fn->getFilename();
-     $echo.='">';
-     $echo.=$fn->getFilename();
-     $echo.='</a><br>';     
-    }
- }
- 
-return $echo;
+	global $TMPDIR;
+	$echo='';
+	foreach (new DirectoryIterator('../'.$TMPDIR.'/userfiles/'.$path) as $fn) {
+   		if (!$fn->isDot()) {
+     			$echo.='<a href="#" class="changeDir" name="';
+     			$echo.=$fn->getFilename();
+     			$echo.='">';
+     			$echo.=$fn->getFilename();
+     			$echo.='</a><br>';     
+    		}
+ 	}
+	return $echo;
 }
 
 ?>
