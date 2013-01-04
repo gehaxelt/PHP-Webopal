@@ -1,32 +1,140 @@
 <?php
-$HOSTURL=''; //Set the host url here, e.g. http://opal.test.me/
-$IMPRESSUM=''; //Set the url to your impressum, if necessary.
-$MINFILES=2; //Minimum / standard number of structures
-$MAXFILES=3; //Number of the Maximum Structures allowed
-$TIMEOUT=10; //Number of seconds which the program is allowed to run
-$TIMEOUTTXT='Your program maybe timed out (>'.$TIMEOUT.'s)'; //text shown, if program did timeout
-$SESSIONTIMEOUT=600; //time in seconds until the session expire
+/**
+This is the main configuration file for WebOpal. You need to configure the following variables.
+**/
+
+/**
+Set the root url to your Webopal installation here.
+Don't forget the slash at the end.
+E.g. http://opal.somedomain.net/
+**/
+$HOSTURL=''; 
+
+/**
+In some countries (e.g. germany) you need an imprint.
+Set the url to your imprint here.
+E.g. http://somedomain.net/myimprint.html
+**/
+$IMPRESSUM=''; 
+
+/**
+Set the minimum/standard amount of structures here.
+A value between 1 and 3 is recommended.
+**/
+$MINFILES=2; 
+
+/**
+Set the maximum amount of structures here.
+A value between 5 and 10 is recommended.
+**/
+$MAXFILES=3; 
+
+/**
+Some programs need a lot of CPU time. 
+You can restrict the duration in seconds the program is allowed to run.
+We recommend a value of 10 seconds.
+**/
+$TIMEOUT=10; 
+
+/**
+If the program ran into the timeout, display a userfriendly message.
+You can edit the message below.
+**/
+$TIMEOUTTXT='Your program maybe timed out (>'.$TIMEOUT.'s)'; 
+
+/**
+Set the session timeout in seconds.
+After the timeout, the session will expire.
+Note: The session will be renewed on everey users action. 
+**/
+$SESSIONTIMEOUT=600; 
+
+/**
+Set the implementation code of an example program, which will be shown to the user the first time he's visiting WebOpal.
+**/
 $EXAMPLECODE_IMPL = 'DEF hello == "Hello World!"';
+
+/**
+Set the signature code of an example program, which will be shown to the user the first time he's visiting WebOpal.
+**/
 $EXAMPLECODE_SIGN = 'FUN hello : denotation';
+
+/**
+Set the execution command of an example program.
+**/
 $EXAMPLECODE_CMD = 'hello';
-$ADVERTCOMMENT = '-- created with WebOpal (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL; //comment, which appears in files
-$TMPDIR = 'tmp'; //temp-directory
+
+/**
+You can add a comment which will appear in some of the downloaded files. 
+**/
+$ADVERTCOMMENT = '-- created with WebOpal (https://github.com/gehaxelt/PHP-Webopal) on Server '.$HOSTURL; 
+
+/**
+Set the path to a temporary directory, which is writable by the webserver, where the files will be stored.
+**/
+$TMPDIR = 'tmp';
+
+/**
+Set the maximum number of execution composition.
+We recommend a value of 10.
+**/
 $RUNMAX = 10;
-$DEBUGMODE = false; // Enable debug mode? Will show var_dump of $_SESSION in debug.php
 
-// For Bugreport PHP >= 5.3.2 with cURL extension needed
-$BUGREPORT = false;	//Enable, if you want the users to be able to report Bugs/Ideas.
+/**
+If the debug mode is enabled, you'll find the content of $_SESSION at /debug.php.
+Useful for developement or debugging.
+You should not enable it on productive systems.
+**/
+$DEBUGMODE = false; 
 
-//Please fill out the following in order to get the bugreport to work
-$ISSUEREPO='';			//Repository where the Bugs should be reported, e.g. PHP-Webopal
-$ISSUEUSER= '';		//User which owns the repository, e.g. gehaxelt
-$GITHUBUSER='';		//User that makes the reports
-$GITHUBPW='';			//Password of that user
-$PUBLICKEY = '';		//Public Key of reCaptcha (can be obtained here http://recaptcha.net)
-$PRIVATEKEY = '';		//Private Key of reCaptcha (can be obtained here http://recaptcha.net)
-// Starting here not required for Bugreport
+/**
+If bugreport is enabled, you'll give the users the posibillity to send bugreports or improvements to a github repository.
+You'll need php version >=5.3.2 with cURL extension enabled.
+We recommend you to enable this option, so we can improve WebOpal ;)
+**/
+$BUGREPORT = false;
 
-$FORBIDDENEMAIL =  //For Blocking trashmail emails
+/**
+You need to set the following variables to get the bugreport working.
+**/
+
+/**
+Set name of the repository, to which the bugs should be reported.
+E.g. PHP-WebOpal
+**/
+$ISSUEREPO='PHP-Webopal';
+
+/**
+Set the owner of the repository. 
+E.g. gehaxelt
+**/
+$ISSUEUSER= 'gehaxelt';
+
+/**
+You'll need to declare a github user, which will post the reports.
+In case, you do not want to use your real account, you can simply create on.
+E.g. WebOpalReporter
+**/
+$GITHUBUSER='';
+
+/**
+The githubusers password for github.com
+**/
+$GITHUBPW='';
+
+/**
+We're using reCaptcha to protect you from spam.
+You'll need to create a key for free at: https://www.google.com/recaptcha/admin/create
+Paste the public/private key into the variables below.
+**/
+$PUBLICKEY = '';
+$PRIVATEKEY = '';
+
+/**
+We created a blacklist of trash/spam mail services. 
+Feel free to add or remove some services.
+**/
+$FORBIDDENEMAIL = 
 Array("0clickemail.com","noclickemail.com","10minutemail.com ","bofthew.com","jnxjn.com","klzlk.com","nepwk.com","nwldx.com","owlpic.com","pjjkp.com",
 "prtnx.com","rmqkr.net","rppkn.com","rtrtr.com","tyldd.com","uggsrock.com","12houremail.com","12minutemail.com","1pad.de","akapost.com",
 "anon-mail.de","anonbox.net","anonmails.de","anonymbox.com","antispam.de","antispam24.de","antispammail.de","b2cmail.de","breakthru.com",
@@ -68,7 +176,9 @@ Array("0clickemail.com","noclickemail.com","10minutemail.com ","bofthew.com","jn
 "wegwerfemail.de","wh4f.org","willhackforfood.biz","whyspam.me","cool.fr.nf","courriel.fr.nf","jetable.fr.nf","mega.zik.dj","moncourrier.fr.nf",
 "monemail.fr.nf","monmail.fr.nf","nomail.xl.cx","nospam.ze.tc","speed.1s.fr","yopmail.com","yopmail.fr","yopmail.net","youmailr.com","zehnminuten.de","zehnminutenmail.de");
 
-//DONT CHANGE BELOW HERE
+/**
+DO NOT CHANGE ANYTHING BELOW.
+**/
 if($ISSUEREPO==''||$ISSUEUSER== ''||$GITHUBUSER==''||$GITHUBPW==''||$PUBLICKEY == ''||$PRIVATEKEY == ''){
 	$BUGREPORT = false; 
 }
