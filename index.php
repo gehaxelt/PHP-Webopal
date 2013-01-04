@@ -240,7 +240,7 @@ if(!isset($_COOKIE['version'])){
 						echo '
 						<h3 class="filename">
 						<span style="float:right" class="delStruc">Löschen</span>
-						Struktur <input id="name'.$i.'" class="nameInput" placeholder="Strukturname" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
+						Struktur <input id="name'.$i.'" title="Nur Buchstaben und Zahlen" pattern="[A-Za-z0-9]" class="nameInput" placeholder="Strukturname" name="fileName['.$i.']" value="'.htmlentities($_SESSION['fileName'][$i]).'">
 						<input type="hidden" value="'.$i.'" class="num">
 						</h3>
 						<div class="struccontainer" style="padding:10px;">
