@@ -1,14 +1,16 @@
 <?php
 session_start();
-ob_start(); //start output buffering
+//start output buffering
+ob_start();
 
+//include necessary files
 include_once 'config.php';
 include_once 'inc/contributors.php';
 include_once 'tools/gc.php';
 
+//Version of WebOpal
 $VERSION="0.5&alpha;";
 
-//Escape all variables
 
 //check if the standard dirs has been created
 if(!is_dir($TMPDIR)){
@@ -116,13 +118,15 @@ function init($i){
 }
 
 //First Visit? --> set cookie
+//load example code
 if(!isset($_COOKIE['visited'])){
 	setcookie("visited", 1, time() + (86400 * 365)); //86400sec is one day
 	$_SESSION['signInput'][0] = $EXAMPLECODE_SIGN;
 	$_SESSION['implInput'][0] = $EXAMPLECODE_IMPL;
 	$_SESSION['runFunction'] = $EXAMPLECODE_CMD;
 }
-$showChangeLog='';
+
+//show changelog for new versions
 if(!isset($_COOKIE['version'])){
 	$showChangeLog='firstTime';
 	setcookie("version", $VERSION, time() + (86400 * 365)); //86400sec is one day
@@ -142,7 +146,11 @@ if(!isset($_COOKIE['version'])){
   <title>WebOpal <?php echo $VERSION; ?></title>
   <script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
   <link rel="shortcut icon" href="favicon.ico">
-	<?if(file_exists('css/style.css')){
+  <?
+	/**
+	Fallback for style/jquery files.
+	**/
+	if(file_exists('css/style.css')){
 		echo '<link rel="stylesheet" type="text/css" href="css/style.css">';
 	}else{
 		echo '<link rel="stylesheet" type="text/css" href="css/style.fallback.css">';
@@ -154,20 +162,26 @@ if(!isset($_COOKIE['version'])){
 		echo '<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>';	
 	}
-	?>
+  ?>
 
 	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="js/ace.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/sha.min.js" charset="utf-8"></script>
 
-	<? if(file_exists('js/script.min.js')){
+  <? 
+	/**
+	Fallback for javascript files.
+	**/
+	if(file_exists('js/script.min.js')){
 		echo '<script src="js/script.min.js" type="text/javascript" charset="utf-8"></script>';
 	}else{
 		echo '<script src="js/functions.js" type="text/javascript" charset="utf-8"></script>';
 		echo '<script src="js/script.js" type="text/javascript" charset="utf-8"></script>';
 	}
-	?>
-	<?php if($BUGREPORT){
+  ?>
+	<?php 
+	//If bugreport is enabled, initialize reCaptcha
+	if($BUGREPORT){
 		echo 
 		'<script language="javascript" type="text/javascript">
 		function showRecaptcha(element) {
@@ -177,7 +191,9 @@ if(!isset($_COOKIE['version'])){
 			});
 		}
 		</script>'
-	;}?>
+	;}
+	?>
+	<!-- Google custom search -->
 	<script language="javascript" type="text/javascript">
 	  (function() {
 	    var cx = '014104389563113645663:vm6azr2-wkg';
@@ -195,23 +211,34 @@ if(!isset($_COOKIE['version'])){
       <div id="heading">
         <a href="<?php echo $HOSTURL ?>"><img src="img/logo.png" id="logo" /></a><h1 style="display:inline;">WebOpal <abbr title="Version <?php echo $VERSION; ?>">v<?php echo $VERSION; ?></abbr></h1>   
 			<a href="#" name="features" class="dialog">[Features]</a> &middot; <a href="#" name="changelog" class="dialog">[Changelog]</a> &middot; <a href="#" name="help" class="dialog">[Hilfe]</a> 
-			<?php if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}?>
-			<?php if($_SESSION['loggedIn']){
+			<?php 
+			//Echo Link to bugreport
+			if($BUGREPORT){ echo '&middot; <a href="#" id="bugReport">[Bug- & Ideenreport]</a>';}
+			?>
+			<?php 
+			//show logout / login link
+			if($_SESSION['loggedIn']){
 				$show="style='display:none;'";
 				echo '<a href="#" class="floatR" id="logout">[Logout]</a>';
 			} else {
 				$show="";
 				echo '<a href="#" class="floatR" id="login">[Login]</a>';
-			}?>
+			}
+			?>
 		</div>
-		<?php if($_SESSION['loggedIn']){ echo "Hallo ".$_SESSION['loggedInAs']."!";} ?>
+		<?php 
+		//show welcome message
+		if($_SESSION['loggedIn']){ echo "Hallo ".htmlentities($_SESSION['loggedInAs'])."!";} 
+		?>
 		<hr style="margin:0px -10px;"><br>
 		<noscript>
 			<span class='error'>Bitte aktiviere Javascript, damit WebOpal ordentlich funktioniert. Wir brauchen das f&uuml;r das Akkordion, sowie f&uuml;r die Ajax-Requests zur Auswertung des Opalcodes.</span><br>
 		</noscript>
 		<div class="codeRelated" <?php echo $show;?>><p>Wenn Du gerade keine Idee hast, beginne doch mit einer <a href="#" id="restore_exampl">Hello World!</a>-Struktur.</p>
 		<input type="button" value="Struktur hinzuf&uuml;gen" id="addStruc" <?php if($_SESSION['structnr']==$MAXFILES) {echo 'disabled="disabled"';} ;?>></div><br>
-		<?php if($_SESSION['loggedIn']){
+		<?php 
+			//List directories
+			if($_SESSION['loggedIn']){
 			$dirs="";$dircount=0;
 			foreach (new DirectoryIterator($TMPDIR.'/userfiles/'.$_SESSION['loggedInPath']) as $fn) {
 				 if (!$fn->isDot()) {
@@ -223,8 +250,9 @@ if(!isset($_COOKIE['version'])){
 				  $dircount++;
 				 }
 			 }
-		echo "Du bist gerade in keinem Verzeichnis. Wähle eins:<!--<a href='#' id='getFolders'>[Verzeichnis wechseln]</a>-->
-		<div id='folders'>$dirs</div>";} ?>
+		echo "Du bist gerade in keinem von ".$dircount." Verzeichnissen. Wähle eins:<!--<a href='#' id='getFolders'>[Verzeichnis wechseln]</a>-->
+		<div id='folders'>".$dirs."</div>";} 
+		?>
 		<div id="warning" style="display:none;"><br><br>
 			<h1 style="display:inline;">Bitte aktiviere Cookies!</h1>
 			<span>(was sind <a href="http://de.wikipedia.org/wiki/HTTP-Cookie" target="_blank">Cookies</a>?)</span>
@@ -309,6 +337,7 @@ if(!isset($_COOKIE['version'])){
 </html>
 
 <?php
+	//pleasecomment
 	//Output buffering for parallel gargabe collection and other things
 	$output = ob_get_clean();
 	ignore_user_abort(true);
