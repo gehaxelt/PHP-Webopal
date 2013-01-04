@@ -15,6 +15,7 @@ var maxWidth = 0;
 /* Execute if DOM is ready */
 $(function () {
 	var currentStruc, maxStruc, strucPre, actTab, keySwitch, jumpFrom, jWasPressed, clearKeyState, preventTabSwitch,  showChangeLog, accordionAttr, pre, data, autoComplete, wordAtLeft, possibleRun, possibleWords, editorPos, foldersShown;
+	/* Initialize variables */
 	currentStruc = $('.num').length;
 	maxStruc = $('#maxStruc').val();
 	strucPre = $('#strucPre').val();
@@ -26,10 +27,13 @@ $(function () {
 	possibleRun = [];
 	jWasPressed = false;
 	foldersShown = false;
+	/* Jumo function */
 	clearKeyState = function () {
 		if (jWasPressed) {editors[editorPos[jumpFrom]].focus(); }
 		jWasPressed = false;
 	};
+	
+	//accordion attributes
 	accordionAttr = {
 		collapsible: false,
 		heightStyle: "content",
@@ -50,8 +54,11 @@ $(function () {
 			keySwitch = false;
 		}
 	};
-
+	
+	//Deny to add structures, if limit is reached.
 	if (currentStruc >= maxStruc) {$("#addStruc").attr("disabled", "disabled"); }
+	
+	//renew/check session timeout
 	sessionTimeOut =  parseInt($('#timeOut').val(), 10);
 	sessionEnd = new Date().getTime() + sessionTimeOut;
 	timeOutId = setInterval(checkIfTimeOut, (sessionTimeOut / 20));
@@ -92,6 +99,7 @@ $(function () {
 		editors[$(".impl").eq(0).attr("id")].focus();
 	}
 
+	//insert example code into the first structure
 	$("#restore_exampl").click(function () {
 		var answer, active, num, cmds, name;
 		active = $("#accordion").accordion("option", "active");
@@ -106,6 +114,7 @@ $(function () {
 		}
 	});
 
+	//pleasecomment
 	$(document).on("change", '.nameInput', function (event) {
 		var num, name;
 		num = $(this).parent().find('.num').val();
@@ -113,6 +122,7 @@ $(function () {
 		checkSignAndImpl(num, name);
 	});
 
+	//change the directory
 	$(document).on("click", '.changeDir', function (event) {
 		name = $(this).attr("name");
 		$.ajax({
@@ -129,7 +139,8 @@ $(function () {
 			}
 		});
 	});
-
+	
+	//Jump to erros in the code
 	$(document).on("click", '.errorJump', function (event) {
 		var c, err, editor;
 		event.preventDefault();
@@ -154,6 +165,7 @@ $(function () {
 		preventTabSwitch = false;
 	});
 
+	//delete structures
 	$(document).on("click", '.delStruc', function (event) {
 		if ($('.delStruc').size() > 1) {
 			var answer, name, num, index, impl, sign;
@@ -195,6 +207,7 @@ $(function () {
 		}
 	});
 
+	//addstructures
 	$('#addStruc').click(function () {
 		if (currentStruc < maxStruc) {
 			var strucNum, name, impl, sign;
@@ -334,6 +347,7 @@ $(function () {
 		});
 	});
 
+	//list folders
 	$("#getFolders").click(function () {
 		var name, w;
 		if(foldersShown){
@@ -361,6 +375,7 @@ $(function () {
 		}
 	});
 
+	//login check
 	$("#login").click(function () {
 		var name, w;
 		name = $(this).attr("name");
@@ -413,11 +428,12 @@ $(function () {
 			}
 		});
 	});
-
+	//logout
 	$(document).on("click", '#logout', function () {
 		window.location.href = "inc/logout.php";
 	});
 
+	//run function, when pressing Strg+Enter
 	$('#runFunction').keypress(function (e) {
 		if (e.which == 13) {
 			e.preventDefault();
@@ -425,6 +441,7 @@ $(function () {
 		}
 	});
 
+	//autocomplete
 	$('#runFunction').autocomplete({
 		minLength : 1,
 		source: function (request, response) {
