@@ -7,6 +7,7 @@ WebOpal - A webinterface for Opal
 - 4. Optimize Javascript & CSS
 - 5. Optional features
 - 5.1. Bugreportsystem
+- 6. Protecting userfiles
 
 ##1. Minimum Requirements##
 
@@ -69,3 +70,38 @@ We implemented an bugreportsystem, which will give your visitors the possibility
 - 4. Edit `$ISSUEUSER` and `$ISSUEREPO` in your **config.php**
 - 5. Set `$BUGREPORT` from `false` to `true` in your **config.php**
 
+##Protecting userfiles##
+
+###Deny access to userfiles with lighttpd###
+
+Just paste the following code into your /etc/lighttpd/lighttpd.conf
+
+```
+$HTTP["url"] =~ "/tmp/files|/tmp/uploads/tmp|/userfiles|/tmp/users" {
+	url.access-deny = ( "" )
+}
+
+```
+
+###Deny access to userfiles with .htacess###
+
+Create a .htaccess file with the following content
+
+	deny from all
+
+in the following directorys:
+
+```
+/tmp/files/
+/tmp/userfiles/
+/tmp/uploads/
+```
+
+Create another .htaccess in the /tmp/ directory and fill it with this:
+
+```
+	<FilesMatch /users>
+		Order deny, allow
+		Deny from all
+	</FilesMatch>
+```
