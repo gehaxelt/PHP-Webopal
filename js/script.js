@@ -585,7 +585,7 @@ $(function () {
 /*
 		}*/
 	});
-
+    //please comment
     $('#bugReport').click(function () {
 		$('#dialog').html("<div id='issueList'><h3 class='title'>Issueliste</h3><div class='content'></div></div><div id='reportForm'><h3 class='title'>Reportformular</h3><div class='content'></div></div>");
 		$('#dialog').dialog().dialog("destroy");
@@ -608,7 +608,7 @@ $(function () {
 		getIssueForm();
 		getIssueList();
     });
-
+	//please comment
 	if (showChangeLog != "") {
 		if (showChangeLog == "firstTime") {
 			data = "page=features";
