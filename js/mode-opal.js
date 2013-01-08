@@ -1,4 +1,4 @@
-//Template
+//Syntaxhiglighting rules for the opal programming language
 
 define('ace/mode/opal', function(require, exports, module) {
 "use strict";
