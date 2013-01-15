@@ -133,7 +133,7 @@ function runOasys($impls,$signs,$cmd,$names,$debugOpal) {
 			
 			/* Check if structure contains bad things */
 			$pattern = '~(.+Com.+)|(INLINE)|(DEBUG)|(.+Stream.+)|(BasicIO)|(LineFormat)|(Commands)|(.+File.+)|(.+Process.+)|(.+Signal.+)|(.+User.+)|(.+Wait.+)|(.+Unix.+)~sm'; 
-			if(preg_match($pattern, $impls[$i].$signs[$i].$cmd)){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt. Du Lausbub! Versuchst du unseren Server zu hacken?");}
+			if((preg_match($pattern, $impls[$i].$signs[$i].$cmd)) && (!preg_match('~\s(Compose)\s~ism',$impls[$i].$signs[$i].$cmd))){return Array("log"=>"Es wurden unerlaubte Strukturen entdeckt. Du Lausbub! Versuchst du unseren Server zu hacken?");}
 
 			/* Check if name contains bad things */
 			$pattern = '~[^a-zA-Z0-9]~sm'; 
