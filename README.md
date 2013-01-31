@@ -1,5 +1,6 @@
 WebOpal - A webinterface for Opal
 ==================================
+For current development news see our [blog](http://webopal.github.com)...
 
 - 1. Requirements
 - 2. Installation
